@@ -1,4 +1,4 @@
-// Shirushi Coin ver 2.0
+// Shirushi Coin ver 3.0
 
 // SPDX-License-Identifier: MIT
 // Compatible with OpenZeppelin Contracts ^5.4.0
@@ -10,7 +10,7 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import { ERC20Pausable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
 import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol"; // EIP-2612 ERC20 Permit
-import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title ShirushiCoin
@@ -28,7 +28,7 @@ import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuar
 contract ShirushiCoin is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC1363, ERC20Permit, ReentrancyGuard {
     // --- Constants ---
     /// @dev String of system version.
-    string public constant VERSION = "2.00";
+    string public constant VERSION = "3.00";
 
     /// @dev Number of decimal places for the coin. Complies with the ERC20 standard of 18 decimals.
     uint256 public constant DECIMAL_FACTOR = 1e18;
