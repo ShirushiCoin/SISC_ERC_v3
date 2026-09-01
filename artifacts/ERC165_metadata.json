@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.30+commit.73712a01"
+		"version": "0.8.36+commit.8a079791"
 	},
 	"language": "Solidity",
 	"output": {
@@ -43,7 +43,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/ShirushiCoin_flattened.sol": "ERC165"
+			"@openzeppelin/contracts/utils/introspection/ERC165.sol": "ERC165"
 		},
 		"evmVersion": "prague",
 		"libraries": {},
@@ -57,12 +57,20 @@
 		"remappings": []
 	},
 	"sources": {
-		"contracts/ShirushiCoin_flattened.sol": {
-			"keccak256": "0x42f1a90ba31f67aec20cf90f689b7b7f31171458924cb4e6f1d3111f5a4486dd",
+		"@openzeppelin/contracts/utils/introspection/ERC165.sol": {
+			"keccak256": "0x2d9dc2fe26180f74c11c13663647d38e259e45f95eb88f57b61d2160b0109d3e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://97cf4d67f1c25429c2e547aafe0118b059a7859fd5fea22d1d0d80e89a5c8287",
-				"dweb:/ipfs/QmdmYRr8DuYkQ5zeQDHpx2BohCsvY2R34QdREjBNABAxML"
+				"bzz-raw://81233d1f98060113d9922180bb0f14f8335856fe9f339134b09335e9f678c377",
+				"dweb:/ipfs/QmWh6R35SarhAn4z2wH8SU456jJSYL2FgucfTFgbHJJN4E"
+			]
+		},
+		"@openzeppelin/contracts/utils/introspection/IERC165.sol": {
+			"keccak256": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://971f954442df5c2ef5b5ebf1eb245d7105d9fbacc7386ee5c796df1d45b21617",
+				"dweb:/ipfs/QmadRjHbkicwqwwh61raUEapaVEtaLMcYbQZWs9gUkgj3u"
 			]
 		}
 	},

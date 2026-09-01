@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.30+commit.73712a01"
+		"version": "0.8.36+commit.8a079791"
 	},
 	"language": "Solidity",
 	"output": {
@@ -38,7 +38,7 @@
 			"errors": {
 				"ECDSAInvalidSignature()": [
 					{
-						"details": "The signature derives the `address(0)`."
+						"details": "The signature is invalid."
 					}
 				],
 				"ECDSAInvalidSignatureLength(uint256)": [
@@ -64,7 +64,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/ShirushiCoin_flattened.sol": "ECDSA"
+			"@openzeppelin/contracts/utils/cryptography/ECDSA.sol": "ECDSA"
 		},
 		"evmVersion": "prague",
 		"libraries": {},
@@ -78,12 +78,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"contracts/ShirushiCoin_flattened.sol": {
-			"keccak256": "0x42f1a90ba31f67aec20cf90f689b7b7f31171458924cb4e6f1d3111f5a4486dd",
+		"@openzeppelin/contracts/utils/cryptography/ECDSA.sol": {
+			"keccak256": "0xbeb5cad8aaabe0d35d2ec1a8414d91e81e5a8ca679add4cf57e2f33476861f40",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://97cf4d67f1c25429c2e547aafe0118b059a7859fd5fea22d1d0d80e89a5c8287",
-				"dweb:/ipfs/QmdmYRr8DuYkQ5zeQDHpx2BohCsvY2R34QdREjBNABAxML"
+				"bzz-raw://ebb272a5ee2da4e8bd5551334e0ce8dce4e9c56a04570d6bf046d260fab3116a",
+				"dweb:/ipfs/QmNw6RyM769qcqFocDq6HJMG2WiEnQbvizpRaUXsACHho2"
 			]
 		}
 	},

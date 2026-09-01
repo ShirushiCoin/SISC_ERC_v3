@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.30+commit.73712a01"
+		"version": "0.8.36+commit.8a079791"
 	},
 	"language": "Solidity",
 	"output": {
@@ -36,7 +36,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/ShirushiCoin_flattened.sol": "ShortStrings"
+			"@openzeppelin/contracts/utils/ShortStrings.sol": "ShortStrings"
 		},
 		"evmVersion": "prague",
 		"libraries": {},
@@ -50,12 +50,20 @@
 		"remappings": []
 	},
 	"sources": {
-		"contracts/ShirushiCoin_flattened.sol": {
-			"keccak256": "0x42f1a90ba31f67aec20cf90f689b7b7f31171458924cb4e6f1d3111f5a4486dd",
+		"@openzeppelin/contracts/utils/ShortStrings.sol": {
+			"keccak256": "0x0768b3bdb701fe4994b3be932ca8635551dfebe04c645f77500322741bebf57c",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://97cf4d67f1c25429c2e547aafe0118b059a7859fd5fea22d1d0d80e89a5c8287",
-				"dweb:/ipfs/QmdmYRr8DuYkQ5zeQDHpx2BohCsvY2R34QdREjBNABAxML"
+				"bzz-raw://a2059f9ca8d3c11c49ca49fc9c5fb070f18cc85d12a7688e45322ed0e2a1cb99",
+				"dweb:/ipfs/QmS2gwX51RAvSw4tYbjHccY2CKbh2uvDzqHLAFXdsddgia"
+			]
+		},
+		"@openzeppelin/contracts/utils/StorageSlot.sol": {
+			"keccak256": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://9f660b1f351b757dfe01438e59888f31f33ded3afcf5cb5b0d9bf9aa6f320a8b",
+				"dweb:/ipfs/QmarDJ5hZEgBtCmmrVzEZWjub9769eD686jmzb2XpSU1cM"
 			]
 		}
 	},

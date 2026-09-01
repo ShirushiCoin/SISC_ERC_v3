@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.30+commit.73712a01"
+		"version": "0.8.36+commit.8a079791"
 	},
 	"language": "Solidity",
 	"output": {
@@ -77,7 +77,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/ShirushiCoin_flattened.sol": "IERC5267"
+			"@openzeppelin/contracts/interfaces/IERC5267.sol": "IERC5267"
 		},
 		"evmVersion": "prague",
 		"libraries": {},
@@ -91,12 +91,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"contracts/ShirushiCoin_flattened.sol": {
-			"keccak256": "0x42f1a90ba31f67aec20cf90f689b7b7f31171458924cb4e6f1d3111f5a4486dd",
+		"@openzeppelin/contracts/interfaces/IERC5267.sol": {
+			"keccak256": "0xfb223a85dd0b2175cfbbaa325a744e2cd74ecd17c3df2b77b0722f991d2725ee",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://97cf4d67f1c25429c2e547aafe0118b059a7859fd5fea22d1d0d80e89a5c8287",
-				"dweb:/ipfs/QmdmYRr8DuYkQ5zeQDHpx2BohCsvY2R34QdREjBNABAxML"
+				"bzz-raw://84bf1dea0589ec49c8d15d559cc6d86ee493048a89b2d4adb60fbe705a3d89ae",
+				"dweb:/ipfs/Qmd56n556d529wk2pRMhYhm5nhMDhviwereodDikjs68w1"
 			]
 		}
 	},

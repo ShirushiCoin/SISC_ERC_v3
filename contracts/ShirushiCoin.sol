@@ -1,8 +1,8 @@
 // Shirushi Coin ver 3.0
 
 // SPDX-License-Identifier: MIT
-// Compatible with OpenZeppelin Contracts ^5.4.0
-pragma solidity ^0.8.30;
+// Compatible with OpenZeppelin Contracts ^5.6.1
+pragma solidity 0.8.36;
 
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ERC1363 } from "@openzeppelin/contracts/token/ERC20/extensions/ERC1363.sol"; // ERC-1363 Transfer And Call

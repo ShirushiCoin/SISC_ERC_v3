@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.30+commit.73712a01"
+		"version": "0.8.36+commit.8a079791"
 	},
 	"language": "Solidity",
 	"output": {
@@ -60,7 +60,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/ShirushiCoin_flattened.sol": "ERC1363Utils"
+			"@openzeppelin/contracts/token/ERC20/utils/ERC1363Utils.sol": "ERC1363Utils"
 		},
 		"evmVersion": "prague",
 		"libraries": {},
@@ -74,12 +74,28 @@
 		"remappings": []
 	},
 	"sources": {
-		"contracts/ShirushiCoin_flattened.sol": {
-			"keccak256": "0x42f1a90ba31f67aec20cf90f689b7b7f31171458924cb4e6f1d3111f5a4486dd",
+		"@openzeppelin/contracts/interfaces/IERC1363Receiver.sol": {
+			"keccak256": "0x5cea723201b514b19a8bbe3bd19d585d378afbe7569657651c21e8eaa09b39d5",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://97cf4d67f1c25429c2e547aafe0118b059a7859fd5fea22d1d0d80e89a5c8287",
-				"dweb:/ipfs/QmdmYRr8DuYkQ5zeQDHpx2BohCsvY2R34QdREjBNABAxML"
+				"bzz-raw://17e72b4af2ebfb3990724ac8a5ceabc85f347210c386e19aed29d767e6ce2aff",
+				"dweb:/ipfs/QmZXFN8ZppaXmJfWzzMnA4zWBvq7fJnEd6Snf8tvWv2VSQ"
+			]
+		},
+		"@openzeppelin/contracts/interfaces/IERC1363Spender.sol": {
+			"keccak256": "0x6df85f4df77c041a1957bdd5ae1c6e3247922e57e0b63687cce493d66663c6a2",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d08c0b9bf43ebd3cb1402dcebaeebe5a827939b3c591f3e131cf1900c7bcd44e",
+				"dweb:/ipfs/QmWkKyQEvmidbk7KJPD96bX5u2iyaAPGyK198N7SqrTn4k"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC20/utils/ERC1363Utils.sol": {
+			"keccak256": "0xe644d2ed2640745d91b1a6f826beb5b20d8312ed02bfca4ffec8af0adf6a3ee4",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://cb146e9cf5e140cae6a82074bc44def564fbb8f687946e295ca81a3e7e113ee5",
+				"dweb:/ipfs/QmXSD2SMDSuaB76oK3fbbsLSmEPepPtY8omwrVSwa7Gdp2"
 			]
 		}
 	},

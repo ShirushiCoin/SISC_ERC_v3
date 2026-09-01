@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.30+commit.73712a01"
+		"version": "0.8.36+commit.8a079791"
 	},
 	"language": "Solidity",
 	"output": {
@@ -70,17 +70,17 @@
 				],
 				"SafeCastOverflowedIntToUint(int256)": [
 					{
-						"details": "An int value doesn't fit in an uint of `bits` size."
+						"details": "An int value doesn't fit in a uint of `bits` size."
 					}
 				],
 				"SafeCastOverflowedUintDowncast(uint8,uint256)": [
 					{
-						"details": "Value doesn't fit in an uint of `bits` size."
+						"details": "Value doesn't fit in a uint of `bits` size."
 					}
 				],
 				"SafeCastOverflowedUintToInt(uint256)": [
 					{
-						"details": "An uint value doesn't fit in an int of `bits` size."
+						"details": "A uint value doesn't fit in an int of `bits` size."
 					}
 				]
 			},
@@ -96,7 +96,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/ShirushiCoin_flattened.sol": "SafeCast"
+			"@openzeppelin/contracts/utils/math/SafeCast.sol": "SafeCast"
 		},
 		"evmVersion": "prague",
 		"libraries": {},
@@ -110,12 +110,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"contracts/ShirushiCoin_flattened.sol": {
-			"keccak256": "0x42f1a90ba31f67aec20cf90f689b7b7f31171458924cb4e6f1d3111f5a4486dd",
+		"@openzeppelin/contracts/utils/math/SafeCast.sol": {
+			"keccak256": "0xc8cae21c9ae4a46e5162ff9bf5b351d6fa6a6eba72d515f3bc1bdfeda7fdf083",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://97cf4d67f1c25429c2e547aafe0118b059a7859fd5fea22d1d0d80e89a5c8287",
-				"dweb:/ipfs/QmdmYRr8DuYkQ5zeQDHpx2BohCsvY2R34QdREjBNABAxML"
+				"bzz-raw://ce830ebcf28e31643caba318996db3763c36d52cd0f23798ba83c135355d45e9",
+				"dweb:/ipfs/QmdGPcvptHN7UBCbUYBbRX3hiRVRFLRwno8b4uga6uFNif"
 			]
 		}
 	},
