@@ -8188,17 +8188,17 @@ contract ShirushiCoin is
 
         // --- Role Assignment ---
         /// @dev DEFAULT_ADMIN_ROLE is pinned to `roleHolders.admin` for the life of the contract:
-        ///      `_grantRole` / `_revokeRole` below reject every later change. The initial grants
-        ///      call the base implementation directly because the `_grantRole` override reads
-        ///      `fixedAdminAccount`, and immutable variables cannot be read during construction.
+        ///      the `_grantRole` / `_revokeRole` overrides below reject every later change.
+        ///      `fixedAdminAccount` is assigned before the first grant so that the override can
+        ///      read it here.
         fixedAdminAccount = roleHolders.admin;
-        AccessControlEnumerable._grantRole(DEFAULT_ADMIN_ROLE, roleHolders.admin);
-        AccessControlEnumerable._grantRole(FREEZER_ROLE, roleHolders.freezer);
-        AccessControlEnumerable._grantRole(WHITELIST_ROLE, roleHolders.whitelistAdmin);
-        AccessControlEnumerable._grantRole(MINING_ADMIN_ROLE, roleHolders.miningAdmin);
-        AccessControlEnumerable._grantRole(MINER_ROLE, roleHolders.miner);
+        _grantRole(DEFAULT_ADMIN_ROLE, roleHolders.admin);
+        _grantRole(FREEZER_ROLE, roleHolders.freezer);
+        _grantRole(WHITELIST_ROLE, roleHolders.whitelistAdmin);
+        _grantRole(MINING_ADMIN_ROLE, roleHolders.miningAdmin);
+        _grantRole(MINER_ROLE, roleHolders.miner);
         if (roleHolders.recorder != address(0)) {
-            AccessControlEnumerable._grantRole(RECORDER_ROLE, roleHolders.recorder);
+            _grantRole(RECORDER_ROLE, roleHolders.recorder);
         }
 
         // --- Pool Account Setup ---
