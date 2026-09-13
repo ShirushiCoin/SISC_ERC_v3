@@ -1,108 +1,114 @@
 *** SISC (ShirushiCoin) – Overview
 
 SISC is an ERC-20 compatible token with role-based access control and a built-in mining schedule.
-The contract extends standard ERC-20 behavior with administrative mint/burn, multi-transfer utilities, and a daily mining reward mechanism.
+This branch (feature/v3.1) contains version 3.1, in which no function can increase, decrease or
+move the balance of another account: issuance is the fixed mining schedule only.
+
+See docs/v3.1-changes.md for the full v3.0 -> v3.1 difference and for the deployment arguments.
 
 *** Key Features
 - ERC-20 Core: name(), symbol(), decimals(), totalSupply(), transfer, approve, transferFrom, etc.
-- Role-Based Access Control (RBAC):
- + DEFAULT_ADMIN_ROLE – manages privileged settings and roles.
- + PAUSER_ROLE – can pause() / unpause() token transfers.
+- Maximum supply of 300,000,000 coins, enforced by OpenZeppelin ERC20Capped (cap() / maxSupply()).
+- Role-Based Access Control (AccessControl + AccessControlEnumerable):
+ + DEFAULT_ADMIN_ROLE – manages the other roles. Fixed at deployment: it cannot be granted
+   to another address, revoked or renounced.
  + FREEZER_ROLE – can freeze(address) / unfreeze(address) individual accounts.
- + MINER_ROLE – can call mine(year) to mint yearly rewards to a designated pool.
-
-- Administrative Mint/Burn:
- + adminMint(address account, uint256 amount)
- + adminBurn(address account, uint256 amount)
-
+ + WHITELIST_ROLE – can registerExchange(address) / unregisterExchange(address).
+ + MINING_ADMIN_ROLE – can setPoolAccount(address) / setMiningReward(year, reward).
+ + MINER_ROLE – can call mine(year) to mint the yearly reward to the pool account.
+ + RECORDER_ROLE – can call storeWeb3MakerAIData(bytes32).
+- Address restrictions (OpenZeppelin Community Contracts ERC20Restricted, vendored unchanged
+  at a pinned commit – see contracts/vendor/README.md):
+ + BLOCKED = frozen. A frozen address can neither send nor receive.
+ + ALLOWED = registered exchange address. It can never be frozen (SISC transition guard).
+ + A frozen address cannot be registered, and unfreeze() cannot remove the ALLOWED state.
 - Mining Schedule:
- + Configurable start year MINING_START_YEAR
+ + Configurable start year MINING_START_YEAR (2022), 90% of the previous year from the 3rd year.
  + Reward calculation via getMiningReward(uint256 year)
- + mine(year) mints the reward to poolAccount (set via setPoolAccount)
- + Enforces a minimum interval between mine calls
- + Caps issuance so that totalSupply() never exceeds maxSupply
+ + mine(year) mints the reward to the pool account (set via setPoolAccount)
+ + Enforces a minimum interval of 23 hours between mine calls
+ + Caps issuance so that totalSupply() never exceeds the cap
+- Migration supply: minted once by the constructor to the given holders. There is no
+  discretionary mint, so the amounts cannot be corrected after deployment.
+- EIP-2612 permit support (gasless approvals), ERC-1363 transferAndCall / approveAndCall.
+- multiTransfer(address[] recipients, uint256[] amounts) – up to 100 recipients, no role
+  required (it moves only the caller's own balance).
+- Re-entrancy protection via ReentrancyGuardTransient (requires evmVersion cancun or later).
 
-Operational Controls & Utilities:
+*** Removed in 3.1 (present in 3.0)
+- burn / burnFrom (ERC20Burnable is not inherited)
+- adminBurn (forced burn from any address)
+- adminMint (discretionary mint)
+- pause / unpause (ERC20Pausable is not inherited), and PAUSER_ROLE
+- POOLER_ROLE (multiTransfer is permissionless)
+- Any transfer of DEFAULT_ADMIN_ROLE
 
-pause() / unpause() to halt or resume transfers
-
-freeze(address) / unfreeze(address) to restrict specific accounts
-
-multiTransfer(address[] recipients, uint256[] amounts)
-
-EIP-2612 permit support (gasless approvals)
-
-Events for administration and mining (MineEvent, AccountFrozen, PoolAccountChanged, etc.)
-
-Repository Structure
+*** Repository Structure
 .
 ├─ contracts/
-│  └─ SISC.sol                 # The main SISC (ShirushiCoin) Solidity contract
-├─ src/                        # TypeScript helper scripts (optional, if included)
-│  ├─ read.ts                  # Read-only queries (name/symbol/decimals/supply/balances, etc.)
-│  ├─ transfer.ts              # Token transfers from a local signer
-│  ├─ admin-mint.ts            # Run adminMint (requires DEFAULT_ADMIN_ROLE)
-│  ├─ admin-burn.ts            # Run adminBurn (requires DEFAULT_ADMIN_ROLE)
-│  ├─ grant-role.ts            # Grant roles (bytes32 or role name → keccak256)
-│  ├─ revoke-role.ts           # Revoke roles
-│  ├─ has-role.ts              # Check role membership
-│  ├─ mine.ts                  # Execute mining for the current year (requires MINER_ROLE)
-│  └─ diag-mine.ts             # Diagnostics for mining prechecks
-├─ abi/
-│  └─ sisc.json                # Compiled ABI (for scripts and verification)
-├─ .env.example                # Environment variables template (RPC, PRIVATE_KEY, CONTRACT, etc.)
-└─ README.md                   # This file
+│  ├─ ShirushiCoin.sol              # The main SISC (ShirushiCoin) Solidity contract
+│  ├─ ShirushiCoin_flattened.sol    # Single-file version for verification (same bytecode)
+│  └─ vendor/                       # Third-party sources, vendored unchanged (see its README)
+├─ docs/
+│  └─ v3.1-changes.md               # v3.0 -> v3.1 difference, guard rules, deployment arguments
+├─ scripts/                         # Remix deployment helpers
+├─ solc-input.json                  # solc standard-json input (0.8.36, evmVersion prague)
+└─ README.txt                       # This file
 
+*** Build
+solc 0.8.36, evmVersion prague, optimizer disabled (runs 200), OpenZeppelin Contracts 5.6.1.
+The flattened file compiles to the same bytecode (metadata excluded) as the modular sources.
 
-If you are only publishing Solidity, the src/ and abi/ folders are optional. They are useful when interacting with the contract via Node.js + ethers v6.
-
-Roles & Typical Operations
+*** Roles & Typical Operations
 
 Grant/Revoke a Role
 
-grantRole(bytes32 role, address account)
+grantRole(bytes32 role, address account)     # DEFAULT_ADMIN_ROLE; not for DEFAULT_ADMIN_ROLE itself
+revokeRole(bytes32 role, address account)    # DEFAULT_ADMIN_ROLE; not for DEFAULT_ADMIN_ROLE itself
+getRoleMembers(bytes32 role)                 # all current holders, on-chain
 
-revokeRole(bytes32 role, address account)
-
-Role constants may be passed as raw bytes32 or computed via keccak256("ROLE_NAME").
-Common roles: DEFAULT_ADMIN_ROLE, PAUSER_ROLE, FREEZER_ROLE, MINER_ROLE.
-
-Pause/Unpause
-
-pause() / unpause() (requires PAUSER_ROLE)
+Role constants are public: DEFAULT_ADMIN_ROLE, FREEZER_ROLE, WHITELIST_ROLE, MINING_ADMIN_ROLE,
+MINER_ROLE, RECORDER_ROLE.
 
 Freeze/Unfreeze Accounts
 
-freeze(address) / unfreeze(address) (requires FREEZER_ROLE)
+freeze(address) / unfreeze(address)          # FREEZER_ROLE
+isFrozen(address)
+
+Exchange whitelist
+
+registerExchange(address) / unregisterExchange(address)   # WHITELIST_ROLE
+isRegisteredExchange(address)
 
 Mining
 
 Check reward: getMiningReward(year)
-
-Execute: mine(year) (requires MINER_ROLE, respects min interval & maxSupply)
+Execute: mine(year)                          # MINER_ROLE, respects the 23h interval and the cap
+Settings: setPoolAccount(address) / setMiningReward(year, reward)   # MINING_ADMIN_ROLE
+getPoolAccount()
 
 Events (Selected)
 
+GenesisSupplyMinted(uint256 genesisSupply, uint256 legacyMinedSupply)
 MineEvent(address miner, address pool, uint256 amount)
-
 AccountFrozen(address account, bool isFrozen)
-
+ExchangeRegistered(address account, bool isRegistered)
+UserRestrictionsUpdated(address account, Restriction restriction)   # from ERC20Restricted
 PoolAccountChanged(address oldAccount, address newAccount)
-
+MiningRewardChanged(uint256 year, uint256 oldReward, uint256 newReward)
+MultiTransferEvent(address sender, uint256 totalCount, uint256 totalAmount)
+Web3MakerAIDataStored(address sender, bytes32 web3MakerAIData)
 Standard ERC-20 events: Transfer, Approval
-
 Access control events: RoleGranted, RoleRevoked, RoleAdminChanged
 
 Security Notes
 
-Administrative functions and mining are protected by RBAC—assign roles carefully.
-
-Consider using a multisig for DEFAULT_ADMIN_ROLE.
-
-Pausing and freezing are powerful controls intended for emergency or compliance workflows.
-
+The contract is not upgradeable (no proxy): every change requires a redeployment.
+DEFAULT_ADMIN_ROLE is fixed at deployment and only manages the other roles.
+freeze / unfreeze has no expiry; registered exchange addresses can never be frozen.
+Assign roles carefully and prefer a multisig for each role holder.
 Always test with a testnet and/or fork before mainnet deployments.
 
 License
 
-Specify your license here (e.g., MIT, Apache-2.0).
+MIT (SPDX-License-Identifier: MIT).

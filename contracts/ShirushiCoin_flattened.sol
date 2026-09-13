@@ -1,10 +1,10 @@
-// Shirushi Coin ver 3.0
+// Shirushi Coin ver 3.1
 //
 // SPDX-License-Identifier: MIT
 // Compatible with OpenZeppelin Contracts ^5.6.1
 //
 // This file was flattened from contracts/ShirushiCoin.sol.
-// Sources (in dependency order): 36 files.
+// Sources (in dependency order): 42 files.
 
 pragma solidity 0.8.36;
 
@@ -13,7 +13,6 @@ pragma solidity 0.8.36;
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.4.0) (access/IAccessControl.sol)
-
 
 /**
  * @dev External interface of AccessControl declared to support ERC-165 detection.
@@ -110,11 +109,41 @@ interface IAccessControl {
 }
 
 // ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/access/extensions/IAccessControlEnumerable.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.4.0) (access/extensions/IAccessControlEnumerable.sol)
+
+/**
+ * @dev External interface of AccessControlEnumerable declared to support ERC-165 detection.
+ */
+interface IAccessControlEnumerable is IAccessControl {
+    /**
+     * @dev Returns one of the accounts that have `role`. `index` must be a
+     * value between 0 and {getRoleMemberCount}, non-inclusive.
+     *
+     * Role bearers are not sorted in any particular way, and their ordering may
+     * change at any point.
+     *
+     * WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure
+     * you perform all queries on the same block. See the following
+     * https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post]
+     * for more information.
+     */
+    function getRoleMember(bytes32 role, uint256 index) external view returns (address);
+
+    /**
+     * @dev Returns the number of accounts that have `role`. Can be used
+     * together with {getRoleMember} to enumerate all bearers of a role.
+     */
+    function getRoleMemberCount(bytes32 role) external view returns (uint256);
+}
+
+// ----------------------------------------------------------------------------
 // File: @openzeppelin/contracts/utils/Context.sol
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.0.1) (utils/Context.sol)
-
 
 /**
  * @dev Provides information about the current execution context, including the
@@ -146,7 +175,6 @@ abstract contract Context {
 
 // OpenZeppelin Contracts (last updated v5.4.0) (utils/introspection/IERC165.sol)
 
-
 /**
  * @dev Interface of the ERC-165 standard, as defined in the
  * https://eips.ethereum.org/EIPS/eip-165[ERC].
@@ -174,8 +202,6 @@ interface IERC165 {
 
 // OpenZeppelin Contracts (last updated v5.4.0) (utils/introspection/ERC165.sol)
 
-
-
 /**
  * @dev Implementation of the {IERC165} interface.
  *
@@ -200,10 +226,6 @@ abstract contract ERC165 is IERC165 {
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.6.0) (access/AccessControl.sol)
-
-
-
-
 
 /**
  * @dev Contract module that allows children to implement role-based access
@@ -405,1551 +427,324 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
 }
 
 // ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/token/ERC20/IERC20.sol
+// File: @openzeppelin/contracts/utils/Comparators.sol
 // ----------------------------------------------------------------------------
 
-// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/IERC20.sol)
-
+// OpenZeppelin Contracts (last updated v5.1.0) (utils/Comparators.sol)
 
 /**
- * @dev Interface of the ERC-20 standard as defined in the ERC.
- */
-interface IERC20 {
-    /**
-     * @dev Emitted when `value` tokens are moved from one account (`from`) to
-     * another (`to`).
-     *
-     * Note that `value` may be zero.
-     */
-    event Transfer(address indexed from, address indexed to, uint256 value);
-
-    /**
-     * @dev Emitted when the allowance of a `spender` for an `owner` is set by
-     * a call to {approve}. `value` is the new allowance.
-     */
-    event Approval(address indexed owner, address indexed spender, uint256 value);
-
-    /**
-     * @dev Returns the value of tokens in existence.
-     */
-    function totalSupply() external view returns (uint256);
-
-    /**
-     * @dev Returns the value of tokens owned by `account`.
-     */
-    function balanceOf(address account) external view returns (uint256);
-
-    /**
-     * @dev Moves a `value` amount of tokens from the caller's account to `to`.
-     *
-     * Returns a boolean value indicating whether the operation succeeded.
-     *
-     * Emits a {Transfer} event.
-     */
-    function transfer(address to, uint256 value) external returns (bool);
-
-    /**
-     * @dev Returns the remaining number of tokens that `spender` will be
-     * allowed to spend on behalf of `owner` through {transferFrom}. This is
-     * zero by default.
-     *
-     * This value changes when {approve} or {transferFrom} are called.
-     */
-    function allowance(address owner, address spender) external view returns (uint256);
-
-    /**
-     * @dev Sets a `value` amount of tokens as the allowance of `spender` over the
-     * caller's tokens.
-     *
-     * Returns a boolean value indicating whether the operation succeeded.
-     *
-     * IMPORTANT: Beware that changing an allowance with this method brings the risk
-     * that someone may use both the old and the new allowance by unfortunate
-     * transaction ordering. One possible solution to mitigate this race
-     * condition is to first reduce the spender's allowance to 0 and set the
-     * desired value afterwards:
-     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-     *
-     * Emits an {Approval} event.
-     */
-    function approve(address spender, uint256 value) external returns (bool);
-
-    /**
-     * @dev Moves a `value` amount of tokens from `from` to `to` using the
-     * allowance mechanism. `value` is then deducted from the caller's
-     * allowance.
-     *
-     * Returns a boolean value indicating whether the operation succeeded.
-     *
-     * Emits a {Transfer} event.
-     */
-    function transferFrom(address from, address to, uint256 value) external returns (bool);
-}
-
-// ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol
-// ----------------------------------------------------------------------------
-
-// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/extensions/IERC20Metadata.sol)
-
-
-
-/**
- * @dev Interface for the optional metadata functions from the ERC-20 standard.
- */
-interface IERC20Metadata is IERC20 {
-    /**
-     * @dev Returns the name of the token.
-     */
-    function name() external view returns (string memory);
-
-    /**
-     * @dev Returns the symbol of the token.
-     */
-    function symbol() external view returns (string memory);
-
-    /**
-     * @dev Returns the decimals places of the token.
-     */
-    function decimals() external view returns (uint8);
-}
-
-// ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/interfaces/draft-IERC6093.sol
-// ----------------------------------------------------------------------------
-
-// OpenZeppelin Contracts (last updated v5.5.0) (interfaces/draft-IERC6093.sol)
-
-
-/**
- * @dev Standard ERC-20 Errors
- * Interface of the https://eips.ethereum.org/EIPS/eip-6093[ERC-6093] custom errors for ERC-20 tokens.
- */
-interface IERC20Errors {
-    /**
-     * @dev Indicates an error related to the current `balance` of a `sender`. Used in transfers.
-     * @param sender Address whose tokens are being transferred.
-     * @param balance Current balance for the interacting account.
-     * @param needed Minimum amount required to perform a transfer.
-     */
-    error ERC20InsufficientBalance(address sender, uint256 balance, uint256 needed);
-
-    /**
-     * @dev Indicates a failure with the token `sender`. Used in transfers.
-     * @param sender Address whose tokens are being transferred.
-     */
-    error ERC20InvalidSender(address sender);
-
-    /**
-     * @dev Indicates a failure with the token `receiver`. Used in transfers.
-     * @param receiver Address to which tokens are being transferred.
-     */
-    error ERC20InvalidReceiver(address receiver);
-
-    /**
-     * @dev Indicates a failure with the `spender`’s `allowance`. Used in transfers.
-     * @param spender Address that may be allowed to operate on tokens without being their owner.
-     * @param allowance Amount of tokens a `spender` is allowed to operate with.
-     * @param needed Minimum amount required to perform a transfer.
-     */
-    error ERC20InsufficientAllowance(address spender, uint256 allowance, uint256 needed);
-
-    /**
-     * @dev Indicates a failure with the `approver` of a token to be approved. Used in approvals.
-     * @param approver Address initiating an approval operation.
-     */
-    error ERC20InvalidApprover(address approver);
-
-    /**
-     * @dev Indicates a failure with the `spender` to be approved. Used in approvals.
-     * @param spender Address that may be allowed to operate on tokens without being their owner.
-     */
-    error ERC20InvalidSpender(address spender);
-}
-
-/**
- * @dev Standard ERC-721 Errors
- * Interface of the https://eips.ethereum.org/EIPS/eip-6093[ERC-6093] custom errors for ERC-721 tokens.
- */
-interface IERC721Errors {
-    /**
-     * @dev Indicates that an address can't be an owner. For example, `address(0)` is a forbidden owner in ERC-721.
-     * Used in balance queries.
-     * @param owner Address of the current owner of a token.
-     */
-    error ERC721InvalidOwner(address owner);
-
-    /**
-     * @dev Indicates a `tokenId` whose `owner` is the zero address.
-     * @param tokenId Identifier number of a token.
-     */
-    error ERC721NonexistentToken(uint256 tokenId);
-
-    /**
-     * @dev Indicates an error related to the ownership over a particular token. Used in transfers.
-     * @param sender Address whose tokens are being transferred.
-     * @param tokenId Identifier number of a token.
-     * @param owner Address of the current owner of a token.
-     */
-    error ERC721IncorrectOwner(address sender, uint256 tokenId, address owner);
-
-    /**
-     * @dev Indicates a failure with the token `sender`. Used in transfers.
-     * @param sender Address whose tokens are being transferred.
-     */
-    error ERC721InvalidSender(address sender);
-
-    /**
-     * @dev Indicates a failure with the token `receiver`. Used in transfers.
-     * @param receiver Address to which tokens are being transferred.
-     */
-    error ERC721InvalidReceiver(address receiver);
-
-    /**
-     * @dev Indicates a failure with the `operator`’s approval. Used in transfers.
-     * @param operator Address that may be allowed to operate on tokens without being their owner.
-     * @param tokenId Identifier number of a token.
-     */
-    error ERC721InsufficientApproval(address operator, uint256 tokenId);
-
-    /**
-     * @dev Indicates a failure with the `approver` of a token to be approved. Used in approvals.
-     * @param approver Address initiating an approval operation.
-     */
-    error ERC721InvalidApprover(address approver);
-
-    /**
-     * @dev Indicates a failure with the `operator` to be approved. Used in approvals.
-     * @param operator Address that may be allowed to operate on tokens without being their owner.
-     */
-    error ERC721InvalidOperator(address operator);
-}
-
-/**
- * @dev Standard ERC-1155 Errors
- * Interface of the https://eips.ethereum.org/EIPS/eip-6093[ERC-6093] custom errors for ERC-1155 tokens.
- */
-interface IERC1155Errors {
-    /**
-     * @dev Indicates an error related to the current `balance` of a `sender`. Used in transfers.
-     * @param sender Address whose tokens are being transferred.
-     * @param balance Current balance for the interacting account.
-     * @param needed Minimum amount required to perform a transfer.
-     * @param tokenId Identifier number of a token.
-     */
-    error ERC1155InsufficientBalance(address sender, uint256 balance, uint256 needed, uint256 tokenId);
-
-    /**
-     * @dev Indicates a failure with the token `sender`. Used in transfers.
-     * @param sender Address whose tokens are being transferred.
-     */
-    error ERC1155InvalidSender(address sender);
-
-    /**
-     * @dev Indicates a failure with the token `receiver`. Used in transfers.
-     * @param receiver Address to which tokens are being transferred.
-     */
-    error ERC1155InvalidReceiver(address receiver);
-
-    /**
-     * @dev Indicates a failure with the `operator`’s approval. Used in transfers.
-     * @param operator Address that may be allowed to operate on tokens without being their owner.
-     * @param owner Address of the current owner of a token.
-     */
-    error ERC1155MissingApprovalForAll(address operator, address owner);
-
-    /**
-     * @dev Indicates a failure with the `approver` of a token to be approved. Used in approvals.
-     * @param approver Address initiating an approval operation.
-     */
-    error ERC1155InvalidApprover(address approver);
-
-    /**
-     * @dev Indicates a failure with the `operator` to be approved. Used in approvals.
-     * @param operator Address that may be allowed to operate on tokens without being their owner.
-     */
-    error ERC1155InvalidOperator(address operator);
-
-    /**
-     * @dev Indicates an array length mismatch between ids and values in a safeBatchTransferFrom operation.
-     * Used in batch transfers.
-     * @param idsLength Length of the array of token identifiers
-     * @param valuesLength Length of the array of token amounts
-     */
-    error ERC1155InvalidArrayLength(uint256 idsLength, uint256 valuesLength);
-}
-
-// ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/token/ERC20/ERC20.sol
-// ----------------------------------------------------------------------------
-
-// OpenZeppelin Contracts (last updated v5.5.0) (token/ERC20/ERC20.sol)
-
-
-
-
-
-
-/**
- * @dev Implementation of the {IERC20} interface.
- *
- * This implementation is agnostic to the way tokens are created. This means
- * that a supply mechanism has to be added in a derived contract using {_mint}.
- *
- * TIP: For a detailed writeup see our guide
- * https://forum.openzeppelin.com/t/how-to-implement-erc20-supply-mechanisms/226[How
- * to implement supply mechanisms].
- *
- * The default value of {decimals} is 18. To change this, you should override
- * this function so it returns a different value.
- *
- * We have followed general OpenZeppelin Contracts guidelines: functions revert
- * instead returning `false` on failure. This behavior is nonetheless
- * conventional and does not conflict with the expectations of ERC-20
- * applications.
- */
-abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
-    mapping(address account => uint256) private _balances;
-
-    mapping(address account => mapping(address spender => uint256)) private _allowances;
-
-    uint256 private _totalSupply;
-
-    string private _name;
-    string private _symbol;
-
-    /**
-     * @dev Sets the values for {name} and {symbol}.
-     *
-     * Both values are immutable: they can only be set once during construction.
-     */
-    constructor(string memory name_, string memory symbol_) {
-        _name = name_;
-        _symbol = symbol_;
-    }
-
-    /**
-     * @dev Returns the name of the token.
-     */
-    function name() public view virtual returns (string memory) {
-        return _name;
-    }
-
-    /**
-     * @dev Returns the symbol of the token, usually a shorter version of the
-     * name.
-     */
-    function symbol() public view virtual returns (string memory) {
-        return _symbol;
-    }
-
-    /**
-     * @dev Returns the number of decimals used to get its user representation.
-     * For example, if `decimals` equals `2`, a balance of `505` tokens should
-     * be displayed to a user as `5.05` (`505 / 10 ** 2`).
-     *
-     * Tokens usually opt for a value of 18, imitating the relationship between
-     * Ether and Wei. This is the default value returned by this function, unless
-     * it's overridden.
-     *
-     * NOTE: This information is only used for _display_ purposes: it in
-     * no way affects any of the arithmetic of the contract, including
-     * {IERC20-balanceOf} and {IERC20-transfer}.
-     */
-    function decimals() public view virtual returns (uint8) {
-        return 18;
-    }
-
-    /// @inheritdoc IERC20
-    function totalSupply() public view virtual returns (uint256) {
-        return _totalSupply;
-    }
-
-    /// @inheritdoc IERC20
-    function balanceOf(address account) public view virtual returns (uint256) {
-        return _balances[account];
-    }
-
-    /**
-     * @dev See {IERC20-transfer}.
-     *
-     * Requirements:
-     *
-     * - `to` cannot be the zero address.
-     * - the caller must have a balance of at least `value`.
-     */
-    function transfer(address to, uint256 value) public virtual returns (bool) {
-        address owner = _msgSender();
-        _transfer(owner, to, value);
-        return true;
-    }
-
-    /// @inheritdoc IERC20
-    function allowance(address owner, address spender) public view virtual returns (uint256) {
-        return _allowances[owner][spender];
-    }
-
-    /**
-     * @dev See {IERC20-approve}.
-     *
-     * NOTE: If `value` is the maximum `uint256`, the allowance is not updated on
-     * `transferFrom`. This is semantically equivalent to an infinite approval.
-     *
-     * Requirements:
-     *
-     * - `spender` cannot be the zero address.
-     */
-    function approve(address spender, uint256 value) public virtual returns (bool) {
-        address owner = _msgSender();
-        _approve(owner, spender, value);
-        return true;
-    }
-
-    /**
-     * @dev See {IERC20-transferFrom}.
-     *
-     * Skips emitting an {Approval} event indicating an allowance update. This is not
-     * required by the ERC. See {xref-ERC20-_approve-address-address-uint256-bool-}[_approve].
-     *
-     * NOTE: Does not update the allowance if the current allowance
-     * is the maximum `uint256`.
-     *
-     * Requirements:
-     *
-     * - `from` and `to` cannot be the zero address.
-     * - `from` must have a balance of at least `value`.
-     * - the caller must have allowance for ``from``'s tokens of at least
-     * `value`.
-     */
-    function transferFrom(address from, address to, uint256 value) public virtual returns (bool) {
-        address spender = _msgSender();
-        _spendAllowance(from, spender, value);
-        _transfer(from, to, value);
-        return true;
-    }
-
-    /**
-     * @dev Moves a `value` amount of tokens from `from` to `to`.
-     *
-     * This internal function is equivalent to {transfer}, and can be used to
-     * e.g. implement automatic token fees, slashing mechanisms, etc.
-     *
-     * Emits a {Transfer} event.
-     *
-     * NOTE: This function is not virtual, {_update} should be overridden instead.
-     */
-    function _transfer(address from, address to, uint256 value) internal {
-        if (from == address(0)) {
-            revert ERC20InvalidSender(address(0));
-        }
-        if (to == address(0)) {
-            revert ERC20InvalidReceiver(address(0));
-        }
-        _update(from, to, value);
-    }
-
-    /**
-     * @dev Transfers a `value` amount of tokens from `from` to `to`, or alternatively mints (or burns) if `from`
-     * (or `to`) is the zero address. All customizations to transfers, mints, and burns should be done by overriding
-     * this function.
-     *
-     * Emits a {Transfer} event.
-     */
-    function _update(address from, address to, uint256 value) internal virtual {
-        if (from == address(0)) {
-            // Overflow check required: The rest of the code assumes that totalSupply never overflows
-            _totalSupply += value;
-        } else {
-            uint256 fromBalance = _balances[from];
-            if (fromBalance < value) {
-                revert ERC20InsufficientBalance(from, fromBalance, value);
-            }
-            unchecked {
-                // Overflow not possible: value <= fromBalance <= totalSupply.
-                _balances[from] = fromBalance - value;
-            }
-        }
-
-        if (to == address(0)) {
-            unchecked {
-                // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
-                _totalSupply -= value;
-            }
-        } else {
-            unchecked {
-                // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
-                _balances[to] += value;
-            }
-        }
-
-        emit Transfer(from, to, value);
-    }
-
-    /**
-     * @dev Creates a `value` amount of tokens and assigns them to `account`, by transferring it from address(0).
-     * Relies on the `_update` mechanism
-     *
-     * Emits a {Transfer} event with `from` set to the zero address.
-     *
-     * NOTE: This function is not virtual, {_update} should be overridden instead.
-     */
-    function _mint(address account, uint256 value) internal {
-        if (account == address(0)) {
-            revert ERC20InvalidReceiver(address(0));
-        }
-        _update(address(0), account, value);
-    }
-
-    /**
-     * @dev Destroys a `value` amount of tokens from `account`, lowering the total supply.
-     * Relies on the `_update` mechanism.
-     *
-     * Emits a {Transfer} event with `to` set to the zero address.
-     *
-     * NOTE: This function is not virtual, {_update} should be overridden instead
-     */
-    function _burn(address account, uint256 value) internal {
-        if (account == address(0)) {
-            revert ERC20InvalidSender(address(0));
-        }
-        _update(account, address(0), value);
-    }
-
-    /**
-     * @dev Sets `value` as the allowance of `spender` over the `owner`'s tokens.
-     *
-     * This internal function is equivalent to `approve`, and can be used to
-     * e.g. set automatic allowances for certain subsystems, etc.
-     *
-     * Emits an {Approval} event.
-     *
-     * Requirements:
-     *
-     * - `owner` cannot be the zero address.
-     * - `spender` cannot be the zero address.
-     *
-     * Overrides to this logic should be done to the variant with an additional `bool emitEvent` argument.
-     */
-    function _approve(address owner, address spender, uint256 value) internal {
-        _approve(owner, spender, value, true);
-    }
-
-    /**
-     * @dev Variant of {_approve} with an optional flag to enable or disable the {Approval} event.
-     *
-     * By default (when calling {_approve}) the flag is set to true. On the other hand, approval changes made by
-     * `_spendAllowance` during the `transferFrom` operation sets the flag to false. This saves gas by not emitting any
-     * `Approval` event during `transferFrom` operations.
-     *
-     * Anyone who wishes to continue emitting `Approval` events on the `transferFrom` operation can force the flag to
-     * true using the following override:
-     *
-     * ```solidity
-     * function _approve(address owner, address spender, uint256 value, bool) internal virtual override {
-     *     super._approve(owner, spender, value, true);
-     * }
-     * ```
-     *
-     * Requirements are the same as {_approve}.
-     */
-    function _approve(address owner, address spender, uint256 value, bool emitEvent) internal virtual {
-        if (owner == address(0)) {
-            revert ERC20InvalidApprover(address(0));
-        }
-        if (spender == address(0)) {
-            revert ERC20InvalidSpender(address(0));
-        }
-        _allowances[owner][spender] = value;
-        if (emitEvent) {
-            emit Approval(owner, spender, value);
-        }
-    }
-
-    /**
-     * @dev Updates `owner`'s allowance for `spender` based on spent `value`.
-     *
-     * Does not update the allowance value in case of infinite allowance.
-     * Revert if not enough allowance is available.
-     *
-     * Does not emit an {Approval} event.
-     */
-    function _spendAllowance(address owner, address spender, uint256 value) internal virtual {
-        uint256 currentAllowance = allowance(owner, spender);
-        if (currentAllowance < type(uint256).max) {
-            if (currentAllowance < value) {
-                revert ERC20InsufficientAllowance(spender, currentAllowance, value);
-            }
-            unchecked {
-                _approve(owner, spender, currentAllowance - value, false);
-            }
-        }
-    }
-}
-
-// ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/interfaces/IERC20.sol
-// ----------------------------------------------------------------------------
-
-// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC20.sol)
-
-// ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/interfaces/IERC165.sol
-// ----------------------------------------------------------------------------
-
-// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC165.sol)
-
-// ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/interfaces/IERC1363.sol
-// ----------------------------------------------------------------------------
-
-// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC1363.sol)
-
-
-
-
-/**
- * @title IERC1363
- * @dev Interface of the ERC-1363 standard as defined in the https://eips.ethereum.org/EIPS/eip-1363[ERC-1363].
- *
- * Defines an extension interface for ERC-20 tokens that supports executing code on a recipient contract
- * after `transfer` or `transferFrom`, or code on a spender contract after `approve`, in a single transaction.
- */
-interface IERC1363 is IERC20, IERC165 {
-    /*
-     * Note: the ERC-165 identifier for this interface is 0xb0202a11.
-     * 0xb0202a11 ===
-     *   bytes4(keccak256('transferAndCall(address,uint256)')) ^
-     *   bytes4(keccak256('transferAndCall(address,uint256,bytes)')) ^
-     *   bytes4(keccak256('transferFromAndCall(address,address,uint256)')) ^
-     *   bytes4(keccak256('transferFromAndCall(address,address,uint256,bytes)')) ^
-     *   bytes4(keccak256('approveAndCall(address,uint256)')) ^
-     *   bytes4(keccak256('approveAndCall(address,uint256,bytes)'))
-     */
-
-    /**
-     * @dev Moves a `value` amount of tokens from the caller's account to `to`
-     * and then calls {IERC1363Receiver-onTransferReceived} on `to`.
-     * @param to The address which you want to transfer to.
-     * @param value The amount of tokens to be transferred.
-     * @return A boolean value indicating whether the operation succeeded unless throwing.
-     */
-    function transferAndCall(address to, uint256 value) external returns (bool);
-
-    /**
-     * @dev Moves a `value` amount of tokens from the caller's account to `to`
-     * and then calls {IERC1363Receiver-onTransferReceived} on `to`.
-     * @param to The address which you want to transfer to.
-     * @param value The amount of tokens to be transferred.
-     * @param data Additional data with no specified format, sent in call to `to`.
-     * @return A boolean value indicating whether the operation succeeded unless throwing.
-     */
-    function transferAndCall(address to, uint256 value, bytes calldata data) external returns (bool);
-
-    /**
-     * @dev Moves a `value` amount of tokens from `from` to `to` using the allowance mechanism
-     * and then calls {IERC1363Receiver-onTransferReceived} on `to`.
-     * @param from The address which you want to send tokens from.
-     * @param to The address which you want to transfer to.
-     * @param value The amount of tokens to be transferred.
-     * @return A boolean value indicating whether the operation succeeded unless throwing.
-     */
-    function transferFromAndCall(address from, address to, uint256 value) external returns (bool);
-
-    /**
-     * @dev Moves a `value` amount of tokens from `from` to `to` using the allowance mechanism
-     * and then calls {IERC1363Receiver-onTransferReceived} on `to`.
-     * @param from The address which you want to send tokens from.
-     * @param to The address which you want to transfer to.
-     * @param value The amount of tokens to be transferred.
-     * @param data Additional data with no specified format, sent in call to `to`.
-     * @return A boolean value indicating whether the operation succeeded unless throwing.
-     */
-    function transferFromAndCall(address from, address to, uint256 value, bytes calldata data) external returns (bool);
-
-    /**
-     * @dev Sets a `value` amount of tokens as the allowance of `spender` over the
-     * caller's tokens and then calls {IERC1363Spender-onApprovalReceived} on `spender`.
-     * @param spender The address which will spend the funds.
-     * @param value The amount of tokens to be spent.
-     * @return A boolean value indicating whether the operation succeeded unless throwing.
-     */
-    function approveAndCall(address spender, uint256 value) external returns (bool);
-
-    /**
-     * @dev Sets a `value` amount of tokens as the allowance of `spender` over the
-     * caller's tokens and then calls {IERC1363Spender-onApprovalReceived} on `spender`.
-     * @param spender The address which will spend the funds.
-     * @param value The amount of tokens to be spent.
-     * @param data Additional data with no specified format, sent in call to `spender`.
-     * @return A boolean value indicating whether the operation succeeded unless throwing.
-     */
-    function approveAndCall(address spender, uint256 value, bytes calldata data) external returns (bool);
-}
-
-// ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/interfaces/IERC1363Receiver.sol
-// ----------------------------------------------------------------------------
-
-// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC1363Receiver.sol)
-
-
-/**
- * @title IERC1363Receiver
- * @dev Interface for any contract that wants to support `transferAndCall` or `transferFromAndCall`
- * from ERC-1363 token contracts.
- */
-interface IERC1363Receiver {
-    /**
-     * @dev Whenever ERC-1363 tokens are transferred to this contract via `transferAndCall` or `transferFromAndCall`
-     * by `operator` from `from`, this function is called.
-     *
-     * NOTE: To accept the transfer, this must return
-     * `bytes4(keccak256("onTransferReceived(address,address,uint256,bytes)"))`
-     * (i.e. 0x88a7ca5c, or its own function selector).
-     *
-     * @param operator The address which called `transferAndCall` or `transferFromAndCall` function.
-     * @param from The address which the tokens are transferred from.
-     * @param value The amount of tokens transferred.
-     * @param data Additional data with no specified format.
-     * @return `bytes4(keccak256("onTransferReceived(address,address,uint256,bytes)"))` if transfer is allowed unless throwing.
-     */
-    function onTransferReceived(
-        address operator,
-        address from,
-        uint256 value,
-        bytes calldata data
-    ) external returns (bytes4);
-}
-
-// ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/interfaces/IERC1363Spender.sol
-// ----------------------------------------------------------------------------
-
-// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC1363Spender.sol)
-
-
-/**
- * @title IERC1363Spender
- * @dev Interface for any contract that wants to support `approveAndCall`
- * from ERC-1363 token contracts.
- */
-interface IERC1363Spender {
-    /**
-     * @dev Whenever an ERC-1363 token `owner` approves this contract via `approveAndCall`
-     * to spend their tokens, this function is called.
-     *
-     * NOTE: To accept the approval, this must return
-     * `bytes4(keccak256("onApprovalReceived(address,uint256,bytes)"))`
-     * (i.e. 0x7b04a2d0, or its own function selector).
-     *
-     * @param owner The address which called `approveAndCall` function and previously owned the tokens.
-     * @param value The amount of tokens to be spent.
-     * @param data Additional data with no specified format.
-     * @return `bytes4(keccak256("onApprovalReceived(address,uint256,bytes)"))` if approval is allowed unless throwing.
-     */
-    function onApprovalReceived(address owner, uint256 value, bytes calldata data) external returns (bytes4);
-}
-
-// ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/token/ERC20/utils/ERC1363Utils.sol
-// ----------------------------------------------------------------------------
-
-// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/utils/ERC1363Utils.sol)
-
-
-
-
-/**
- * @dev Library that provides common ERC-1363 utility functions.
- *
- * See https://eips.ethereum.org/EIPS/eip-1363[ERC-1363].
- */
-library ERC1363Utils {
-    /**
-     * @dev Indicates a failure with the token `receiver`. Used in transfers.
-     * @param receiver Address to which tokens are being transferred.
-     */
-    error ERC1363InvalidReceiver(address receiver);
-
-    /**
-     * @dev Indicates a failure with the token `spender`. Used in approvals.
-     * @param spender Address that may be allowed to operate on tokens without being their owner.
-     */
-    error ERC1363InvalidSpender(address spender);
-
-    /**
-     * @dev Performs a call to {IERC1363Receiver-onTransferReceived} on a target address.
-     *
-     * Requirements:
-     *
-     * - The target has code (i.e. is a contract).
-     * - The target `to` must implement the {IERC1363Receiver} interface.
-     * - The target must return the {IERC1363Receiver-onTransferReceived} selector to accept the transfer.
-     */
-    function checkOnERC1363TransferReceived(
-        address operator,
-        address from,
-        address to,
-        uint256 value,
-        bytes memory data
-    ) internal {
-        if (to.code.length == 0) {
-            revert ERC1363InvalidReceiver(to);
-        }
-
-        try IERC1363Receiver(to).onTransferReceived(operator, from, value, data) returns (bytes4 retval) {
-            if (retval != IERC1363Receiver.onTransferReceived.selector) {
-                revert ERC1363InvalidReceiver(to);
-            }
-        } catch (bytes memory reason) {
-            if (reason.length == 0) {
-                revert ERC1363InvalidReceiver(to);
-            } else {
-                assembly ("memory-safe") {
-                    revert(add(reason, 0x20), mload(reason))
-                }
-            }
-        }
-    }
-
-    /**
-     * @dev Performs a call to {IERC1363Spender-onApprovalReceived} on a target address.
-     *
-     * Requirements:
-     *
-     * - The target has code (i.e. is a contract).
-     * - The target `spender` must implement the {IERC1363Spender} interface.
-     * - The target must return the {IERC1363Spender-onApprovalReceived} selector to accept the approval.
-     */
-    function checkOnERC1363ApprovalReceived(
-        address operator,
-        address spender,
-        uint256 value,
-        bytes memory data
-    ) internal {
-        if (spender.code.length == 0) {
-            revert ERC1363InvalidSpender(spender);
-        }
-
-        try IERC1363Spender(spender).onApprovalReceived(operator, value, data) returns (bytes4 retval) {
-            if (retval != IERC1363Spender.onApprovalReceived.selector) {
-                revert ERC1363InvalidSpender(spender);
-            }
-        } catch (bytes memory reason) {
-            if (reason.length == 0) {
-                revert ERC1363InvalidSpender(spender);
-            } else {
-                assembly ("memory-safe") {
-                    revert(add(reason, 0x20), mload(reason))
-                }
-            }
-        }
-    }
-}
-
-// ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/token/ERC20/extensions/ERC1363.sol
-// ----------------------------------------------------------------------------
-
-// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/extensions/ERC1363.sol)
-
-
-
-
-
-
-/**
- * @title ERC1363
- * @dev Extension of {ERC20} tokens that adds support for code execution after transfers and approvals
- * on recipient contracts. Calls after transfers are enabled through the {ERC1363-transferAndCall} and
- * {ERC1363-transferFromAndCall} methods while calls after approvals can be made with {ERC1363-approveAndCall}
+ * @dev Provides a set of functions to compare values.
  *
  * _Available since v5.1._
  */
-abstract contract ERC1363 is ERC20, ERC165, IERC1363 {
-    /**
-     * @dev Indicates a failure within the {transfer} part of a transferAndCall operation.
-     * @param receiver Address to which tokens are being transferred.
-     * @param value Amount of tokens to be transferred.
-     */
-    error ERC1363TransferFailed(address receiver, uint256 value);
-
-    /**
-     * @dev Indicates a failure within the {transferFrom} part of a transferFromAndCall operation.
-     * @param sender Address from which to send tokens.
-     * @param receiver Address to which tokens are being transferred.
-     * @param value Amount of tokens to be transferred.
-     */
-    error ERC1363TransferFromFailed(address sender, address receiver, uint256 value);
-
-    /**
-     * @dev Indicates a failure within the {approve} part of a approveAndCall operation.
-     * @param spender Address which will spend the funds.
-     * @param value Amount of tokens to be spent.
-     */
-    error ERC1363ApproveFailed(address spender, uint256 value);
-
-    /// @inheritdoc IERC165
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool) {
-        return interfaceId == type(IERC1363).interfaceId || super.supportsInterface(interfaceId);
+library Comparators {
+    function lt(uint256 a, uint256 b) internal pure returns (bool) {
+        return a < b;
     }
 
-    /**
-     * @dev Moves a `value` amount of tokens from the caller's account to `to`
-     * and then calls {IERC1363Receiver-onTransferReceived} on `to`. Returns a flag that indicates
-     * if the call succeeded.
-     *
-     * Requirements:
-     *
-     * - The target has code (i.e. is a contract).
-     * - The target `to` must implement the {IERC1363Receiver} interface.
-     * - The target must return the {IERC1363Receiver-onTransferReceived} selector to accept the transfer.
-     * - The internal {transfer} must succeed (returned `true`).
-     */
-    function transferAndCall(address to, uint256 value) public returns (bool) {
-        return transferAndCall(to, value, "");
-    }
-
-    /**
-     * @dev Variant of {transferAndCall} that accepts an additional `data` parameter with
-     * no specified format.
-     */
-    function transferAndCall(address to, uint256 value, bytes memory data) public virtual returns (bool) {
-        if (!transfer(to, value)) {
-            revert ERC1363TransferFailed(to, value);
-        }
-        ERC1363Utils.checkOnERC1363TransferReceived(_msgSender(), _msgSender(), to, value, data);
-        return true;
-    }
-
-    /**
-     * @dev Moves a `value` amount of tokens from `from` to `to` using the allowance mechanism
-     * and then calls {IERC1363Receiver-onTransferReceived} on `to`. Returns a flag that indicates
-     * if the call succeeded.
-     *
-     * Requirements:
-     *
-     * - The target has code (i.e. is a contract).
-     * - The target `to` must implement the {IERC1363Receiver} interface.
-     * - The target must return the {IERC1363Receiver-onTransferReceived} selector to accept the transfer.
-     * - The internal {transferFrom} must succeed (returned `true`).
-     */
-    function transferFromAndCall(address from, address to, uint256 value) public returns (bool) {
-        return transferFromAndCall(from, to, value, "");
-    }
-
-    /**
-     * @dev Variant of {transferFromAndCall} that accepts an additional `data` parameter with
-     * no specified format.
-     */
-    function transferFromAndCall(
-        address from,
-        address to,
-        uint256 value,
-        bytes memory data
-    ) public virtual returns (bool) {
-        if (!transferFrom(from, to, value)) {
-            revert ERC1363TransferFromFailed(from, to, value);
-        }
-        ERC1363Utils.checkOnERC1363TransferReceived(_msgSender(), from, to, value, data);
-        return true;
-    }
-
-    /**
-     * @dev Sets a `value` amount of tokens as the allowance of `spender` over the
-     * caller's tokens and then calls {IERC1363Spender-onApprovalReceived} on `spender`.
-     * Returns a flag that indicates if the call succeeded.
-     *
-     * Requirements:
-     *
-     * - The target has code (i.e. is a contract).
-     * - The target `spender` must implement the {IERC1363Spender} interface.
-     * - The target must return the {IERC1363Spender-onApprovalReceived} selector to accept the approval.
-     * - The internal {approve} must succeed (returned `true`).
-     */
-    function approveAndCall(address spender, uint256 value) public returns (bool) {
-        return approveAndCall(spender, value, "");
-    }
-
-    /**
-     * @dev Variant of {approveAndCall} that accepts an additional `data` parameter with
-     * no specified format.
-     */
-    function approveAndCall(address spender, uint256 value, bytes memory data) public virtual returns (bool) {
-        if (!approve(spender, value)) {
-            revert ERC1363ApproveFailed(spender, value);
-        }
-        ERC1363Utils.checkOnERC1363ApprovalReceived(_msgSender(), spender, value, data);
-        return true;
+    function gt(uint256 a, uint256 b) internal pure returns (bool) {
+        return a > b;
     }
 }
 
 // ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol
+// File: @openzeppelin/contracts/utils/SlotDerivation.sol
 // ----------------------------------------------------------------------------
 
-// OpenZeppelin Contracts (last updated v5.0.0) (token/ERC20/extensions/ERC20Burnable.sol)
-
-
-
+// OpenZeppelin Contracts (last updated v5.5.0) (utils/SlotDerivation.sol)
+// This file was procedurally generated from scripts/generate/templates/SlotDerivation.js.
 
 /**
- * @dev Extension of {ERC20} that allows token holders to destroy both their own
- * tokens and those that they have an allowance for, in a way that can be
- * recognized off-chain (via event analysis).
- */
-abstract contract ERC20Burnable is Context, ERC20 {
-    /**
-     * @dev Destroys a `value` amount of tokens from the caller.
-     *
-     * See {ERC20-_burn}.
-     */
-    function burn(uint256 value) public virtual {
-        _burn(_msgSender(), value);
-    }
-
-    /**
-     * @dev Destroys a `value` amount of tokens from `account`, deducting from
-     * the caller's allowance.
-     *
-     * See {ERC20-_burn} and {ERC20-allowance}.
-     *
-     * Requirements:
-     *
-     * - the caller must have allowance for ``accounts``'s tokens of at least
-     * `value`.
-     */
-    function burnFrom(address account, uint256 value) public virtual {
-        _spendAllowance(account, _msgSender(), value);
-        _burn(account, value);
-    }
-}
-
-// ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/utils/Pausable.sol
-// ----------------------------------------------------------------------------
-
-// OpenZeppelin Contracts (last updated v5.3.0) (utils/Pausable.sol)
-
-
-
-/**
- * @dev Contract module which allows children to implement an emergency stop
- * mechanism that can be triggered by an authorized account.
+ * @dev Library for computing storage (and transient storage) locations from namespaces and deriving slots
+ * corresponding to standard patterns. The derivation method for array and mapping matches the storage layout used by
+ * the solidity language / compiler.
  *
- * This module is used through inheritance. It will make available the
- * modifiers `whenNotPaused` and `whenPaused`, which can be applied to
- * the functions of your contract. Note that they will not be pausable by
- * simply including this module, only once the modifiers are put in place.
- */
-abstract contract Pausable is Context {
-    bool private _paused;
-
-    /**
-     * @dev Emitted when the pause is triggered by `account`.
-     */
-    event Paused(address account);
-
-    /**
-     * @dev Emitted when the pause is lifted by `account`.
-     */
-    event Unpaused(address account);
-
-    /**
-     * @dev The operation failed because the contract is paused.
-     */
-    error EnforcedPause();
-
-    /**
-     * @dev The operation failed because the contract is not paused.
-     */
-    error ExpectedPause();
-
-    /**
-     * @dev Modifier to make a function callable only when the contract is not paused.
-     *
-     * Requirements:
-     *
-     * - The contract must not be paused.
-     */
-    modifier whenNotPaused() {
-        _requireNotPaused();
-        _;
-    }
-
-    /**
-     * @dev Modifier to make a function callable only when the contract is paused.
-     *
-     * Requirements:
-     *
-     * - The contract must be paused.
-     */
-    modifier whenPaused() {
-        _requirePaused();
-        _;
-    }
-
-    /**
-     * @dev Returns true if the contract is paused, and false otherwise.
-     */
-    function paused() public view virtual returns (bool) {
-        return _paused;
-    }
-
-    /**
-     * @dev Throws if the contract is paused.
-     */
-    function _requireNotPaused() internal view virtual {
-        if (paused()) {
-            revert EnforcedPause();
-        }
-    }
-
-    /**
-     * @dev Throws if the contract is not paused.
-     */
-    function _requirePaused() internal view virtual {
-        if (!paused()) {
-            revert ExpectedPause();
-        }
-    }
-
-    /**
-     * @dev Triggers stopped state.
-     *
-     * Requirements:
-     *
-     * - The contract must not be paused.
-     */
-    function _pause() internal virtual whenNotPaused {
-        _paused = true;
-        emit Paused(_msgSender());
-    }
-
-    /**
-     * @dev Returns to normal state.
-     *
-     * Requirements:
-     *
-     * - The contract must be paused.
-     */
-    function _unpause() internal virtual whenPaused {
-        _paused = false;
-        emit Unpaused(_msgSender());
-    }
-}
-
-// ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol
-// ----------------------------------------------------------------------------
-
-// OpenZeppelin Contracts (last updated v5.1.0) (token/ERC20/extensions/ERC20Pausable.sol)
-
-
-
-
-/**
- * @dev ERC-20 token with pausable token transfers, minting and burning.
+ * See https://docs.soliditylang.org/en/v0.8.20/internals/layout_in_storage.html#mappings-and-dynamic-arrays[Solidity docs for mappings and dynamic arrays.].
  *
- * Useful for scenarios such as preventing trades until the end of an evaluation
- * period, or having an emergency switch for freezing all token transfers in the
- * event of a large bug.
- *
- * IMPORTANT: This contract does not include public pause and unpause functions. In
- * addition to inheriting this contract, you must define both functions, invoking the
- * {Pausable-_pause} and {Pausable-_unpause} internal functions, with appropriate
- * access control, e.g. using {AccessControl} or {Ownable}. Not doing so will
- * make the contract pause mechanism of the contract unreachable, and thus unusable.
- */
-abstract contract ERC20Pausable is ERC20, Pausable {
-    /**
-     * @dev See {ERC20-_update}.
-     *
-     * Requirements:
-     *
-     * - the contract must not be paused.
-     */
-    function _update(address from, address to, uint256 value) internal virtual override whenNotPaused {
-        super._update(from, to, value);
-    }
-}
-
-// ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol
-// ----------------------------------------------------------------------------
-
-// OpenZeppelin Contracts (last updated v5.5.0) (token/ERC20/extensions/IERC20Permit.sol)
-
-
-/**
- * @dev Interface of the ERC-20 Permit extension allowing approvals to be made via signatures, as defined in
- * https://eips.ethereum.org/EIPS/eip-2612[ERC-2612].
- *
- * Adds the {permit} method, which can be used to change an account's ERC-20 allowance (see {IERC20-allowance}) by
- * presenting a message signed by the account. By not relying on {IERC20-approve}, the token holder account doesn't
- * need to send a transaction, and thus is not required to hold Ether at all.
- *
- * ==== Security Considerations
- *
- * There are two important considerations concerning the use of `permit`. The first is that a valid permit signature
- * expresses an allowance, and it should not be assumed to convey additional meaning. In particular, it should not be
- * considered as an intention to spend the allowance in any specific way. The second is that because permits have
- * built-in replay protection and can be submitted by anyone, they can be frontrun. A protocol that uses permits should
- * take this into consideration and allow a `permit` call to fail. Combining these two aspects, a pattern that may be
- * generally recommended is:
- *
+ * Example usage:
  * ```solidity
- * function doThingWithPermit(..., uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) public {
- *     try token.permit(msg.sender, address(this), value, deadline, v, r, s) {} catch {}
- *     doThing(..., value);
- * }
+ * contract Example {
+ *     // Add the library methods
+ *     using StorageSlot for bytes32;
+ *     using SlotDerivation for *;
  *
- * function doThing(..., uint256 value) public {
- *     token.safeTransferFrom(msg.sender, address(this), value);
- *     ...
+ *     // Declare a namespace
+ *     string private constant _NAMESPACE = "<namespace>"; // eg. OpenZeppelin.Slot
+ *
+ *     function setValueInNamespace(uint256 key, address newValue) internal {
+ *         _NAMESPACE.erc7201Slot().deriveMapping(key).getAddressSlot().value = newValue;
+ *     }
+ *
+ *     function getValueInNamespace(uint256 key) internal view returns (address) {
+ *         return _NAMESPACE.erc7201Slot().deriveMapping(key).getAddressSlot().value;
+ *     }
  * }
  * ```
  *
- * Observe that: 1) `msg.sender` is used as the owner, leaving no ambiguity as to the signer intent, and 2) the use of
- * `try/catch` allows the permit to fail and makes the code tolerant to frontrunning. (See also
- * {SafeERC20-safeTransferFrom}).
+ * TIP: Consider using this library along with {StorageSlot}.
  *
- * Additionally, note that smart contract wallets (such as Argent or Safe) are not able to produce permit signatures, so
- * contracts should have entry points that don't rely on permit.
+ * NOTE: This library provides a way to manipulate storage locations in a non-standard way. Tooling for checking
+ * upgrade safety will ignore the slots accessed through this library.
+ *
+ * _Available since v5.1._
  */
-interface IERC20Permit {
+library SlotDerivation {
     /**
-     * @dev Sets `value` as the allowance of `spender` over ``owner``'s tokens,
-     * given ``owner``'s signed approval.
-     *
-     * IMPORTANT: The same issues {IERC20-approve} has related to transaction
-     * ordering also applies here.
-     *
-     * Emits an {Approval} event.
-     *
-     * Requirements:
-     *
-     * - `spender` cannot be the zero address.
-     * - `deadline` must be a timestamp in the future.
-     * - `v`, `r` and `s` must be a valid `secp256k1` signature from `owner`
-     * over the EIP712-formatted function arguments.
-     * - the signature must use ``owner``'s current nonce (see {nonces}).
-     *
-     * For more information on the signature format, see the
-     * https://eips.ethereum.org/EIPS/eip-2612#specification[relevant EIP
-     * section].
-     *
-     * CAUTION: See Security Considerations above.
+     * @dev Derive an ERC-7201 slot from a string (namespace).
      */
-    function permit(
-        address owner,
-        address spender,
-        uint256 value,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external;
+    function erc7201Slot(string memory namespace) internal pure returns (bytes32 slot) {
+        assembly ("memory-safe") {
+            mstore(0x00, sub(keccak256(add(namespace, 0x20), mload(namespace)), 1))
+            slot := and(keccak256(0x00, 0x20), not(0xff))
+        }
+    }
 
     /**
-     * @dev Returns the current nonce for `owner`. This value must be
-     * included whenever a signature is generated for {permit}.
-     *
-     * Every successful call to {permit} increases ``owner``'s nonce by one. This
-     * prevents a signature from being used multiple times.
+     * @dev Add an offset to a slot to get the n-th element of a structure or an array.
      */
-    function nonces(address owner) external view returns (uint256);
+    function offset(bytes32 slot, uint256 pos) internal pure returns (bytes32 result) {
+        unchecked {
+            return bytes32(uint256(slot) + pos);
+        }
+    }
 
     /**
-     * @dev Returns the domain separator used in the encoding of the signature for {permit}, as defined by {EIP712}.
+     * @dev Derive the location of the first element in an array from the slot where the length is stored.
      */
-    // solhint-disable-next-line func-name-mixedcase
-    function DOMAIN_SEPARATOR() external view returns (bytes32);
+    function deriveArray(bytes32 slot) internal pure returns (bytes32 result) {
+        assembly ("memory-safe") {
+            mstore(0x00, slot)
+            result := keccak256(0x00, 0x20)
+        }
+    }
+
+    /**
+     * @dev Derive the location of a mapping element from the key.
+     */
+    function deriveMapping(bytes32 slot, address key) internal pure returns (bytes32 result) {
+        assembly ("memory-safe") {
+            mstore(0x00, and(key, shr(96, not(0))))
+            mstore(0x20, slot)
+            result := keccak256(0x00, 0x40)
+        }
+    }
+
+    /**
+     * @dev Derive the location of a mapping element from the key.
+     */
+    function deriveMapping(bytes32 slot, bool key) internal pure returns (bytes32 result) {
+        assembly ("memory-safe") {
+            mstore(0x00, iszero(iszero(key)))
+            mstore(0x20, slot)
+            result := keccak256(0x00, 0x40)
+        }
+    }
+
+    /**
+     * @dev Derive the location of a mapping element from the key.
+     */
+    function deriveMapping(bytes32 slot, bytes32 key) internal pure returns (bytes32 result) {
+        assembly ("memory-safe") {
+            mstore(0x00, key)
+            mstore(0x20, slot)
+            result := keccak256(0x00, 0x40)
+        }
+    }
+
+    /**
+     * @dev Derive the location of a mapping element from the key.
+     */
+    function deriveMapping(bytes32 slot, uint256 key) internal pure returns (bytes32 result) {
+        assembly ("memory-safe") {
+            mstore(0x00, key)
+            mstore(0x20, slot)
+            result := keccak256(0x00, 0x40)
+        }
+    }
+
+    /**
+     * @dev Derive the location of a mapping element from the key.
+     */
+    function deriveMapping(bytes32 slot, int256 key) internal pure returns (bytes32 result) {
+        assembly ("memory-safe") {
+            mstore(0x00, key)
+            mstore(0x20, slot)
+            result := keccak256(0x00, 0x40)
+        }
+    }
+
+    /**
+     * @dev Derive the location of a mapping element from the key.
+     */
+    function deriveMapping(bytes32 slot, string memory key) internal pure returns (bytes32 result) {
+        assembly ("memory-safe") {
+            let length := mload(key)
+            let begin := add(key, 0x20)
+            let end := add(begin, length)
+            let cache := mload(end)
+            mstore(end, slot)
+            result := keccak256(begin, add(length, 0x20))
+            mstore(end, cache)
+        }
+    }
+
+    /**
+     * @dev Derive the location of a mapping element from the key.
+     */
+    function deriveMapping(bytes32 slot, bytes memory key) internal pure returns (bytes32 result) {
+        assembly ("memory-safe") {
+            let length := mload(key)
+            let begin := add(key, 0x20)
+            let end := add(begin, length)
+            let cache := mload(end)
+            mstore(end, slot)
+            result := keccak256(begin, add(length, 0x20))
+            mstore(end, cache)
+        }
+    }
 }
 
 // ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/utils/cryptography/ECDSA.sol
+// File: @openzeppelin/contracts/utils/StorageSlot.sol
 // ----------------------------------------------------------------------------
 
-// OpenZeppelin Contracts (last updated v5.6.0) (utils/cryptography/ECDSA.sol)
-
+// OpenZeppelin Contracts (last updated v5.1.0) (utils/StorageSlot.sol)
+// This file was procedurally generated from scripts/generate/templates/StorageSlot.js.
 
 /**
- * @dev Elliptic Curve Digital Signature Algorithm (ECDSA) operations.
+ * @dev Library for reading and writing primitive types to specific storage slots.
  *
- * These functions can be used to verify that a message was signed by the holder
- * of the private keys of a given address.
+ * Storage slots are often used to avoid storage conflict when dealing with upgradeable contracts.
+ * This library helps with reading and writing to such slots without the need for inline assembly.
+ *
+ * The functions in this library return Slot structs that contain a `value` member that can be used to read or write.
+ *
+ * Example usage to set ERC-1967 implementation slot:
+ * ```solidity
+ * contract ERC1967 {
+ *     // Define the slot. Alternatively, use the SlotDerivation library to derive the slot.
+ *     bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
+ *
+ *     function _getImplementation() internal view returns (address) {
+ *         return StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
+ *     }
+ *
+ *     function _setImplementation(address newImplementation) internal {
+ *         require(newImplementation.code.length > 0);
+ *         StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = newImplementation;
+ *     }
+ * }
+ * ```
+ *
+ * TIP: Consider using this library along with {SlotDerivation}.
  */
-library ECDSA {
-    enum RecoverError {
-        NoError,
-        InvalidSignature,
-        InvalidSignatureLength,
-        InvalidSignatureS
+library StorageSlot {
+    struct AddressSlot {
+        address value;
+    }
+
+    struct BooleanSlot {
+        bool value;
+    }
+
+    struct Bytes32Slot {
+        bytes32 value;
+    }
+
+    struct Uint256Slot {
+        uint256 value;
+    }
+
+    struct Int256Slot {
+        int256 value;
+    }
+
+    struct StringSlot {
+        string value;
+    }
+
+    struct BytesSlot {
+        bytes value;
     }
 
     /**
-     * @dev The signature is invalid.
+     * @dev Returns an `AddressSlot` with member `value` located at `slot`.
      */
-    error ECDSAInvalidSignature();
-
-    /**
-     * @dev The signature has an invalid length.
-     */
-    error ECDSAInvalidSignatureLength(uint256 length);
-
-    /**
-     * @dev The signature has an S value that is in the upper half order.
-     */
-    error ECDSAInvalidSignatureS(bytes32 s);
-
-    /**
-     * @dev Returns the address that signed a hashed message (`hash`) with `signature` or an error. This will not
-     * return address(0) without also returning an error description. Errors are documented using an enum (error type)
-     * and a bytes32 providing additional information about the error.
-     *
-     * If no error is returned, then the address can be used for verification purposes.
-     *
-     * The `ecrecover` EVM precompile allows for malleable (non-unique) signatures:
-     * this function rejects them by requiring the `s` value to be in the lower
-     * half order, and the `v` value to be either 27 or 28.
-     *
-     * NOTE: This function only supports 65-byte signatures. ERC-2098 short signatures are rejected. This restriction
-     * is DEPRECATED and will be removed in v6.0. Developers SHOULD NOT use signatures as unique identifiers; use hash
-     * invalidation or nonces for replay protection.
-     *
-     * IMPORTANT: `hash` _must_ be the result of a hash operation for the
-     * verification to be secure: it is possible to craft signatures that
-     * recover to arbitrary addresses for non-hashed data. A safe way to ensure
-     * this is by receiving a hash of the original message (which may otherwise
-     * be too long), and then calling {MessageHashUtils-toEthSignedMessageHash} on it.
-     *
-     * Documentation for signature generation:
-     *
-     * - with https://web3js.readthedocs.io/en/v1.3.4/web3-eth-accounts.html#sign[Web3.js]
-     * - with https://docs.ethers.io/v5/api/signer/#Signer-signMessage[ethers]
-     */
-    function tryRecover(
-        bytes32 hash,
-        bytes memory signature
-    ) internal pure returns (address recovered, RecoverError err, bytes32 errArg) {
-        if (signature.length == 65) {
-            bytes32 r;
-            bytes32 s;
-            uint8 v;
-            // ecrecover takes the signature parameters, and the only way to get them
-            // currently is to use assembly.
-            assembly ("memory-safe") {
-                r := mload(add(signature, 0x20))
-                s := mload(add(signature, 0x40))
-                v := byte(0, mload(add(signature, 0x60)))
-            }
-            return tryRecover(hash, v, r, s);
-        } else {
-            return (address(0), RecoverError.InvalidSignatureLength, bytes32(signature.length));
-        }
-    }
-
-    /**
-     * @dev Variant of {tryRecover} that takes a signature in calldata
-     */
-    function tryRecoverCalldata(
-        bytes32 hash,
-        bytes calldata signature
-    ) internal pure returns (address recovered, RecoverError err, bytes32 errArg) {
-        if (signature.length == 65) {
-            bytes32 r;
-            bytes32 s;
-            uint8 v;
-            // ecrecover takes the signature parameters, calldata slices would work here, but are
-            // significantly more expensive (length check) than using calldataload in assembly.
-            assembly ("memory-safe") {
-                r := calldataload(signature.offset)
-                s := calldataload(add(signature.offset, 0x20))
-                v := byte(0, calldataload(add(signature.offset, 0x40)))
-            }
-            return tryRecover(hash, v, r, s);
-        } else {
-            return (address(0), RecoverError.InvalidSignatureLength, bytes32(signature.length));
-        }
-    }
-
-    /**
-     * @dev Returns the address that signed a hashed message (`hash`) with
-     * `signature`. This address can then be used for verification purposes.
-     *
-     * The `ecrecover` EVM precompile allows for malleable (non-unique) signatures:
-     * this function rejects them by requiring the `s` value to be in the lower
-     * half order, and the `v` value to be either 27 or 28.
-     *
-     * NOTE: This function only supports 65-byte signatures. ERC-2098 short signatures are rejected. This restriction
-     * is DEPRECATED and will be removed in v6.0. Developers SHOULD NOT use signatures as unique identifiers; use hash
-     * invalidation or nonces for replay protection.
-     *
-     * IMPORTANT: `hash` _must_ be the result of a hash operation for the
-     * verification to be secure: it is possible to craft signatures that
-     * recover to arbitrary addresses for non-hashed data. A safe way to ensure
-     * this is by receiving a hash of the original message (which may otherwise
-     * be too long), and then calling {MessageHashUtils-toEthSignedMessageHash} on it.
-     */
-    function recover(bytes32 hash, bytes memory signature) internal pure returns (address) {
-        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, signature);
-        _throwError(error, errorArg);
-        return recovered;
-    }
-
-    /**
-     * @dev Variant of {recover} that takes a signature in calldata
-     */
-    function recoverCalldata(bytes32 hash, bytes calldata signature) internal pure returns (address) {
-        (address recovered, RecoverError error, bytes32 errorArg) = tryRecoverCalldata(hash, signature);
-        _throwError(error, errorArg);
-        return recovered;
-    }
-
-    /**
-     * @dev Overload of {ECDSA-tryRecover} that receives the `r` and `vs` short-signature fields separately.
-     *
-     * See https://eips.ethereum.org/EIPS/eip-2098[ERC-2098 short signatures]
-     */
-    function tryRecover(
-        bytes32 hash,
-        bytes32 r,
-        bytes32 vs
-    ) internal pure returns (address recovered, RecoverError err, bytes32 errArg) {
-        unchecked {
-            bytes32 s = vs & bytes32(0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff);
-            // We do not check for an overflow here since the shift operation results in 0 or 1.
-            uint8 v = uint8((uint256(vs) >> 255) + 27);
-            return tryRecover(hash, v, r, s);
-        }
-    }
-
-    /**
-     * @dev Overload of {ECDSA-recover} that receives the `r` and `vs` short-signature fields separately.
-     */
-    function recover(bytes32 hash, bytes32 r, bytes32 vs) internal pure returns (address) {
-        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, r, vs);
-        _throwError(error, errorArg);
-        return recovered;
-    }
-
-    /**
-     * @dev Overload of {ECDSA-tryRecover} that receives the `v`,
-     * `r` and `s` signature fields separately.
-     */
-    function tryRecover(
-        bytes32 hash,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) internal pure returns (address recovered, RecoverError err, bytes32 errArg) {
-        // EIP-2 still allows signature malleability for ecrecover(). Remove this possibility and make the signature
-        // unique. Appendix F in the Ethereum Yellow paper (https://ethereum.github.io/yellowpaper/paper.pdf), defines
-        // the valid range for s in (301): 0 < s < secp256k1n ÷ 2 + 1, and for v in (302): v ∈ {27, 28}. Most
-        // signatures from current libraries generate a unique signature with an s-value in the lower half order.
-        //
-        // If your library generates malleable signatures, such as s-values in the upper range, calculate a new s-value
-        // with 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 - s1 and flip v from 27 to 28 or
-        // vice versa. If your library also generates signatures with 0/1 for v instead 27/28, add 27 to v to accept
-        // these malleable signatures as well.
-        if (uint256(s) > 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0) {
-            return (address(0), RecoverError.InvalidSignatureS, s);
-        }
-
-        // If the signature is valid (and not malleable), return the signer address
-        address signer = ecrecover(hash, v, r, s);
-        if (signer == address(0)) {
-            return (address(0), RecoverError.InvalidSignature, bytes32(0));
-        }
-
-        return (signer, RecoverError.NoError, bytes32(0));
-    }
-
-    /**
-     * @dev Overload of {ECDSA-recover} that receives the `v`,
-     * `r` and `s` signature fields separately.
-     */
-    function recover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) internal pure returns (address) {
-        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, v, r, s);
-        _throwError(error, errorArg);
-        return recovered;
-    }
-
-    /**
-     * @dev Parse a signature into its `v`, `r` and `s` components. Supports 65-byte and 64-byte (ERC-2098)
-     * formats. Returns (0,0,0) for invalid signatures.
-     *
-     * For 64-byte signatures, `v` is automatically normalized to 27 or 28.
-     * For 65-byte signatures, `v` is returned as-is and MUST already be 27 or 28 for use with ecrecover.
-     *
-     * Consider validating the result before use, or use {tryRecover}/{recover} which perform full validation.
-     */
-    function parse(bytes memory signature) internal pure returns (uint8 v, bytes32 r, bytes32 s) {
+    function getAddressSlot(bytes32 slot) internal pure returns (AddressSlot storage r) {
         assembly ("memory-safe") {
-            // Check the signature length
-            switch mload(signature)
-            // - case 65: r,s,v signature (standard)
-            case 65 {
-                r := mload(add(signature, 0x20))
-                s := mload(add(signature, 0x40))
-                v := byte(0, mload(add(signature, 0x60)))
-            }
-            // - case 64: r,vs signature (cf https://eips.ethereum.org/EIPS/eip-2098)
-            case 64 {
-                let vs := mload(add(signature, 0x40))
-                r := mload(add(signature, 0x20))
-                s := and(vs, shr(1, not(0)))
-                v := add(shr(255, vs), 27)
-            }
-            default {
-                r := 0
-                s := 0
-                v := 0
-            }
+            r.slot := slot
         }
     }
 
     /**
-     * @dev Variant of {parse} that takes a signature in calldata
+     * @dev Returns a `BooleanSlot` with member `value` located at `slot`.
      */
-    function parseCalldata(bytes calldata signature) internal pure returns (uint8 v, bytes32 r, bytes32 s) {
+    function getBooleanSlot(bytes32 slot) internal pure returns (BooleanSlot storage r) {
         assembly ("memory-safe") {
-            // Check the signature length
-            switch signature.length
-            // - case 65: r,s,v signature (standard)
-            case 65 {
-                r := calldataload(signature.offset)
-                s := calldataload(add(signature.offset, 0x20))
-                v := byte(0, calldataload(add(signature.offset, 0x40)))
-            }
-            // - case 64: r,vs signature (cf https://eips.ethereum.org/EIPS/eip-2098)
-            case 64 {
-                let vs := calldataload(add(signature.offset, 0x20))
-                r := calldataload(signature.offset)
-                s := and(vs, shr(1, not(0)))
-                v := add(shr(255, vs), 27)
-            }
-            default {
-                r := 0
-                s := 0
-                v := 0
-            }
+            r.slot := slot
         }
     }
 
     /**
-     * @dev Optionally reverts with the corresponding custom error according to the `error` argument provided.
+     * @dev Returns a `Bytes32Slot` with member `value` located at `slot`.
      */
-    function _throwError(RecoverError error, bytes32 errorArg) private pure {
-        if (error == RecoverError.NoError) {
-            return; // no error: do nothing
-        } else if (error == RecoverError.InvalidSignature) {
-            revert ECDSAInvalidSignature();
-        } else if (error == RecoverError.InvalidSignatureLength) {
-            revert ECDSAInvalidSignatureLength(uint256(errorArg));
-        } else if (error == RecoverError.InvalidSignatureS) {
-            revert ECDSAInvalidSignatureS(errorArg);
+    function getBytes32Slot(bytes32 slot) internal pure returns (Bytes32Slot storage r) {
+        assembly ("memory-safe") {
+            r.slot := slot
+        }
+    }
+
+    /**
+     * @dev Returns a `Uint256Slot` with member `value` located at `slot`.
+     */
+    function getUint256Slot(bytes32 slot) internal pure returns (Uint256Slot storage r) {
+        assembly ("memory-safe") {
+            r.slot := slot
+        }
+    }
+
+    /**
+     * @dev Returns a `Int256Slot` with member `value` located at `slot`.
+     */
+    function getInt256Slot(bytes32 slot) internal pure returns (Int256Slot storage r) {
+        assembly ("memory-safe") {
+            r.slot := slot
+        }
+    }
+
+    /**
+     * @dev Returns a `StringSlot` with member `value` located at `slot`.
+     */
+    function getStringSlot(bytes32 slot) internal pure returns (StringSlot storage r) {
+        assembly ("memory-safe") {
+            r.slot := slot
+        }
+    }
+
+    /**
+     * @dev Returns an `StringSlot` representation of the string storage pointer `store`.
+     */
+    function getStringSlot(string storage store) internal pure returns (StringSlot storage r) {
+        assembly ("memory-safe") {
+            r.slot := store.slot
+        }
+    }
+
+    /**
+     * @dev Returns a `BytesSlot` with member `value` located at `slot`.
+     */
+    function getBytesSlot(bytes32 slot) internal pure returns (BytesSlot storage r) {
+        assembly ("memory-safe") {
+            r.slot := slot
+        }
+    }
+
+    /**
+     * @dev Returns an `BytesSlot` representation of the bytes storage pointer `store`.
+     */
+    function getBytesSlot(bytes storage store) internal pure returns (BytesSlot storage r) {
+        assembly ("memory-safe") {
+            r.slot := store.slot
         }
     }
 }
@@ -1959,7 +754,6 @@ library ECDSA {
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.1.0) (utils/Panic.sol)
-
 
 /**
  * @dev Helper library for emitting standardized panic codes.
@@ -2020,7 +814,6 @@ library Panic {
 
 // OpenZeppelin Contracts (last updated v5.6.0) (utils/math/SafeCast.sol)
 // This file was procedurally generated from scripts/generate/templates/SafeCast.js.
-
 
 /**
  * @dev Wrappers over Solidity's uintXX/intXX/bool casting operators with added overflow
@@ -3185,9 +1978,6 @@ library SafeCast {
 
 // OpenZeppelin Contracts (last updated v5.6.0) (utils/math/Math.sol)
 
-
-
-
 /**
  * @dev Standard math utilities missing in the Solidity language.
  */
@@ -3945,12 +2735,3257 @@ library Math {
 }
 
 // ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/utils/Arrays.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.6.0) (utils/Arrays.sol)
+// This file was procedurally generated from scripts/generate/templates/Arrays.js.
+
+/**
+ * @dev Collection of functions related to array types.
+ */
+library Arrays {
+    using SlotDerivation for bytes32;
+    using StorageSlot for bytes32;
+
+    /**
+     * @dev Sort an array of uint256 (in memory) following the provided comparator function.
+     *
+     * This function does the sorting "in place", meaning that it overrides the input. The object is returned for
+     * convenience, but that returned value can be discarded safely if the caller has a memory pointer to the array.
+     *
+     * NOTE: this function's cost is `O(n · log(n))` in average and `O(n²)` in the worst case, with n the length of the
+     * array. Using it in view functions that are executed through `eth_call` is safe, but one should be very careful
+     * when executing this as part of a transaction. If the array being sorted is too large, the sort operation may
+     * consume more gas than is available in a block, leading to potential DoS.
+     *
+     * IMPORTANT: Consider memory side-effects when using custom comparator functions that access memory in an unsafe way.
+     */
+    function sort(
+        uint256[] memory array,
+        function(uint256, uint256) pure returns (bool) comp
+    ) internal pure returns (uint256[] memory) {
+        _quickSort(_begin(array), _end(array), comp);
+        return array;
+    }
+
+    /**
+     * @dev Variant of {sort} that sorts an array of uint256 in increasing order.
+     */
+    function sort(uint256[] memory array) internal pure returns (uint256[] memory) {
+        sort(array, Comparators.lt);
+        return array;
+    }
+
+    /**
+     * @dev Sort an array of address (in memory) following the provided comparator function.
+     *
+     * This function does the sorting "in place", meaning that it overrides the input. The object is returned for
+     * convenience, but that returned value can be discarded safely if the caller has a memory pointer to the array.
+     *
+     * NOTE: this function's cost is `O(n · log(n))` in average and `O(n²)` in the worst case, with n the length of the
+     * array. Using it in view functions that are executed through `eth_call` is safe, but one should be very careful
+     * when executing this as part of a transaction. If the array being sorted is too large, the sort operation may
+     * consume more gas than is available in a block, leading to potential DoS.
+     *
+     * IMPORTANT: Consider memory side-effects when using custom comparator functions that access memory in an unsafe way.
+     */
+    function sort(
+        address[] memory array,
+        function(address, address) pure returns (bool) comp
+    ) internal pure returns (address[] memory) {
+        sort(_castToUint256Array(array), _castToUint256Comp(comp));
+        return array;
+    }
+
+    /**
+     * @dev Variant of {sort} that sorts an array of address in increasing order.
+     */
+    function sort(address[] memory array) internal pure returns (address[] memory) {
+        sort(_castToUint256Array(array), Comparators.lt);
+        return array;
+    }
+
+    /**
+     * @dev Sort an array of bytes32 (in memory) following the provided comparator function.
+     *
+     * This function does the sorting "in place", meaning that it overrides the input. The object is returned for
+     * convenience, but that returned value can be discarded safely if the caller has a memory pointer to the array.
+     *
+     * NOTE: this function's cost is `O(n · log(n))` in average and `O(n²)` in the worst case, with n the length of the
+     * array. Using it in view functions that are executed through `eth_call` is safe, but one should be very careful
+     * when executing this as part of a transaction. If the array being sorted is too large, the sort operation may
+     * consume more gas than is available in a block, leading to potential DoS.
+     *
+     * IMPORTANT: Consider memory side-effects when using custom comparator functions that access memory in an unsafe way.
+     */
+    function sort(
+        bytes32[] memory array,
+        function(bytes32, bytes32) pure returns (bool) comp
+    ) internal pure returns (bytes32[] memory) {
+        sort(_castToUint256Array(array), _castToUint256Comp(comp));
+        return array;
+    }
+
+    /**
+     * @dev Variant of {sort} that sorts an array of bytes32 in increasing order.
+     */
+    function sort(bytes32[] memory array) internal pure returns (bytes32[] memory) {
+        sort(_castToUint256Array(array), Comparators.lt);
+        return array;
+    }
+
+    /**
+     * @dev Performs a quick sort of a segment of memory. The segment sorted starts at `begin` (inclusive), and stops
+     * at end (exclusive). Sorting follows the `comp` comparator.
+     *
+     * Invariant: `begin <= end`. This is the case when initially called by {sort} and is preserved in subcalls.
+     *
+     * IMPORTANT: Memory locations between `begin` and `end` are not validated/zeroed. This function should
+     * be used only if the limits are within a memory array.
+     */
+    function _quickSort(uint256 begin, uint256 end, function(uint256, uint256) pure returns (bool) comp) private pure {
+        unchecked {
+            if (end - begin < 0x40) return;
+
+            // Use first element as pivot
+            uint256 pivot = _mload(begin);
+            // Position where the pivot should be at the end of the loop
+            uint256 pos = begin;
+
+            for (uint256 it = begin + 0x20; it < end; it += 0x20) {
+                if (comp(_mload(it), pivot)) {
+                    // If the value stored at the iterator's position comes before the pivot, we increment the
+                    // position of the pivot and move the value there.
+                    pos += 0x20;
+                    _swap(pos, it);
+                }
+            }
+
+            _swap(begin, pos); // Swap pivot into place
+            _quickSort(begin, pos, comp); // Sort the left side of the pivot
+            _quickSort(pos + 0x20, end, comp); // Sort the right side of the pivot
+        }
+    }
+
+    /**
+     * @dev Pointer to the memory location of the first element of `array`.
+     */
+    function _begin(uint256[] memory array) private pure returns (uint256 ptr) {
+        assembly ("memory-safe") {
+            ptr := add(array, 0x20)
+        }
+    }
+
+    /**
+     * @dev Pointer to the memory location of the first memory word (32bytes) after `array`. This is the memory word
+     * that comes just after the last element of the array.
+     */
+    function _end(uint256[] memory array) private pure returns (uint256 ptr) {
+        unchecked {
+            return _begin(array) + array.length * 0x20;
+        }
+    }
+
+    /**
+     * @dev Load memory word (as a uint256) at location `ptr`.
+     */
+    function _mload(uint256 ptr) private pure returns (uint256 value) {
+        assembly {
+            value := mload(ptr)
+        }
+    }
+
+    /**
+     * @dev Swaps the elements memory location `ptr1` and `ptr2`.
+     */
+    function _swap(uint256 ptr1, uint256 ptr2) private pure {
+        assembly {
+            let value1 := mload(ptr1)
+            let value2 := mload(ptr2)
+            mstore(ptr1, value2)
+            mstore(ptr2, value1)
+        }
+    }
+
+    /// @dev Helper: low level cast address memory array to uint256 memory array
+    function _castToUint256Array(address[] memory input) private pure returns (uint256[] memory output) {
+        assembly {
+            output := input
+        }
+    }
+
+    /// @dev Helper: low level cast bytes32 memory array to uint256 memory array
+    function _castToUint256Array(bytes32[] memory input) private pure returns (uint256[] memory output) {
+        assembly {
+            output := input
+        }
+    }
+
+    /// @dev Helper: low level cast address comp function to uint256 comp function
+    function _castToUint256Comp(
+        function(address, address) pure returns (bool) input
+    ) private pure returns (function(uint256, uint256) pure returns (bool) output) {
+        assembly {
+            output := input
+        }
+    }
+
+    /// @dev Helper: low level cast bytes32 comp function to uint256 comp function
+    function _castToUint256Comp(
+        function(bytes32, bytes32) pure returns (bool) input
+    ) private pure returns (function(uint256, uint256) pure returns (bool) output) {
+        assembly {
+            output := input
+        }
+    }
+
+    /**
+     * @dev Searches a sorted `array` and returns the first index that contains
+     * a value greater or equal to `element`. If no such index exists (i.e. all
+     * values in the array are strictly less than `element`), the array length is
+     * returned. Time complexity O(log n).
+     *
+     * NOTE: The `array` is expected to be sorted in ascending order, and to
+     * contain no repeated elements.
+     *
+     * IMPORTANT: Deprecated. This implementation behaves as {lowerBound} but lacks
+     * support for repeated elements in the array. The {lowerBound} function should
+     * be used instead.
+     */
+    function findUpperBound(uint256[] storage array, uint256 element) internal view returns (uint256) {
+        uint256 low = 0;
+        uint256 high = array.length;
+
+        if (high == 0) {
+            return 0;
+        }
+
+        while (low < high) {
+            uint256 mid = Math.average(low, high);
+
+            // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
+            // because Math.average rounds towards zero (it does integer division with truncation).
+            if (unsafeAccess(array, mid).value > element) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+
+        // At this point `low` is the exclusive upper bound. We will return the inclusive upper bound.
+        if (low > 0 && unsafeAccess(array, low - 1).value == element) {
+            return low - 1;
+        } else {
+            return low;
+        }
+    }
+
+    /**
+     * @dev Searches an `array` sorted in ascending order and returns the first
+     * index that contains a value greater or equal than `element`. If no such index
+     * exists (i.e. all values in the array are strictly less than `element`), the array
+     * length is returned. Time complexity O(log n).
+     *
+     * See C++'s https://en.cppreference.com/w/cpp/algorithm/lower_bound[lower_bound].
+     */
+    function lowerBound(uint256[] storage array, uint256 element) internal view returns (uint256) {
+        uint256 low = 0;
+        uint256 high = array.length;
+
+        if (high == 0) {
+            return 0;
+        }
+
+        while (low < high) {
+            uint256 mid = Math.average(low, high);
+
+            // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
+            // because Math.average rounds towards zero (it does integer division with truncation).
+            if (unsafeAccess(array, mid).value < element) {
+                // this cannot overflow because mid < high
+                unchecked {
+                    low = mid + 1;
+                }
+            } else {
+                high = mid;
+            }
+        }
+
+        return low;
+    }
+
+    /**
+     * @dev Searches an `array` sorted in ascending order and returns the first
+     * index that contains a value strictly greater than `element`. If no such index
+     * exists (i.e. all values in the array are strictly less than `element`), the array
+     * length is returned. Time complexity O(log n).
+     *
+     * See C++'s https://en.cppreference.com/w/cpp/algorithm/upper_bound[upper_bound].
+     */
+    function upperBound(uint256[] storage array, uint256 element) internal view returns (uint256) {
+        uint256 low = 0;
+        uint256 high = array.length;
+
+        if (high == 0) {
+            return 0;
+        }
+
+        while (low < high) {
+            uint256 mid = Math.average(low, high);
+
+            // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
+            // because Math.average rounds towards zero (it does integer division with truncation).
+            if (unsafeAccess(array, mid).value > element) {
+                high = mid;
+            } else {
+                // this cannot overflow because mid < high
+                unchecked {
+                    low = mid + 1;
+                }
+            }
+        }
+
+        return low;
+    }
+
+    /**
+     * @dev Same as {lowerBound}, but with an array in memory.
+     */
+    function lowerBoundMemory(uint256[] memory array, uint256 element) internal pure returns (uint256) {
+        uint256 low = 0;
+        uint256 high = array.length;
+
+        if (high == 0) {
+            return 0;
+        }
+
+        while (low < high) {
+            uint256 mid = Math.average(low, high);
+
+            // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
+            // because Math.average rounds towards zero (it does integer division with truncation).
+            if (unsafeMemoryAccess(array, mid) < element) {
+                // this cannot overflow because mid < high
+                unchecked {
+                    low = mid + 1;
+                }
+            } else {
+                high = mid;
+            }
+        }
+
+        return low;
+    }
+
+    /**
+     * @dev Same as {upperBound}, but with an array in memory.
+     */
+    function upperBoundMemory(uint256[] memory array, uint256 element) internal pure returns (uint256) {
+        uint256 low = 0;
+        uint256 high = array.length;
+
+        if (high == 0) {
+            return 0;
+        }
+
+        while (low < high) {
+            uint256 mid = Math.average(low, high);
+
+            // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
+            // because Math.average rounds towards zero (it does integer division with truncation).
+            if (unsafeMemoryAccess(array, mid) > element) {
+                high = mid;
+            } else {
+                // this cannot overflow because mid < high
+                unchecked {
+                    low = mid + 1;
+                }
+            }
+        }
+
+        return low;
+    }
+
+    /**
+     * @dev Copies the content of `array`, from `start` (included) to the end of `array` into a new address array in
+     * memory.
+     *
+     * NOTE: replicates the behavior of https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice[Javascript's `Array.slice`]
+     */
+    function slice(address[] memory array, uint256 start) internal pure returns (address[] memory) {
+        return slice(array, start, array.length);
+    }
+
+    /**
+     * @dev Copies the content of `array`, from `start` (included) to `end` (excluded) into a new address array in
+     * memory. The `end` argument is truncated to the length of the `array`.
+     *
+     * NOTE: replicates the behavior of https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice[Javascript's `Array.slice`]
+     */
+    function slice(address[] memory array, uint256 start, uint256 end) internal pure returns (address[] memory) {
+        // sanitize
+        end = Math.min(end, array.length);
+        start = Math.min(start, end);
+
+        // allocate and copy
+        address[] memory result = new address[](end - start);
+        assembly ("memory-safe") {
+            mcopy(add(result, 0x20), add(add(array, 0x20), mul(start, 0x20)), mul(sub(end, start), 0x20))
+        }
+
+        return result;
+    }
+
+    /**
+     * @dev Copies the content of `array`, from `start` (included) to the end of `array` into a new bytes32 array in
+     * memory.
+     *
+     * NOTE: replicates the behavior of https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice[Javascript's `Array.slice`]
+     */
+    function slice(bytes32[] memory array, uint256 start) internal pure returns (bytes32[] memory) {
+        return slice(array, start, array.length);
+    }
+
+    /**
+     * @dev Copies the content of `array`, from `start` (included) to `end` (excluded) into a new bytes32 array in
+     * memory. The `end` argument is truncated to the length of the `array`.
+     *
+     * NOTE: replicates the behavior of https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice[Javascript's `Array.slice`]
+     */
+    function slice(bytes32[] memory array, uint256 start, uint256 end) internal pure returns (bytes32[] memory) {
+        // sanitize
+        end = Math.min(end, array.length);
+        start = Math.min(start, end);
+
+        // allocate and copy
+        bytes32[] memory result = new bytes32[](end - start);
+        assembly ("memory-safe") {
+            mcopy(add(result, 0x20), add(add(array, 0x20), mul(start, 0x20)), mul(sub(end, start), 0x20))
+        }
+
+        return result;
+    }
+
+    /**
+     * @dev Copies the content of `array`, from `start` (included) to the end of `array` into a new uint256 array in
+     * memory.
+     *
+     * NOTE: replicates the behavior of https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice[Javascript's `Array.slice`]
+     */
+    function slice(uint256[] memory array, uint256 start) internal pure returns (uint256[] memory) {
+        return slice(array, start, array.length);
+    }
+
+    /**
+     * @dev Copies the content of `array`, from `start` (included) to `end` (excluded) into a new uint256 array in
+     * memory. The `end` argument is truncated to the length of the `array`.
+     *
+     * NOTE: replicates the behavior of https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice[Javascript's `Array.slice`]
+     */
+    function slice(uint256[] memory array, uint256 start, uint256 end) internal pure returns (uint256[] memory) {
+        // sanitize
+        end = Math.min(end, array.length);
+        start = Math.min(start, end);
+
+        // allocate and copy
+        uint256[] memory result = new uint256[](end - start);
+        assembly ("memory-safe") {
+            mcopy(add(result, 0x20), add(add(array, 0x20), mul(start, 0x20)), mul(sub(end, start), 0x20))
+        }
+
+        return result;
+    }
+
+    /**
+     * @dev Moves the content of `array`, from `start` (included) to the end of `array` to the start of that array,
+     * and shrinks the array length accordingly, effectively overwriting the array with array[start:].
+     *
+     * NOTE: This function modifies the provided array in place. If you need to preserve the original array, use {slice} instead.
+     */
+    function splice(address[] memory array, uint256 start) internal pure returns (address[] memory) {
+        return splice(array, start, array.length);
+    }
+
+    /**
+     * @dev Moves the content of `array`, from `start` (included) to `end` (excluded) to the start of that array,
+     * and shrinks the array length accordingly, effectively overwriting the array with array[start:end]. The
+     * `end` argument is truncated to the length of the `array`.
+     *
+     * NOTE: This function modifies the provided array in place. If you need to preserve the original array, use {slice} instead.
+     */
+    function splice(address[] memory array, uint256 start, uint256 end) internal pure returns (address[] memory) {
+        // sanitize
+        end = Math.min(end, array.length);
+        start = Math.min(start, end);
+
+        // move and resize
+        assembly ("memory-safe") {
+            mcopy(add(array, 0x20), add(add(array, 0x20), mul(start, 0x20)), mul(sub(end, start), 0x20))
+            mstore(array, sub(end, start))
+        }
+
+        return array;
+    }
+
+    /**
+     * @dev Replaces elements in `array` starting at `pos` with all elements from `replacement`.
+     *
+     * Parameters are clamped to valid ranges (e.g. `pos` is clamped to `[0, array.length]`).
+     * If `pos >= array.length`, no replacement occurs and the array is returned unchanged.
+     *
+     * NOTE: This function modifies the provided array in place.
+     */
+    function replace(
+        address[] memory array,
+        uint256 pos,
+        address[] memory replacement
+    ) internal pure returns (address[] memory) {
+        return replace(array, pos, replacement, 0, replacement.length);
+    }
+
+    /**
+     * @dev Replaces elements in `array` starting at `pos` with elements from `replacement` starting at `offset`.
+     * Copies at most `length` elements from `replacement` to `array`.
+     *
+     * Parameters are clamped to valid ranges (i.e. `pos` is clamped to `[0, array.length]`, `offset` is
+     * clamped to `[0, replacement.length]`, and `length` is clamped to `min(length, replacement.length - offset,
+     * array.length - pos)`). If `pos >= array.length` or `offset >= replacement.length`, no replacement occurs
+     * and the array is returned unchanged.
+     *
+     * NOTE: This function modifies the provided array in place.
+     */
+    function replace(
+        address[] memory array,
+        uint256 pos,
+        address[] memory replacement,
+        uint256 offset,
+        uint256 length
+    ) internal pure returns (address[] memory) {
+        // sanitize
+        pos = Math.min(pos, array.length);
+        offset = Math.min(offset, replacement.length);
+        length = Math.min(length, Math.min(replacement.length - offset, array.length - pos));
+
+        // replace
+        assembly ("memory-safe") {
+            mcopy(
+                add(add(array, 0x20), mul(pos, 0x20)),
+                add(add(replacement, 0x20), mul(offset, 0x20)),
+                mul(length, 0x20)
+            )
+        }
+
+        return array;
+    }
+
+    /**
+     * @dev Moves the content of `array`, from `start` (included) to the end of `array` to the start of that array,
+     * and shrinks the array length accordingly, effectively overwriting the array with array[start:].
+     *
+     * NOTE: This function modifies the provided array in place. If you need to preserve the original array, use {slice} instead.
+     */
+    function splice(bytes32[] memory array, uint256 start) internal pure returns (bytes32[] memory) {
+        return splice(array, start, array.length);
+    }
+
+    /**
+     * @dev Moves the content of `array`, from `start` (included) to `end` (excluded) to the start of that array,
+     * and shrinks the array length accordingly, effectively overwriting the array with array[start:end]. The
+     * `end` argument is truncated to the length of the `array`.
+     *
+     * NOTE: This function modifies the provided array in place. If you need to preserve the original array, use {slice} instead.
+     */
+    function splice(bytes32[] memory array, uint256 start, uint256 end) internal pure returns (bytes32[] memory) {
+        // sanitize
+        end = Math.min(end, array.length);
+        start = Math.min(start, end);
+
+        // move and resize
+        assembly ("memory-safe") {
+            mcopy(add(array, 0x20), add(add(array, 0x20), mul(start, 0x20)), mul(sub(end, start), 0x20))
+            mstore(array, sub(end, start))
+        }
+
+        return array;
+    }
+
+    /**
+     * @dev Replaces elements in `array` starting at `pos` with all elements from `replacement`.
+     *
+     * Parameters are clamped to valid ranges (e.g. `pos` is clamped to `[0, array.length]`).
+     * If `pos >= array.length`, no replacement occurs and the array is returned unchanged.
+     *
+     * NOTE: This function modifies the provided array in place.
+     */
+    function replace(
+        bytes32[] memory array,
+        uint256 pos,
+        bytes32[] memory replacement
+    ) internal pure returns (bytes32[] memory) {
+        return replace(array, pos, replacement, 0, replacement.length);
+    }
+
+    /**
+     * @dev Replaces elements in `array` starting at `pos` with elements from `replacement` starting at `offset`.
+     * Copies at most `length` elements from `replacement` to `array`.
+     *
+     * Parameters are clamped to valid ranges (i.e. `pos` is clamped to `[0, array.length]`, `offset` is
+     * clamped to `[0, replacement.length]`, and `length` is clamped to `min(length, replacement.length - offset,
+     * array.length - pos)`). If `pos >= array.length` or `offset >= replacement.length`, no replacement occurs
+     * and the array is returned unchanged.
+     *
+     * NOTE: This function modifies the provided array in place.
+     */
+    function replace(
+        bytes32[] memory array,
+        uint256 pos,
+        bytes32[] memory replacement,
+        uint256 offset,
+        uint256 length
+    ) internal pure returns (bytes32[] memory) {
+        // sanitize
+        pos = Math.min(pos, array.length);
+        offset = Math.min(offset, replacement.length);
+        length = Math.min(length, Math.min(replacement.length - offset, array.length - pos));
+
+        // replace
+        assembly ("memory-safe") {
+            mcopy(
+                add(add(array, 0x20), mul(pos, 0x20)),
+                add(add(replacement, 0x20), mul(offset, 0x20)),
+                mul(length, 0x20)
+            )
+        }
+
+        return array;
+    }
+
+    /**
+     * @dev Moves the content of `array`, from `start` (included) to the end of `array` to the start of that array,
+     * and shrinks the array length accordingly, effectively overwriting the array with array[start:].
+     *
+     * NOTE: This function modifies the provided array in place. If you need to preserve the original array, use {slice} instead.
+     */
+    function splice(uint256[] memory array, uint256 start) internal pure returns (uint256[] memory) {
+        return splice(array, start, array.length);
+    }
+
+    /**
+     * @dev Moves the content of `array`, from `start` (included) to `end` (excluded) to the start of that array,
+     * and shrinks the array length accordingly, effectively overwriting the array with array[start:end]. The
+     * `end` argument is truncated to the length of the `array`.
+     *
+     * NOTE: This function modifies the provided array in place. If you need to preserve the original array, use {slice} instead.
+     */
+    function splice(uint256[] memory array, uint256 start, uint256 end) internal pure returns (uint256[] memory) {
+        // sanitize
+        end = Math.min(end, array.length);
+        start = Math.min(start, end);
+
+        // move and resize
+        assembly ("memory-safe") {
+            mcopy(add(array, 0x20), add(add(array, 0x20), mul(start, 0x20)), mul(sub(end, start), 0x20))
+            mstore(array, sub(end, start))
+        }
+
+        return array;
+    }
+
+    /**
+     * @dev Replaces elements in `array` starting at `pos` with all elements from `replacement`.
+     *
+     * Parameters are clamped to valid ranges (e.g. `pos` is clamped to `[0, array.length]`).
+     * If `pos >= array.length`, no replacement occurs and the array is returned unchanged.
+     *
+     * NOTE: This function modifies the provided array in place.
+     */
+    function replace(
+        uint256[] memory array,
+        uint256 pos,
+        uint256[] memory replacement
+    ) internal pure returns (uint256[] memory) {
+        return replace(array, pos, replacement, 0, replacement.length);
+    }
+
+    /**
+     * @dev Replaces elements in `array` starting at `pos` with elements from `replacement` starting at `offset`.
+     * Copies at most `length` elements from `replacement` to `array`.
+     *
+     * Parameters are clamped to valid ranges (i.e. `pos` is clamped to `[0, array.length]`, `offset` is
+     * clamped to `[0, replacement.length]`, and `length` is clamped to `min(length, replacement.length - offset,
+     * array.length - pos)`). If `pos >= array.length` or `offset >= replacement.length`, no replacement occurs
+     * and the array is returned unchanged.
+     *
+     * NOTE: This function modifies the provided array in place.
+     */
+    function replace(
+        uint256[] memory array,
+        uint256 pos,
+        uint256[] memory replacement,
+        uint256 offset,
+        uint256 length
+    ) internal pure returns (uint256[] memory) {
+        // sanitize
+        pos = Math.min(pos, array.length);
+        offset = Math.min(offset, replacement.length);
+        length = Math.min(length, Math.min(replacement.length - offset, array.length - pos));
+
+        // replace
+        assembly ("memory-safe") {
+            mcopy(
+                add(add(array, 0x20), mul(pos, 0x20)),
+                add(add(replacement, 0x20), mul(offset, 0x20)),
+                mul(length, 0x20)
+            )
+        }
+
+        return array;
+    }
+
+    /**
+     * @dev Access an array in an "unsafe" way. Skips solidity "index-out-of-range" check.
+     *
+     * WARNING: Only use if you are certain `pos` is lower than the array length.
+     */
+    function unsafeAccess(address[] storage arr, uint256 pos) internal pure returns (StorageSlot.AddressSlot storage) {
+        bytes32 slot;
+        assembly ("memory-safe") {
+            slot := arr.slot
+        }
+        return slot.deriveArray().offset(pos).getAddressSlot();
+    }
+
+    /**
+     * @dev Access an array in an "unsafe" way. Skips solidity "index-out-of-range" check.
+     *
+     * WARNING: Only use if you are certain `pos` is lower than the array length.
+     */
+    function unsafeAccess(bytes32[] storage arr, uint256 pos) internal pure returns (StorageSlot.Bytes32Slot storage) {
+        bytes32 slot;
+        assembly ("memory-safe") {
+            slot := arr.slot
+        }
+        return slot.deriveArray().offset(pos).getBytes32Slot();
+    }
+
+    /**
+     * @dev Access an array in an "unsafe" way. Skips solidity "index-out-of-range" check.
+     *
+     * WARNING: Only use if you are certain `pos` is lower than the array length.
+     */
+    function unsafeAccess(uint256[] storage arr, uint256 pos) internal pure returns (StorageSlot.Uint256Slot storage) {
+        bytes32 slot;
+        assembly ("memory-safe") {
+            slot := arr.slot
+        }
+        return slot.deriveArray().offset(pos).getUint256Slot();
+    }
+
+    /**
+     * @dev Access an array in an "unsafe" way. Skips solidity "index-out-of-range" check.
+     *
+     * WARNING: Only use if you are certain `pos` is lower than the array length.
+     */
+    function unsafeAccess(bytes[] storage arr, uint256 pos) internal pure returns (StorageSlot.BytesSlot storage) {
+        bytes32 slot;
+        assembly ("memory-safe") {
+            slot := arr.slot
+        }
+        return slot.deriveArray().offset(pos).getBytesSlot();
+    }
+
+    /**
+     * @dev Access an array in an "unsafe" way. Skips solidity "index-out-of-range" check.
+     *
+     * WARNING: Only use if you are certain `pos` is lower than the array length.
+     */
+    function unsafeAccess(string[] storage arr, uint256 pos) internal pure returns (StorageSlot.StringSlot storage) {
+        bytes32 slot;
+        assembly ("memory-safe") {
+            slot := arr.slot
+        }
+        return slot.deriveArray().offset(pos).getStringSlot();
+    }
+
+    /**
+     * @dev Access an array in an "unsafe" way. Skips solidity "index-out-of-range" check.
+     *
+     * WARNING: Only use if you are certain `pos` is lower than the array length.
+     */
+    function unsafeMemoryAccess(address[] memory arr, uint256 pos) internal pure returns (address res) {
+        assembly {
+            res := mload(add(add(arr, 0x20), mul(pos, 0x20)))
+        }
+    }
+
+    /**
+     * @dev Access an array in an "unsafe" way. Skips solidity "index-out-of-range" check.
+     *
+     * WARNING: Only use if you are certain `pos` is lower than the array length.
+     */
+    function unsafeMemoryAccess(bytes32[] memory arr, uint256 pos) internal pure returns (bytes32 res) {
+        assembly {
+            res := mload(add(add(arr, 0x20), mul(pos, 0x20)))
+        }
+    }
+
+    /**
+     * @dev Access an array in an "unsafe" way. Skips solidity "index-out-of-range" check.
+     *
+     * WARNING: Only use if you are certain `pos` is lower than the array length.
+     */
+    function unsafeMemoryAccess(uint256[] memory arr, uint256 pos) internal pure returns (uint256 res) {
+        assembly {
+            res := mload(add(add(arr, 0x20), mul(pos, 0x20)))
+        }
+    }
+
+    /**
+     * @dev Access an array in an "unsafe" way. Skips solidity "index-out-of-range" check.
+     *
+     * WARNING: Only use if you are certain `pos` is lower than the array length.
+     */
+    function unsafeMemoryAccess(bytes[] memory arr, uint256 pos) internal pure returns (bytes memory res) {
+        assembly {
+            res := mload(add(add(arr, 0x20), mul(pos, 0x20)))
+        }
+    }
+
+    /**
+     * @dev Access an array in an "unsafe" way. Skips solidity "index-out-of-range" check.
+     *
+     * WARNING: Only use if you are certain `pos` is lower than the array length.
+     */
+    function unsafeMemoryAccess(string[] memory arr, uint256 pos) internal pure returns (string memory res) {
+        assembly {
+            res := mload(add(add(arr, 0x20), mul(pos, 0x20)))
+        }
+    }
+
+    /**
+     * @dev Helper to set the length of a dynamic array. Directly writing to `.length` is forbidden.
+     *
+     * WARNING: this does not clear elements if length is reduced, or initialize elements if length is increased.
+     */
+    function unsafeSetLength(address[] storage array, uint256 len) internal {
+        assembly ("memory-safe") {
+            sstore(array.slot, len)
+        }
+    }
+
+    /**
+     * @dev Helper to set the length of a dynamic array. Directly writing to `.length` is forbidden.
+     *
+     * WARNING: this does not clear elements if length is reduced, or initialize elements if length is increased.
+     */
+    function unsafeSetLength(bytes32[] storage array, uint256 len) internal {
+        assembly ("memory-safe") {
+            sstore(array.slot, len)
+        }
+    }
+
+    /**
+     * @dev Helper to set the length of a dynamic array. Directly writing to `.length` is forbidden.
+     *
+     * WARNING: this does not clear elements if length is reduced, or initialize elements if length is increased.
+     */
+    function unsafeSetLength(uint256[] storage array, uint256 len) internal {
+        assembly ("memory-safe") {
+            sstore(array.slot, len)
+        }
+    }
+
+    /**
+     * @dev Helper to set the length of a dynamic array. Directly writing to `.length` is forbidden.
+     *
+     * WARNING: this does not clear elements if length is reduced, or initialize elements if length is increased.
+     */
+    function unsafeSetLength(bytes[] storage array, uint256 len) internal {
+        assembly ("memory-safe") {
+            sstore(array.slot, len)
+        }
+    }
+
+    /**
+     * @dev Helper to set the length of a dynamic array. Directly writing to `.length` is forbidden.
+     *
+     * WARNING: this does not clear elements if length is reduced, or initialize elements if length is increased.
+     */
+    function unsafeSetLength(string[] storage array, uint256 len) internal {
+        assembly ("memory-safe") {
+            sstore(array.slot, len)
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/utils/structs/EnumerableSet.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.6.0) (utils/structs/EnumerableSet.sol)
+// This file was procedurally generated from scripts/generate/templates/EnumerableSet.js.
+
+/**
+ * @dev Library for managing
+ * https://en.wikipedia.org/wiki/Set_(abstract_data_type)[sets] of primitive
+ * types.
+ *
+ * Sets have the following properties:
+ *
+ * - Elements are added, removed, and checked for existence in constant time
+ * (O(1)).
+ * - Elements are enumerated in O(n). No guarantees are made on the ordering.
+ * - Set can be cleared (all elements removed) in O(n).
+ *
+ * ```solidity
+ * contract Example {
+ *     // Add the library methods
+ *     using EnumerableSet for EnumerableSet.AddressSet;
+ *
+ *     // Declare a set state variable
+ *     EnumerableSet.AddressSet private mySet;
+ * }
+ * ```
+ *
+ * The following types are supported:
+ *
+ * - `bytes32` (`Bytes32Set`) since v3.3.0
+ * - `address` (`AddressSet`) since v3.3.0
+ * - `uint256` (`UintSet`) since v3.3.0
+ * - `string` (`StringSet`) since v5.4.0
+ * - `bytes` (`BytesSet`) since v5.4.0
+ * - `bytes4` (`Bytes4Set`) since v5.6.0
+ *
+ * [WARNING]
+ * ====
+ * Trying to delete such a structure from storage will likely result in data corruption, rendering the structure
+ * unusable.
+ * See https://github.com/ethereum/solidity/pull/11843[ethereum/solidity#11843] for more info.
+ *
+ * In order to clean an EnumerableSet, you can either remove all elements one by one or create a fresh instance using an
+ * array of EnumerableSet.
+ * ====
+ */
+library EnumerableSet {
+    // To implement this library for multiple types with as little code
+    // repetition as possible, we write it in terms of a generic Set type with
+    // bytes32 values.
+    // The Set implementation uses private functions, and user-facing
+    // implementations (such as AddressSet) are just wrappers around the
+    // underlying Set.
+    // This means that we can only create new EnumerableSets for types that fit
+    // in bytes32.
+
+    struct Set {
+        // Storage of set values
+        bytes32[] _values;
+        // Position is the index of the value in the `values` array plus 1.
+        // Position 0 is used to mean a value is not in the set.
+        mapping(bytes32 value => uint256) _positions;
+    }
+
+    /**
+     * @dev Add a value to a set. O(1).
+     *
+     * Returns true if the value was added to the set, that is if it was not
+     * already present.
+     */
+    function _add(Set storage set, bytes32 value) private returns (bool) {
+        if (!_contains(set, value)) {
+            set._values.push(value);
+            // The value is stored at length-1, but we add 1 to all indexes
+            // and use 0 as a sentinel value
+            set._positions[value] = set._values.length;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @dev Removes a value from a set. O(1).
+     *
+     * Returns true if the value was removed from the set, that is if it was
+     * present.
+     */
+    function _remove(Set storage set, bytes32 value) private returns (bool) {
+        // We cache the value's position to prevent multiple reads from the same storage slot
+        uint256 position = set._positions[value];
+
+        if (position != 0) {
+            // Equivalent to contains(set, value)
+            // To delete an element from the _values array in O(1), we swap the element to delete with the last one in
+            // the array, and then remove the last element (sometimes called as 'swap and pop').
+            // This modifies the order of the array, as noted in {at}.
+
+            uint256 valueIndex = position - 1;
+            uint256 lastIndex = set._values.length - 1;
+
+            if (valueIndex != lastIndex) {
+                bytes32 lastValue = set._values[lastIndex];
+
+                // Move the lastValue to the index where the value to delete is
+                set._values[valueIndex] = lastValue;
+                // Update the tracked position of the lastValue (that was just moved)
+                set._positions[lastValue] = position;
+            }
+
+            // Delete the slot where the moved value was stored
+            set._values.pop();
+
+            // Delete the tracked position for the deleted slot
+            delete set._positions[value];
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @dev Removes all the values from a set. O(n).
+     *
+     * WARNING: This function has an unbounded cost that scales with set size. Developers should keep in mind that
+     * using it may render the function uncallable if the set grows to the point where clearing it consumes too much
+     * gas to fit in a block.
+     */
+    function _clear(Set storage set) private {
+        uint256 len = _length(set);
+        for (uint256 i = 0; i < len; ++i) {
+            delete set._positions[set._values[i]];
+        }
+        Arrays.unsafeSetLength(set._values, 0);
+    }
+
+    /**
+     * @dev Returns true if the value is in the set. O(1).
+     */
+    function _contains(Set storage set, bytes32 value) private view returns (bool) {
+        return set._positions[value] != 0;
+    }
+
+    /**
+     * @dev Returns the number of values on the set. O(1).
+     */
+    function _length(Set storage set) private view returns (uint256) {
+        return set._values.length;
+    }
+
+    /**
+     * @dev Returns the value stored at position `index` in the set. O(1).
+     *
+     * Note that there are no guarantees on the ordering of values inside the
+     * array, and it may change when more values are added or removed.
+     *
+     * Requirements:
+     *
+     * - `index` must be strictly less than {length}.
+     */
+    function _at(Set storage set, uint256 index) private view returns (bytes32) {
+        return set._values[index];
+    }
+
+    /**
+     * @dev Return the entire set in an array
+     *
+     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
+     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
+     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
+     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
+     */
+    function _values(Set storage set) private view returns (bytes32[] memory) {
+        return set._values;
+    }
+
+    /**
+     * @dev Return a slice of the set in an array
+     *
+     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
+     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
+     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
+     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
+     */
+    function _values(Set storage set, uint256 start, uint256 end) private view returns (bytes32[] memory) {
+        unchecked {
+            end = Math.min(end, _length(set));
+            start = Math.min(start, end);
+
+            uint256 len = end - start;
+            bytes32[] memory result = new bytes32[](len);
+            for (uint256 i = 0; i < len; ++i) {
+                result[i] = Arrays.unsafeAccess(set._values, start + i).value;
+            }
+            return result;
+        }
+    }
+
+    // Bytes32Set
+
+    struct Bytes32Set {
+        Set _inner;
+    }
+
+    /**
+     * @dev Add a value to a set. O(1).
+     *
+     * Returns true if the value was added to the set, that is if it was not
+     * already present.
+     */
+    function add(Bytes32Set storage set, bytes32 value) internal returns (bool) {
+        return _add(set._inner, value);
+    }
+
+    /**
+     * @dev Removes a value from a set. O(1).
+     *
+     * Returns true if the value was removed from the set, that is if it was
+     * present.
+     */
+    function remove(Bytes32Set storage set, bytes32 value) internal returns (bool) {
+        return _remove(set._inner, value);
+    }
+
+    /**
+     * @dev Removes all the values from a set. O(n).
+     *
+     * WARNING: Developers should keep in mind that this function has an unbounded cost and using it may render the
+     * function uncallable if the set grows to the point where clearing it consumes too much gas to fit in a block.
+     */
+    function clear(Bytes32Set storage set) internal {
+        _clear(set._inner);
+    }
+
+    /**
+     * @dev Returns true if the value is in the set. O(1).
+     */
+    function contains(Bytes32Set storage set, bytes32 value) internal view returns (bool) {
+        return _contains(set._inner, value);
+    }
+
+    /**
+     * @dev Returns the number of values in the set. O(1).
+     */
+    function length(Bytes32Set storage set) internal view returns (uint256) {
+        return _length(set._inner);
+    }
+
+    /**
+     * @dev Returns the value stored at position `index` in the set. O(1).
+     *
+     * Note that there are no guarantees on the ordering of values inside the
+     * array, and it may change when more values are added or removed.
+     *
+     * Requirements:
+     *
+     * - `index` must be strictly less than {length}.
+     */
+    function at(Bytes32Set storage set, uint256 index) internal view returns (bytes32) {
+        return _at(set._inner, index);
+    }
+
+    /**
+     * @dev Return the entire set in an array
+     *
+     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
+     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
+     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
+     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
+     */
+    function values(Bytes32Set storage set) internal view returns (bytes32[] memory) {
+        bytes32[] memory store = _values(set._inner);
+        bytes32[] memory result;
+
+        assembly ("memory-safe") {
+            result := store
+        }
+
+        return result;
+    }
+
+    /**
+     * @dev Return a slice of the set in an array
+     *
+     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
+     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
+     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
+     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
+     */
+    function values(Bytes32Set storage set, uint256 start, uint256 end) internal view returns (bytes32[] memory) {
+        bytes32[] memory store = _values(set._inner, start, end);
+        bytes32[] memory result;
+
+        assembly ("memory-safe") {
+            result := store
+        }
+
+        return result;
+    }
+
+    // Bytes4Set
+
+    struct Bytes4Set {
+        Set _inner;
+    }
+
+    /**
+     * @dev Add a value to a set. O(1).
+     *
+     * Returns true if the value was added to the set, that is if it was not
+     * already present.
+     */
+    function add(Bytes4Set storage set, bytes4 value) internal returns (bool) {
+        return _add(set._inner, bytes32(value));
+    }
+
+    /**
+     * @dev Removes a value from a set. O(1).
+     *
+     * Returns true if the value was removed from the set, that is if it was
+     * present.
+     */
+    function remove(Bytes4Set storage set, bytes4 value) internal returns (bool) {
+        return _remove(set._inner, bytes32(value));
+    }
+
+    /**
+     * @dev Removes all the values from a set. O(n).
+     *
+     * WARNING: Developers should keep in mind that this function has an unbounded cost and using it may render the
+     * function uncallable if the set grows to the point where clearing it consumes too much gas to fit in a block.
+     */
+    function clear(Bytes4Set storage set) internal {
+        _clear(set._inner);
+    }
+
+    /**
+     * @dev Returns true if the value is in the set. O(1).
+     */
+    function contains(Bytes4Set storage set, bytes4 value) internal view returns (bool) {
+        return _contains(set._inner, bytes32(value));
+    }
+
+    /**
+     * @dev Returns the number of values in the set. O(1).
+     */
+    function length(Bytes4Set storage set) internal view returns (uint256) {
+        return _length(set._inner);
+    }
+
+    /**
+     * @dev Returns the value stored at position `index` in the set. O(1).
+     *
+     * Note that there are no guarantees on the ordering of values inside the
+     * array, and it may change when more values are added or removed.
+     *
+     * Requirements:
+     *
+     * - `index` must be strictly less than {length}.
+     */
+    function at(Bytes4Set storage set, uint256 index) internal view returns (bytes4) {
+        return bytes4(_at(set._inner, index));
+    }
+
+    /**
+     * @dev Return the entire set in an array
+     *
+     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
+     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
+     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
+     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
+     */
+    function values(Bytes4Set storage set) internal view returns (bytes4[] memory) {
+        bytes32[] memory store = _values(set._inner);
+        bytes4[] memory result;
+
+        assembly ("memory-safe") {
+            result := store
+        }
+
+        return result;
+    }
+
+    /**
+     * @dev Return a slice of the set in an array
+     *
+     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
+     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
+     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
+     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
+     */
+    function values(Bytes4Set storage set, uint256 start, uint256 end) internal view returns (bytes4[] memory) {
+        bytes32[] memory store = _values(set._inner, start, end);
+        bytes4[] memory result;
+
+        assembly ("memory-safe") {
+            result := store
+        }
+
+        return result;
+    }
+
+    // AddressSet
+
+    struct AddressSet {
+        Set _inner;
+    }
+
+    /**
+     * @dev Add a value to a set. O(1).
+     *
+     * Returns true if the value was added to the set, that is if it was not
+     * already present.
+     */
+    function add(AddressSet storage set, address value) internal returns (bool) {
+        return _add(set._inner, bytes32(uint256(uint160(value))));
+    }
+
+    /**
+     * @dev Removes a value from a set. O(1).
+     *
+     * Returns true if the value was removed from the set, that is if it was
+     * present.
+     */
+    function remove(AddressSet storage set, address value) internal returns (bool) {
+        return _remove(set._inner, bytes32(uint256(uint160(value))));
+    }
+
+    /**
+     * @dev Removes all the values from a set. O(n).
+     *
+     * WARNING: Developers should keep in mind that this function has an unbounded cost and using it may render the
+     * function uncallable if the set grows to the point where clearing it consumes too much gas to fit in a block.
+     */
+    function clear(AddressSet storage set) internal {
+        _clear(set._inner);
+    }
+
+    /**
+     * @dev Returns true if the value is in the set. O(1).
+     */
+    function contains(AddressSet storage set, address value) internal view returns (bool) {
+        return _contains(set._inner, bytes32(uint256(uint160(value))));
+    }
+
+    /**
+     * @dev Returns the number of values in the set. O(1).
+     */
+    function length(AddressSet storage set) internal view returns (uint256) {
+        return _length(set._inner);
+    }
+
+    /**
+     * @dev Returns the value stored at position `index` in the set. O(1).
+     *
+     * Note that there are no guarantees on the ordering of values inside the
+     * array, and it may change when more values are added or removed.
+     *
+     * Requirements:
+     *
+     * - `index` must be strictly less than {length}.
+     */
+    function at(AddressSet storage set, uint256 index) internal view returns (address) {
+        return address(uint160(uint256(_at(set._inner, index))));
+    }
+
+    /**
+     * @dev Return the entire set in an array
+     *
+     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
+     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
+     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
+     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
+     */
+    function values(AddressSet storage set) internal view returns (address[] memory) {
+        bytes32[] memory store = _values(set._inner);
+        address[] memory result;
+
+        assembly ("memory-safe") {
+            result := store
+        }
+
+        return result;
+    }
+
+    /**
+     * @dev Return a slice of the set in an array
+     *
+     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
+     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
+     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
+     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
+     */
+    function values(AddressSet storage set, uint256 start, uint256 end) internal view returns (address[] memory) {
+        bytes32[] memory store = _values(set._inner, start, end);
+        address[] memory result;
+
+        assembly ("memory-safe") {
+            result := store
+        }
+
+        return result;
+    }
+
+    // UintSet
+
+    struct UintSet {
+        Set _inner;
+    }
+
+    /**
+     * @dev Add a value to a set. O(1).
+     *
+     * Returns true if the value was added to the set, that is if it was not
+     * already present.
+     */
+    function add(UintSet storage set, uint256 value) internal returns (bool) {
+        return _add(set._inner, bytes32(value));
+    }
+
+    /**
+     * @dev Removes a value from a set. O(1).
+     *
+     * Returns true if the value was removed from the set, that is if it was
+     * present.
+     */
+    function remove(UintSet storage set, uint256 value) internal returns (bool) {
+        return _remove(set._inner, bytes32(value));
+    }
+
+    /**
+     * @dev Removes all the values from a set. O(n).
+     *
+     * WARNING: Developers should keep in mind that this function has an unbounded cost and using it may render the
+     * function uncallable if the set grows to the point where clearing it consumes too much gas to fit in a block.
+     */
+    function clear(UintSet storage set) internal {
+        _clear(set._inner);
+    }
+
+    /**
+     * @dev Returns true if the value is in the set. O(1).
+     */
+    function contains(UintSet storage set, uint256 value) internal view returns (bool) {
+        return _contains(set._inner, bytes32(value));
+    }
+
+    /**
+     * @dev Returns the number of values in the set. O(1).
+     */
+    function length(UintSet storage set) internal view returns (uint256) {
+        return _length(set._inner);
+    }
+
+    /**
+     * @dev Returns the value stored at position `index` in the set. O(1).
+     *
+     * Note that there are no guarantees on the ordering of values inside the
+     * array, and it may change when more values are added or removed.
+     *
+     * Requirements:
+     *
+     * - `index` must be strictly less than {length}.
+     */
+    function at(UintSet storage set, uint256 index) internal view returns (uint256) {
+        return uint256(_at(set._inner, index));
+    }
+
+    /**
+     * @dev Return the entire set in an array
+     *
+     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
+     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
+     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
+     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
+     */
+    function values(UintSet storage set) internal view returns (uint256[] memory) {
+        bytes32[] memory store = _values(set._inner);
+        uint256[] memory result;
+
+        assembly ("memory-safe") {
+            result := store
+        }
+
+        return result;
+    }
+
+    /**
+     * @dev Return a slice of the set in an array
+     *
+     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
+     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
+     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
+     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
+     */
+    function values(UintSet storage set, uint256 start, uint256 end) internal view returns (uint256[] memory) {
+        bytes32[] memory store = _values(set._inner, start, end);
+        uint256[] memory result;
+
+        assembly ("memory-safe") {
+            result := store
+        }
+
+        return result;
+    }
+
+    struct StringSet {
+        // Storage of set values
+        string[] _values;
+        // Position is the index of the value in the `values` array plus 1.
+        // Position 0 is used to mean a value is not in the set.
+        mapping(string value => uint256) _positions;
+    }
+
+    /**
+     * @dev Add a value to a set. O(1).
+     *
+     * Returns true if the value was added to the set, that is if it was not
+     * already present.
+     */
+    function add(StringSet storage set, string memory value) internal returns (bool) {
+        if (!contains(set, value)) {
+            set._values.push(value);
+            // The value is stored at length-1, but we add 1 to all indexes
+            // and use 0 as a sentinel value
+            set._positions[value] = set._values.length;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @dev Removes a value from a set. O(1).
+     *
+     * Returns true if the value was removed from the set, that is if it was
+     * present.
+     */
+    function remove(StringSet storage set, string memory value) internal returns (bool) {
+        // We cache the value's position to prevent multiple reads from the same storage slot
+        uint256 position = set._positions[value];
+
+        if (position != 0) {
+            // Equivalent to contains(set, value)
+            // To delete an element from the _values array in O(1), we swap the element to delete with the last one in
+            // the array, and then remove the last element (sometimes called as 'swap and pop').
+            // This modifies the order of the array, as noted in {at}.
+
+            uint256 valueIndex = position - 1;
+            uint256 lastIndex = set._values.length - 1;
+
+            if (valueIndex != lastIndex) {
+                string memory lastValue = set._values[lastIndex];
+
+                // Move the lastValue to the index where the value to delete is
+                set._values[valueIndex] = lastValue;
+                // Update the tracked position of the lastValue (that was just moved)
+                set._positions[lastValue] = position;
+            }
+
+            // Delete the slot where the moved value was stored
+            set._values.pop();
+
+            // Delete the tracked position for the deleted slot
+            delete set._positions[value];
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @dev Removes all the values from a set. O(n).
+     *
+     * WARNING: Developers should keep in mind that this function has an unbounded cost and using it may render the
+     * function uncallable if the set grows to the point where clearing it consumes too much gas to fit in a block.
+     */
+    function clear(StringSet storage set) internal {
+        uint256 len = length(set);
+        for (uint256 i = 0; i < len; ++i) {
+            delete set._positions[set._values[i]];
+        }
+        Arrays.unsafeSetLength(set._values, 0);
+    }
+
+    /**
+     * @dev Returns true if the value is in the set. O(1).
+     */
+    function contains(StringSet storage set, string memory value) internal view returns (bool) {
+        return set._positions[value] != 0;
+    }
+
+    /**
+     * @dev Returns the number of values on the set. O(1).
+     */
+    function length(StringSet storage set) internal view returns (uint256) {
+        return set._values.length;
+    }
+
+    /**
+     * @dev Returns the value stored at position `index` in the set. O(1).
+     *
+     * Note that there are no guarantees on the ordering of values inside the
+     * array, and it may change when more values are added or removed.
+     *
+     * Requirements:
+     *
+     * - `index` must be strictly less than {length}.
+     */
+    function at(StringSet storage set, uint256 index) internal view returns (string memory) {
+        return set._values[index];
+    }
+
+    /**
+     * @dev Return the entire set in an array
+     *
+     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
+     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
+     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
+     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
+     */
+    function values(StringSet storage set) internal view returns (string[] memory) {
+        return set._values;
+    }
+
+    /**
+     * @dev Return a slice of the set in an array
+     *
+     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
+     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
+     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
+     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
+     */
+    function values(StringSet storage set, uint256 start, uint256 end) internal view returns (string[] memory) {
+        unchecked {
+            end = Math.min(end, length(set));
+            start = Math.min(start, end);
+
+            uint256 len = end - start;
+            string[] memory result = new string[](len);
+            for (uint256 i = 0; i < len; ++i) {
+                result[i] = Arrays.unsafeAccess(set._values, start + i).value;
+            }
+            return result;
+        }
+    }
+
+    struct BytesSet {
+        // Storage of set values
+        bytes[] _values;
+        // Position is the index of the value in the `values` array plus 1.
+        // Position 0 is used to mean a value is not in the set.
+        mapping(bytes value => uint256) _positions;
+    }
+
+    /**
+     * @dev Add a value to a set. O(1).
+     *
+     * Returns true if the value was added to the set, that is if it was not
+     * already present.
+     */
+    function add(BytesSet storage set, bytes memory value) internal returns (bool) {
+        if (!contains(set, value)) {
+            set._values.push(value);
+            // The value is stored at length-1, but we add 1 to all indexes
+            // and use 0 as a sentinel value
+            set._positions[value] = set._values.length;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @dev Removes a value from a set. O(1).
+     *
+     * Returns true if the value was removed from the set, that is if it was
+     * present.
+     */
+    function remove(BytesSet storage set, bytes memory value) internal returns (bool) {
+        // We cache the value's position to prevent multiple reads from the same storage slot
+        uint256 position = set._positions[value];
+
+        if (position != 0) {
+            // Equivalent to contains(set, value)
+            // To delete an element from the _values array in O(1), we swap the element to delete with the last one in
+            // the array, and then remove the last element (sometimes called as 'swap and pop').
+            // This modifies the order of the array, as noted in {at}.
+
+            uint256 valueIndex = position - 1;
+            uint256 lastIndex = set._values.length - 1;
+
+            if (valueIndex != lastIndex) {
+                bytes memory lastValue = set._values[lastIndex];
+
+                // Move the lastValue to the index where the value to delete is
+                set._values[valueIndex] = lastValue;
+                // Update the tracked position of the lastValue (that was just moved)
+                set._positions[lastValue] = position;
+            }
+
+            // Delete the slot where the moved value was stored
+            set._values.pop();
+
+            // Delete the tracked position for the deleted slot
+            delete set._positions[value];
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @dev Removes all the values from a set. O(n).
+     *
+     * WARNING: Developers should keep in mind that this function has an unbounded cost and using it may render the
+     * function uncallable if the set grows to the point where clearing it consumes too much gas to fit in a block.
+     */
+    function clear(BytesSet storage set) internal {
+        uint256 len = length(set);
+        for (uint256 i = 0; i < len; ++i) {
+            delete set._positions[set._values[i]];
+        }
+        Arrays.unsafeSetLength(set._values, 0);
+    }
+
+    /**
+     * @dev Returns true if the value is in the set. O(1).
+     */
+    function contains(BytesSet storage set, bytes memory value) internal view returns (bool) {
+        return set._positions[value] != 0;
+    }
+
+    /**
+     * @dev Returns the number of values on the set. O(1).
+     */
+    function length(BytesSet storage set) internal view returns (uint256) {
+        return set._values.length;
+    }
+
+    /**
+     * @dev Returns the value stored at position `index` in the set. O(1).
+     *
+     * Note that there are no guarantees on the ordering of values inside the
+     * array, and it may change when more values are added or removed.
+     *
+     * Requirements:
+     *
+     * - `index` must be strictly less than {length}.
+     */
+    function at(BytesSet storage set, uint256 index) internal view returns (bytes memory) {
+        return set._values[index];
+    }
+
+    /**
+     * @dev Return the entire set in an array
+     *
+     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
+     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
+     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
+     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
+     */
+    function values(BytesSet storage set) internal view returns (bytes[] memory) {
+        return set._values;
+    }
+
+    /**
+     * @dev Return a slice of the set in an array
+     *
+     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
+     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
+     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
+     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
+     */
+    function values(BytesSet storage set, uint256 start, uint256 end) internal view returns (bytes[] memory) {
+        unchecked {
+            end = Math.min(end, length(set));
+            start = Math.min(start, end);
+
+            uint256 len = end - start;
+            bytes[] memory result = new bytes[](len);
+            for (uint256 i = 0; i < len; ++i) {
+                result[i] = Arrays.unsafeAccess(set._values, start + i).value;
+            }
+            return result;
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/access/extensions/AccessControlEnumerable.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.5.0) (access/extensions/AccessControlEnumerable.sol)
+
+/**
+ * @dev Extension of {AccessControl} that allows enumerating the members of each role.
+ */
+abstract contract AccessControlEnumerable is IAccessControlEnumerable, AccessControl {
+    using EnumerableSet for EnumerableSet.AddressSet;
+
+    mapping(bytes32 role => EnumerableSet.AddressSet) private _roleMembers;
+
+    /// @inheritdoc IERC165
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return interfaceId == type(IAccessControlEnumerable).interfaceId || super.supportsInterface(interfaceId);
+    }
+
+    /**
+     * @dev Returns one of the accounts that have `role`. `index` must be a
+     * value between 0 and {getRoleMemberCount}, non-inclusive.
+     *
+     * Role bearers are not sorted in any particular way, and their ordering may
+     * change at any point.
+     *
+     * WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure
+     * you perform all queries on the same block. See the following
+     * https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post]
+     * for more information.
+     */
+    function getRoleMember(bytes32 role, uint256 index) public view virtual returns (address) {
+        return _roleMembers[role].at(index);
+    }
+
+    /**
+     * @dev Returns the number of accounts that have `role`. Can be used
+     * together with {getRoleMember} to enumerate all bearers of a role.
+     */
+    function getRoleMemberCount(bytes32 role) public view virtual returns (uint256) {
+        return _roleMembers[role].length();
+    }
+
+    /**
+     * @dev Return all accounts that have `role`
+     *
+     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
+     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
+     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
+     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
+     */
+    function getRoleMembers(bytes32 role) public view virtual returns (address[] memory) {
+        return _roleMembers[role].values();
+    }
+
+    /**
+     * @dev Overload {AccessControl-_grantRole} to track enumerable memberships
+     */
+    function _grantRole(bytes32 role, address account) internal virtual override returns (bool) {
+        bool granted = super._grantRole(role, account);
+        if (granted) {
+            _roleMembers[role].add(account);
+        }
+        return granted;
+    }
+
+    /**
+     * @dev Overload {AccessControl-_revokeRole} to track enumerable memberships
+     */
+    function _revokeRole(bytes32 role, address account) internal virtual override returns (bool) {
+        bool revoked = super._revokeRole(role, account);
+        if (revoked) {
+            _roleMembers[role].remove(account);
+        }
+        return revoked;
+    }
+}
+
+// ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/token/ERC20/IERC20.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/IERC20.sol)
+
+/**
+ * @dev Interface of the ERC-20 standard as defined in the ERC.
+ */
+interface IERC20 {
+    /**
+     * @dev Emitted when `value` tokens are moved from one account (`from`) to
+     * another (`to`).
+     *
+     * Note that `value` may be zero.
+     */
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
+    /**
+     * @dev Emitted when the allowance of a `spender` for an `owner` is set by
+     * a call to {approve}. `value` is the new allowance.
+     */
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+
+    /**
+     * @dev Returns the value of tokens in existence.
+     */
+    function totalSupply() external view returns (uint256);
+
+    /**
+     * @dev Returns the value of tokens owned by `account`.
+     */
+    function balanceOf(address account) external view returns (uint256);
+
+    /**
+     * @dev Moves a `value` amount of tokens from the caller's account to `to`.
+     *
+     * Returns a boolean value indicating whether the operation succeeded.
+     *
+     * Emits a {Transfer} event.
+     */
+    function transfer(address to, uint256 value) external returns (bool);
+
+    /**
+     * @dev Returns the remaining number of tokens that `spender` will be
+     * allowed to spend on behalf of `owner` through {transferFrom}. This is
+     * zero by default.
+     *
+     * This value changes when {approve} or {transferFrom} are called.
+     */
+    function allowance(address owner, address spender) external view returns (uint256);
+
+    /**
+     * @dev Sets a `value` amount of tokens as the allowance of `spender` over the
+     * caller's tokens.
+     *
+     * Returns a boolean value indicating whether the operation succeeded.
+     *
+     * IMPORTANT: Beware that changing an allowance with this method brings the risk
+     * that someone may use both the old and the new allowance by unfortunate
+     * transaction ordering. One possible solution to mitigate this race
+     * condition is to first reduce the spender's allowance to 0 and set the
+     * desired value afterwards:
+     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+     *
+     * Emits an {Approval} event.
+     */
+    function approve(address spender, uint256 value) external returns (bool);
+
+    /**
+     * @dev Moves a `value` amount of tokens from `from` to `to` using the
+     * allowance mechanism. `value` is then deducted from the caller's
+     * allowance.
+     *
+     * Returns a boolean value indicating whether the operation succeeded.
+     *
+     * Emits a {Transfer} event.
+     */
+    function transferFrom(address from, address to, uint256 value) external returns (bool);
+}
+
+// ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/extensions/IERC20Metadata.sol)
+
+/**
+ * @dev Interface for the optional metadata functions from the ERC-20 standard.
+ */
+interface IERC20Metadata is IERC20 {
+    /**
+     * @dev Returns the name of the token.
+     */
+    function name() external view returns (string memory);
+
+    /**
+     * @dev Returns the symbol of the token.
+     */
+    function symbol() external view returns (string memory);
+
+    /**
+     * @dev Returns the decimals places of the token.
+     */
+    function decimals() external view returns (uint8);
+}
+
+// ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/interfaces/draft-IERC6093.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.5.0) (interfaces/draft-IERC6093.sol)
+
+/**
+ * @dev Standard ERC-20 Errors
+ * Interface of the https://eips.ethereum.org/EIPS/eip-6093[ERC-6093] custom errors for ERC-20 tokens.
+ */
+interface IERC20Errors {
+    /**
+     * @dev Indicates an error related to the current `balance` of a `sender`. Used in transfers.
+     * @param sender Address whose tokens are being transferred.
+     * @param balance Current balance for the interacting account.
+     * @param needed Minimum amount required to perform a transfer.
+     */
+    error ERC20InsufficientBalance(address sender, uint256 balance, uint256 needed);
+
+    /**
+     * @dev Indicates a failure with the token `sender`. Used in transfers.
+     * @param sender Address whose tokens are being transferred.
+     */
+    error ERC20InvalidSender(address sender);
+
+    /**
+     * @dev Indicates a failure with the token `receiver`. Used in transfers.
+     * @param receiver Address to which tokens are being transferred.
+     */
+    error ERC20InvalidReceiver(address receiver);
+
+    /**
+     * @dev Indicates a failure with the `spender`’s `allowance`. Used in transfers.
+     * @param spender Address that may be allowed to operate on tokens without being their owner.
+     * @param allowance Amount of tokens a `spender` is allowed to operate with.
+     * @param needed Minimum amount required to perform a transfer.
+     */
+    error ERC20InsufficientAllowance(address spender, uint256 allowance, uint256 needed);
+
+    /**
+     * @dev Indicates a failure with the `approver` of a token to be approved. Used in approvals.
+     * @param approver Address initiating an approval operation.
+     */
+    error ERC20InvalidApprover(address approver);
+
+    /**
+     * @dev Indicates a failure with the `spender` to be approved. Used in approvals.
+     * @param spender Address that may be allowed to operate on tokens without being their owner.
+     */
+    error ERC20InvalidSpender(address spender);
+}
+
+/**
+ * @dev Standard ERC-721 Errors
+ * Interface of the https://eips.ethereum.org/EIPS/eip-6093[ERC-6093] custom errors for ERC-721 tokens.
+ */
+interface IERC721Errors {
+    /**
+     * @dev Indicates that an address can't be an owner. For example, `address(0)` is a forbidden owner in ERC-721.
+     * Used in balance queries.
+     * @param owner Address of the current owner of a token.
+     */
+    error ERC721InvalidOwner(address owner);
+
+    /**
+     * @dev Indicates a `tokenId` whose `owner` is the zero address.
+     * @param tokenId Identifier number of a token.
+     */
+    error ERC721NonexistentToken(uint256 tokenId);
+
+    /**
+     * @dev Indicates an error related to the ownership over a particular token. Used in transfers.
+     * @param sender Address whose tokens are being transferred.
+     * @param tokenId Identifier number of a token.
+     * @param owner Address of the current owner of a token.
+     */
+    error ERC721IncorrectOwner(address sender, uint256 tokenId, address owner);
+
+    /**
+     * @dev Indicates a failure with the token `sender`. Used in transfers.
+     * @param sender Address whose tokens are being transferred.
+     */
+    error ERC721InvalidSender(address sender);
+
+    /**
+     * @dev Indicates a failure with the token `receiver`. Used in transfers.
+     * @param receiver Address to which tokens are being transferred.
+     */
+    error ERC721InvalidReceiver(address receiver);
+
+    /**
+     * @dev Indicates a failure with the `operator`’s approval. Used in transfers.
+     * @param operator Address that may be allowed to operate on tokens without being their owner.
+     * @param tokenId Identifier number of a token.
+     */
+    error ERC721InsufficientApproval(address operator, uint256 tokenId);
+
+    /**
+     * @dev Indicates a failure with the `approver` of a token to be approved. Used in approvals.
+     * @param approver Address initiating an approval operation.
+     */
+    error ERC721InvalidApprover(address approver);
+
+    /**
+     * @dev Indicates a failure with the `operator` to be approved. Used in approvals.
+     * @param operator Address that may be allowed to operate on tokens without being their owner.
+     */
+    error ERC721InvalidOperator(address operator);
+}
+
+/**
+ * @dev Standard ERC-1155 Errors
+ * Interface of the https://eips.ethereum.org/EIPS/eip-6093[ERC-6093] custom errors for ERC-1155 tokens.
+ */
+interface IERC1155Errors {
+    /**
+     * @dev Indicates an error related to the current `balance` of a `sender`. Used in transfers.
+     * @param sender Address whose tokens are being transferred.
+     * @param balance Current balance for the interacting account.
+     * @param needed Minimum amount required to perform a transfer.
+     * @param tokenId Identifier number of a token.
+     */
+    error ERC1155InsufficientBalance(address sender, uint256 balance, uint256 needed, uint256 tokenId);
+
+    /**
+     * @dev Indicates a failure with the token `sender`. Used in transfers.
+     * @param sender Address whose tokens are being transferred.
+     */
+    error ERC1155InvalidSender(address sender);
+
+    /**
+     * @dev Indicates a failure with the token `receiver`. Used in transfers.
+     * @param receiver Address to which tokens are being transferred.
+     */
+    error ERC1155InvalidReceiver(address receiver);
+
+    /**
+     * @dev Indicates a failure with the `operator`’s approval. Used in transfers.
+     * @param operator Address that may be allowed to operate on tokens without being their owner.
+     * @param owner Address of the current owner of a token.
+     */
+    error ERC1155MissingApprovalForAll(address operator, address owner);
+
+    /**
+     * @dev Indicates a failure with the `approver` of a token to be approved. Used in approvals.
+     * @param approver Address initiating an approval operation.
+     */
+    error ERC1155InvalidApprover(address approver);
+
+    /**
+     * @dev Indicates a failure with the `operator` to be approved. Used in approvals.
+     * @param operator Address that may be allowed to operate on tokens without being their owner.
+     */
+    error ERC1155InvalidOperator(address operator);
+
+    /**
+     * @dev Indicates an array length mismatch between ids and values in a safeBatchTransferFrom operation.
+     * Used in batch transfers.
+     * @param idsLength Length of the array of token identifiers
+     * @param valuesLength Length of the array of token amounts
+     */
+    error ERC1155InvalidArrayLength(uint256 idsLength, uint256 valuesLength);
+}
+
+// ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/token/ERC20/ERC20.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.5.0) (token/ERC20/ERC20.sol)
+
+/**
+ * @dev Implementation of the {IERC20} interface.
+ *
+ * This implementation is agnostic to the way tokens are created. This means
+ * that a supply mechanism has to be added in a derived contract using {_mint}.
+ *
+ * TIP: For a detailed writeup see our guide
+ * https://forum.openzeppelin.com/t/how-to-implement-erc20-supply-mechanisms/226[How
+ * to implement supply mechanisms].
+ *
+ * The default value of {decimals} is 18. To change this, you should override
+ * this function so it returns a different value.
+ *
+ * We have followed general OpenZeppelin Contracts guidelines: functions revert
+ * instead returning `false` on failure. This behavior is nonetheless
+ * conventional and does not conflict with the expectations of ERC-20
+ * applications.
+ */
+abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
+    mapping(address account => uint256) private _balances;
+
+    mapping(address account => mapping(address spender => uint256)) private _allowances;
+
+    uint256 private _totalSupply;
+
+    string private _name;
+    string private _symbol;
+
+    /**
+     * @dev Sets the values for {name} and {symbol}.
+     *
+     * Both values are immutable: they can only be set once during construction.
+     */
+    constructor(string memory name_, string memory symbol_) {
+        _name = name_;
+        _symbol = symbol_;
+    }
+
+    /**
+     * @dev Returns the name of the token.
+     */
+    function name() public view virtual returns (string memory) {
+        return _name;
+    }
+
+    /**
+     * @dev Returns the symbol of the token, usually a shorter version of the
+     * name.
+     */
+    function symbol() public view virtual returns (string memory) {
+        return _symbol;
+    }
+
+    /**
+     * @dev Returns the number of decimals used to get its user representation.
+     * For example, if `decimals` equals `2`, a balance of `505` tokens should
+     * be displayed to a user as `5.05` (`505 / 10 ** 2`).
+     *
+     * Tokens usually opt for a value of 18, imitating the relationship between
+     * Ether and Wei. This is the default value returned by this function, unless
+     * it's overridden.
+     *
+     * NOTE: This information is only used for _display_ purposes: it in
+     * no way affects any of the arithmetic of the contract, including
+     * {IERC20-balanceOf} and {IERC20-transfer}.
+     */
+    function decimals() public view virtual returns (uint8) {
+        return 18;
+    }
+
+    /// @inheritdoc IERC20
+    function totalSupply() public view virtual returns (uint256) {
+        return _totalSupply;
+    }
+
+    /// @inheritdoc IERC20
+    function balanceOf(address account) public view virtual returns (uint256) {
+        return _balances[account];
+    }
+
+    /**
+     * @dev See {IERC20-transfer}.
+     *
+     * Requirements:
+     *
+     * - `to` cannot be the zero address.
+     * - the caller must have a balance of at least `value`.
+     */
+    function transfer(address to, uint256 value) public virtual returns (bool) {
+        address owner = _msgSender();
+        _transfer(owner, to, value);
+        return true;
+    }
+
+    /// @inheritdoc IERC20
+    function allowance(address owner, address spender) public view virtual returns (uint256) {
+        return _allowances[owner][spender];
+    }
+
+    /**
+     * @dev See {IERC20-approve}.
+     *
+     * NOTE: If `value` is the maximum `uint256`, the allowance is not updated on
+     * `transferFrom`. This is semantically equivalent to an infinite approval.
+     *
+     * Requirements:
+     *
+     * - `spender` cannot be the zero address.
+     */
+    function approve(address spender, uint256 value) public virtual returns (bool) {
+        address owner = _msgSender();
+        _approve(owner, spender, value);
+        return true;
+    }
+
+    /**
+     * @dev See {IERC20-transferFrom}.
+     *
+     * Skips emitting an {Approval} event indicating an allowance update. This is not
+     * required by the ERC. See {xref-ERC20-_approve-address-address-uint256-bool-}[_approve].
+     *
+     * NOTE: Does not update the allowance if the current allowance
+     * is the maximum `uint256`.
+     *
+     * Requirements:
+     *
+     * - `from` and `to` cannot be the zero address.
+     * - `from` must have a balance of at least `value`.
+     * - the caller must have allowance for ``from``'s tokens of at least
+     * `value`.
+     */
+    function transferFrom(address from, address to, uint256 value) public virtual returns (bool) {
+        address spender = _msgSender();
+        _spendAllowance(from, spender, value);
+        _transfer(from, to, value);
+        return true;
+    }
+
+    /**
+     * @dev Moves a `value` amount of tokens from `from` to `to`.
+     *
+     * This internal function is equivalent to {transfer}, and can be used to
+     * e.g. implement automatic token fees, slashing mechanisms, etc.
+     *
+     * Emits a {Transfer} event.
+     *
+     * NOTE: This function is not virtual, {_update} should be overridden instead.
+     */
+    function _transfer(address from, address to, uint256 value) internal {
+        if (from == address(0)) {
+            revert ERC20InvalidSender(address(0));
+        }
+        if (to == address(0)) {
+            revert ERC20InvalidReceiver(address(0));
+        }
+        _update(from, to, value);
+    }
+
+    /**
+     * @dev Transfers a `value` amount of tokens from `from` to `to`, or alternatively mints (or burns) if `from`
+     * (or `to`) is the zero address. All customizations to transfers, mints, and burns should be done by overriding
+     * this function.
+     *
+     * Emits a {Transfer} event.
+     */
+    function _update(address from, address to, uint256 value) internal virtual {
+        if (from == address(0)) {
+            // Overflow check required: The rest of the code assumes that totalSupply never overflows
+            _totalSupply += value;
+        } else {
+            uint256 fromBalance = _balances[from];
+            if (fromBalance < value) {
+                revert ERC20InsufficientBalance(from, fromBalance, value);
+            }
+            unchecked {
+                // Overflow not possible: value <= fromBalance <= totalSupply.
+                _balances[from] = fromBalance - value;
+            }
+        }
+
+        if (to == address(0)) {
+            unchecked {
+                // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
+                _totalSupply -= value;
+            }
+        } else {
+            unchecked {
+                // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
+                _balances[to] += value;
+            }
+        }
+
+        emit Transfer(from, to, value);
+    }
+
+    /**
+     * @dev Creates a `value` amount of tokens and assigns them to `account`, by transferring it from address(0).
+     * Relies on the `_update` mechanism
+     *
+     * Emits a {Transfer} event with `from` set to the zero address.
+     *
+     * NOTE: This function is not virtual, {_update} should be overridden instead.
+     */
+    function _mint(address account, uint256 value) internal {
+        if (account == address(0)) {
+            revert ERC20InvalidReceiver(address(0));
+        }
+        _update(address(0), account, value);
+    }
+
+    /**
+     * @dev Destroys a `value` amount of tokens from `account`, lowering the total supply.
+     * Relies on the `_update` mechanism.
+     *
+     * Emits a {Transfer} event with `to` set to the zero address.
+     *
+     * NOTE: This function is not virtual, {_update} should be overridden instead
+     */
+    function _burn(address account, uint256 value) internal {
+        if (account == address(0)) {
+            revert ERC20InvalidSender(address(0));
+        }
+        _update(account, address(0), value);
+    }
+
+    /**
+     * @dev Sets `value` as the allowance of `spender` over the `owner`'s tokens.
+     *
+     * This internal function is equivalent to `approve`, and can be used to
+     * e.g. set automatic allowances for certain subsystems, etc.
+     *
+     * Emits an {Approval} event.
+     *
+     * Requirements:
+     *
+     * - `owner` cannot be the zero address.
+     * - `spender` cannot be the zero address.
+     *
+     * Overrides to this logic should be done to the variant with an additional `bool emitEvent` argument.
+     */
+    function _approve(address owner, address spender, uint256 value) internal {
+        _approve(owner, spender, value, true);
+    }
+
+    /**
+     * @dev Variant of {_approve} with an optional flag to enable or disable the {Approval} event.
+     *
+     * By default (when calling {_approve}) the flag is set to true. On the other hand, approval changes made by
+     * `_spendAllowance` during the `transferFrom` operation sets the flag to false. This saves gas by not emitting any
+     * `Approval` event during `transferFrom` operations.
+     *
+     * Anyone who wishes to continue emitting `Approval` events on the `transferFrom` operation can force the flag to
+     * true using the following override:
+     *
+     * ```solidity
+     * function _approve(address owner, address spender, uint256 value, bool) internal virtual override {
+     *     super._approve(owner, spender, value, true);
+     * }
+     * ```
+     *
+     * Requirements are the same as {_approve}.
+     */
+    function _approve(address owner, address spender, uint256 value, bool emitEvent) internal virtual {
+        if (owner == address(0)) {
+            revert ERC20InvalidApprover(address(0));
+        }
+        if (spender == address(0)) {
+            revert ERC20InvalidSpender(address(0));
+        }
+        _allowances[owner][spender] = value;
+        if (emitEvent) {
+            emit Approval(owner, spender, value);
+        }
+    }
+
+    /**
+     * @dev Updates `owner`'s allowance for `spender` based on spent `value`.
+     *
+     * Does not update the allowance value in case of infinite allowance.
+     * Revert if not enough allowance is available.
+     *
+     * Does not emit an {Approval} event.
+     */
+    function _spendAllowance(address owner, address spender, uint256 value) internal virtual {
+        uint256 currentAllowance = allowance(owner, spender);
+        if (currentAllowance < type(uint256).max) {
+            if (currentAllowance < value) {
+                revert ERC20InsufficientAllowance(spender, currentAllowance, value);
+            }
+            unchecked {
+                _approve(owner, spender, currentAllowance - value, false);
+            }
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/interfaces/IERC20.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC20.sol)
+
+// ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/interfaces/IERC165.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC165.sol)
+
+// ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/interfaces/IERC1363.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC1363.sol)
+
+/**
+ * @title IERC1363
+ * @dev Interface of the ERC-1363 standard as defined in the https://eips.ethereum.org/EIPS/eip-1363[ERC-1363].
+ *
+ * Defines an extension interface for ERC-20 tokens that supports executing code on a recipient contract
+ * after `transfer` or `transferFrom`, or code on a spender contract after `approve`, in a single transaction.
+ */
+interface IERC1363 is IERC20, IERC165 {
+    /*
+     * Note: the ERC-165 identifier for this interface is 0xb0202a11.
+     * 0xb0202a11 ===
+     *   bytes4(keccak256('transferAndCall(address,uint256)')) ^
+     *   bytes4(keccak256('transferAndCall(address,uint256,bytes)')) ^
+     *   bytes4(keccak256('transferFromAndCall(address,address,uint256)')) ^
+     *   bytes4(keccak256('transferFromAndCall(address,address,uint256,bytes)')) ^
+     *   bytes4(keccak256('approveAndCall(address,uint256)')) ^
+     *   bytes4(keccak256('approveAndCall(address,uint256,bytes)'))
+     */
+
+    /**
+     * @dev Moves a `value` amount of tokens from the caller's account to `to`
+     * and then calls {IERC1363Receiver-onTransferReceived} on `to`.
+     * @param to The address which you want to transfer to.
+     * @param value The amount of tokens to be transferred.
+     * @return A boolean value indicating whether the operation succeeded unless throwing.
+     */
+    function transferAndCall(address to, uint256 value) external returns (bool);
+
+    /**
+     * @dev Moves a `value` amount of tokens from the caller's account to `to`
+     * and then calls {IERC1363Receiver-onTransferReceived} on `to`.
+     * @param to The address which you want to transfer to.
+     * @param value The amount of tokens to be transferred.
+     * @param data Additional data with no specified format, sent in call to `to`.
+     * @return A boolean value indicating whether the operation succeeded unless throwing.
+     */
+    function transferAndCall(address to, uint256 value, bytes calldata data) external returns (bool);
+
+    /**
+     * @dev Moves a `value` amount of tokens from `from` to `to` using the allowance mechanism
+     * and then calls {IERC1363Receiver-onTransferReceived} on `to`.
+     * @param from The address which you want to send tokens from.
+     * @param to The address which you want to transfer to.
+     * @param value The amount of tokens to be transferred.
+     * @return A boolean value indicating whether the operation succeeded unless throwing.
+     */
+    function transferFromAndCall(address from, address to, uint256 value) external returns (bool);
+
+    /**
+     * @dev Moves a `value` amount of tokens from `from` to `to` using the allowance mechanism
+     * and then calls {IERC1363Receiver-onTransferReceived} on `to`.
+     * @param from The address which you want to send tokens from.
+     * @param to The address which you want to transfer to.
+     * @param value The amount of tokens to be transferred.
+     * @param data Additional data with no specified format, sent in call to `to`.
+     * @return A boolean value indicating whether the operation succeeded unless throwing.
+     */
+    function transferFromAndCall(address from, address to, uint256 value, bytes calldata data) external returns (bool);
+
+    /**
+     * @dev Sets a `value` amount of tokens as the allowance of `spender` over the
+     * caller's tokens and then calls {IERC1363Spender-onApprovalReceived} on `spender`.
+     * @param spender The address which will spend the funds.
+     * @param value The amount of tokens to be spent.
+     * @return A boolean value indicating whether the operation succeeded unless throwing.
+     */
+    function approveAndCall(address spender, uint256 value) external returns (bool);
+
+    /**
+     * @dev Sets a `value` amount of tokens as the allowance of `spender` over the
+     * caller's tokens and then calls {IERC1363Spender-onApprovalReceived} on `spender`.
+     * @param spender The address which will spend the funds.
+     * @param value The amount of tokens to be spent.
+     * @param data Additional data with no specified format, sent in call to `spender`.
+     * @return A boolean value indicating whether the operation succeeded unless throwing.
+     */
+    function approveAndCall(address spender, uint256 value, bytes calldata data) external returns (bool);
+}
+
+// ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/interfaces/IERC1363Receiver.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC1363Receiver.sol)
+
+/**
+ * @title IERC1363Receiver
+ * @dev Interface for any contract that wants to support `transferAndCall` or `transferFromAndCall`
+ * from ERC-1363 token contracts.
+ */
+interface IERC1363Receiver {
+    /**
+     * @dev Whenever ERC-1363 tokens are transferred to this contract via `transferAndCall` or `transferFromAndCall`
+     * by `operator` from `from`, this function is called.
+     *
+     * NOTE: To accept the transfer, this must return
+     * `bytes4(keccak256("onTransferReceived(address,address,uint256,bytes)"))`
+     * (i.e. 0x88a7ca5c, or its own function selector).
+     *
+     * @param operator The address which called `transferAndCall` or `transferFromAndCall` function.
+     * @param from The address which the tokens are transferred from.
+     * @param value The amount of tokens transferred.
+     * @param data Additional data with no specified format.
+     * @return `bytes4(keccak256("onTransferReceived(address,address,uint256,bytes)"))` if transfer is allowed unless throwing.
+     */
+    function onTransferReceived(
+        address operator,
+        address from,
+        uint256 value,
+        bytes calldata data
+    ) external returns (bytes4);
+}
+
+// ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/interfaces/IERC1363Spender.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC1363Spender.sol)
+
+/**
+ * @title IERC1363Spender
+ * @dev Interface for any contract that wants to support `approveAndCall`
+ * from ERC-1363 token contracts.
+ */
+interface IERC1363Spender {
+    /**
+     * @dev Whenever an ERC-1363 token `owner` approves this contract via `approveAndCall`
+     * to spend their tokens, this function is called.
+     *
+     * NOTE: To accept the approval, this must return
+     * `bytes4(keccak256("onApprovalReceived(address,uint256,bytes)"))`
+     * (i.e. 0x7b04a2d0, or its own function selector).
+     *
+     * @param owner The address which called `approveAndCall` function and previously owned the tokens.
+     * @param value The amount of tokens to be spent.
+     * @param data Additional data with no specified format.
+     * @return `bytes4(keccak256("onApprovalReceived(address,uint256,bytes)"))` if approval is allowed unless throwing.
+     */
+    function onApprovalReceived(address owner, uint256 value, bytes calldata data) external returns (bytes4);
+}
+
+// ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/token/ERC20/utils/ERC1363Utils.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/utils/ERC1363Utils.sol)
+
+/**
+ * @dev Library that provides common ERC-1363 utility functions.
+ *
+ * See https://eips.ethereum.org/EIPS/eip-1363[ERC-1363].
+ */
+library ERC1363Utils {
+    /**
+     * @dev Indicates a failure with the token `receiver`. Used in transfers.
+     * @param receiver Address to which tokens are being transferred.
+     */
+    error ERC1363InvalidReceiver(address receiver);
+
+    /**
+     * @dev Indicates a failure with the token `spender`. Used in approvals.
+     * @param spender Address that may be allowed to operate on tokens without being their owner.
+     */
+    error ERC1363InvalidSpender(address spender);
+
+    /**
+     * @dev Performs a call to {IERC1363Receiver-onTransferReceived} on a target address.
+     *
+     * Requirements:
+     *
+     * - The target has code (i.e. is a contract).
+     * - The target `to` must implement the {IERC1363Receiver} interface.
+     * - The target must return the {IERC1363Receiver-onTransferReceived} selector to accept the transfer.
+     */
+    function checkOnERC1363TransferReceived(
+        address operator,
+        address from,
+        address to,
+        uint256 value,
+        bytes memory data
+    ) internal {
+        if (to.code.length == 0) {
+            revert ERC1363InvalidReceiver(to);
+        }
+
+        try IERC1363Receiver(to).onTransferReceived(operator, from, value, data) returns (bytes4 retval) {
+            if (retval != IERC1363Receiver.onTransferReceived.selector) {
+                revert ERC1363InvalidReceiver(to);
+            }
+        } catch (bytes memory reason) {
+            if (reason.length == 0) {
+                revert ERC1363InvalidReceiver(to);
+            } else {
+                assembly ("memory-safe") {
+                    revert(add(reason, 0x20), mload(reason))
+                }
+            }
+        }
+    }
+
+    /**
+     * @dev Performs a call to {IERC1363Spender-onApprovalReceived} on a target address.
+     *
+     * Requirements:
+     *
+     * - The target has code (i.e. is a contract).
+     * - The target `spender` must implement the {IERC1363Spender} interface.
+     * - The target must return the {IERC1363Spender-onApprovalReceived} selector to accept the approval.
+     */
+    function checkOnERC1363ApprovalReceived(
+        address operator,
+        address spender,
+        uint256 value,
+        bytes memory data
+    ) internal {
+        if (spender.code.length == 0) {
+            revert ERC1363InvalidSpender(spender);
+        }
+
+        try IERC1363Spender(spender).onApprovalReceived(operator, value, data) returns (bytes4 retval) {
+            if (retval != IERC1363Spender.onApprovalReceived.selector) {
+                revert ERC1363InvalidSpender(spender);
+            }
+        } catch (bytes memory reason) {
+            if (reason.length == 0) {
+                revert ERC1363InvalidSpender(spender);
+            } else {
+                assembly ("memory-safe") {
+                    revert(add(reason, 0x20), mload(reason))
+                }
+            }
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/token/ERC20/extensions/ERC1363.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/extensions/ERC1363.sol)
+
+/**
+ * @title ERC1363
+ * @dev Extension of {ERC20} tokens that adds support for code execution after transfers and approvals
+ * on recipient contracts. Calls after transfers are enabled through the {ERC1363-transferAndCall} and
+ * {ERC1363-transferFromAndCall} methods while calls after approvals can be made with {ERC1363-approveAndCall}
+ *
+ * _Available since v5.1._
+ */
+abstract contract ERC1363 is ERC20, ERC165, IERC1363 {
+    /**
+     * @dev Indicates a failure within the {transfer} part of a transferAndCall operation.
+     * @param receiver Address to which tokens are being transferred.
+     * @param value Amount of tokens to be transferred.
+     */
+    error ERC1363TransferFailed(address receiver, uint256 value);
+
+    /**
+     * @dev Indicates a failure within the {transferFrom} part of a transferFromAndCall operation.
+     * @param sender Address from which to send tokens.
+     * @param receiver Address to which tokens are being transferred.
+     * @param value Amount of tokens to be transferred.
+     */
+    error ERC1363TransferFromFailed(address sender, address receiver, uint256 value);
+
+    /**
+     * @dev Indicates a failure within the {approve} part of a approveAndCall operation.
+     * @param spender Address which will spend the funds.
+     * @param value Amount of tokens to be spent.
+     */
+    error ERC1363ApproveFailed(address spender, uint256 value);
+
+    /// @inheritdoc IERC165
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool) {
+        return interfaceId == type(IERC1363).interfaceId || super.supportsInterface(interfaceId);
+    }
+
+    /**
+     * @dev Moves a `value` amount of tokens from the caller's account to `to`
+     * and then calls {IERC1363Receiver-onTransferReceived} on `to`. Returns a flag that indicates
+     * if the call succeeded.
+     *
+     * Requirements:
+     *
+     * - The target has code (i.e. is a contract).
+     * - The target `to` must implement the {IERC1363Receiver} interface.
+     * - The target must return the {IERC1363Receiver-onTransferReceived} selector to accept the transfer.
+     * - The internal {transfer} must succeed (returned `true`).
+     */
+    function transferAndCall(address to, uint256 value) public returns (bool) {
+        return transferAndCall(to, value, "");
+    }
+
+    /**
+     * @dev Variant of {transferAndCall} that accepts an additional `data` parameter with
+     * no specified format.
+     */
+    function transferAndCall(address to, uint256 value, bytes memory data) public virtual returns (bool) {
+        if (!transfer(to, value)) {
+            revert ERC1363TransferFailed(to, value);
+        }
+        ERC1363Utils.checkOnERC1363TransferReceived(_msgSender(), _msgSender(), to, value, data);
+        return true;
+    }
+
+    /**
+     * @dev Moves a `value` amount of tokens from `from` to `to` using the allowance mechanism
+     * and then calls {IERC1363Receiver-onTransferReceived} on `to`. Returns a flag that indicates
+     * if the call succeeded.
+     *
+     * Requirements:
+     *
+     * - The target has code (i.e. is a contract).
+     * - The target `to` must implement the {IERC1363Receiver} interface.
+     * - The target must return the {IERC1363Receiver-onTransferReceived} selector to accept the transfer.
+     * - The internal {transferFrom} must succeed (returned `true`).
+     */
+    function transferFromAndCall(address from, address to, uint256 value) public returns (bool) {
+        return transferFromAndCall(from, to, value, "");
+    }
+
+    /**
+     * @dev Variant of {transferFromAndCall} that accepts an additional `data` parameter with
+     * no specified format.
+     */
+    function transferFromAndCall(
+        address from,
+        address to,
+        uint256 value,
+        bytes memory data
+    ) public virtual returns (bool) {
+        if (!transferFrom(from, to, value)) {
+            revert ERC1363TransferFromFailed(from, to, value);
+        }
+        ERC1363Utils.checkOnERC1363TransferReceived(_msgSender(), from, to, value, data);
+        return true;
+    }
+
+    /**
+     * @dev Sets a `value` amount of tokens as the allowance of `spender` over the
+     * caller's tokens and then calls {IERC1363Spender-onApprovalReceived} on `spender`.
+     * Returns a flag that indicates if the call succeeded.
+     *
+     * Requirements:
+     *
+     * - The target has code (i.e. is a contract).
+     * - The target `spender` must implement the {IERC1363Spender} interface.
+     * - The target must return the {IERC1363Spender-onApprovalReceived} selector to accept the approval.
+     * - The internal {approve} must succeed (returned `true`).
+     */
+    function approveAndCall(address spender, uint256 value) public returns (bool) {
+        return approveAndCall(spender, value, "");
+    }
+
+    /**
+     * @dev Variant of {approveAndCall} that accepts an additional `data` parameter with
+     * no specified format.
+     */
+    function approveAndCall(address spender, uint256 value, bytes memory data) public virtual returns (bool) {
+        if (!approve(spender, value)) {
+            revert ERC1363ApproveFailed(spender, value);
+        }
+        ERC1363Utils.checkOnERC1363ApprovalReceived(_msgSender(), spender, value, data);
+        return true;
+    }
+}
+
+// ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/extensions/ERC20Capped.sol)
+
+/**
+ * @dev Extension of {ERC20} that adds a cap to the supply of tokens.
+ */
+abstract contract ERC20Capped is ERC20 {
+    uint256 private immutable _cap;
+
+    /**
+     * @dev Total supply cap has been exceeded.
+     */
+    error ERC20ExceededCap(uint256 increasedSupply, uint256 cap);
+
+    /**
+     * @dev The supplied cap is not a valid cap.
+     */
+    error ERC20InvalidCap(uint256 cap);
+
+    /**
+     * @dev Sets the value of the `cap`. This value is immutable, it can only be
+     * set once during construction.
+     */
+    constructor(uint256 cap_) {
+        if (cap_ == 0) {
+            revert ERC20InvalidCap(0);
+        }
+        _cap = cap_;
+    }
+
+    /**
+     * @dev Returns the cap on the token's total supply.
+     */
+    function cap() public view virtual returns (uint256) {
+        return _cap;
+    }
+
+    /// @inheritdoc ERC20
+    function _update(address from, address to, uint256 value) internal virtual override {
+        super._update(from, to, value);
+
+        if (from == address(0)) {
+            uint256 maxSupply = cap();
+            uint256 supply = totalSupply();
+            if (supply > maxSupply) {
+                revert ERC20ExceededCap(supply, maxSupply);
+            }
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.5.0) (token/ERC20/extensions/IERC20Permit.sol)
+
+/**
+ * @dev Interface of the ERC-20 Permit extension allowing approvals to be made via signatures, as defined in
+ * https://eips.ethereum.org/EIPS/eip-2612[ERC-2612].
+ *
+ * Adds the {permit} method, which can be used to change an account's ERC-20 allowance (see {IERC20-allowance}) by
+ * presenting a message signed by the account. By not relying on {IERC20-approve}, the token holder account doesn't
+ * need to send a transaction, and thus is not required to hold Ether at all.
+ *
+ * ==== Security Considerations
+ *
+ * There are two important considerations concerning the use of `permit`. The first is that a valid permit signature
+ * expresses an allowance, and it should not be assumed to convey additional meaning. In particular, it should not be
+ * considered as an intention to spend the allowance in any specific way. The second is that because permits have
+ * built-in replay protection and can be submitted by anyone, they can be frontrun. A protocol that uses permits should
+ * take this into consideration and allow a `permit` call to fail. Combining these two aspects, a pattern that may be
+ * generally recommended is:
+ *
+ * ```solidity
+ * function doThingWithPermit(..., uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) public {
+ *     try token.permit(msg.sender, address(this), value, deadline, v, r, s) {} catch {}
+ *     doThing(..., value);
+ * }
+ *
+ * function doThing(..., uint256 value) public {
+ *     token.safeTransferFrom(msg.sender, address(this), value);
+ *     ...
+ * }
+ * ```
+ *
+ * Observe that: 1) `msg.sender` is used as the owner, leaving no ambiguity as to the signer intent, and 2) the use of
+ * `try/catch` allows the permit to fail and makes the code tolerant to frontrunning. (See also
+ * {SafeERC20-safeTransferFrom}).
+ *
+ * Additionally, note that smart contract wallets (such as Argent or Safe) are not able to produce permit signatures, so
+ * contracts should have entry points that don't rely on permit.
+ */
+interface IERC20Permit {
+    /**
+     * @dev Sets `value` as the allowance of `spender` over ``owner``'s tokens,
+     * given ``owner``'s signed approval.
+     *
+     * IMPORTANT: The same issues {IERC20-approve} has related to transaction
+     * ordering also applies here.
+     *
+     * Emits an {Approval} event.
+     *
+     * Requirements:
+     *
+     * - `spender` cannot be the zero address.
+     * - `deadline` must be a timestamp in the future.
+     * - `v`, `r` and `s` must be a valid `secp256k1` signature from `owner`
+     * over the EIP712-formatted function arguments.
+     * - the signature must use ``owner``'s current nonce (see {nonces}).
+     *
+     * For more information on the signature format, see the
+     * https://eips.ethereum.org/EIPS/eip-2612#specification[relevant EIP
+     * section].
+     *
+     * CAUTION: See Security Considerations above.
+     */
+    function permit(
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external;
+
+    /**
+     * @dev Returns the current nonce for `owner`. This value must be
+     * included whenever a signature is generated for {permit}.
+     *
+     * Every successful call to {permit} increases ``owner``'s nonce by one. This
+     * prevents a signature from being used multiple times.
+     */
+    function nonces(address owner) external view returns (uint256);
+
+    /**
+     * @dev Returns the domain separator used in the encoding of the signature for {permit}, as defined by {EIP712}.
+     */
+    // solhint-disable-next-line func-name-mixedcase
+    function DOMAIN_SEPARATOR() external view returns (bytes32);
+}
+
+// ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/utils/cryptography/ECDSA.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.6.0) (utils/cryptography/ECDSA.sol)
+
+/**
+ * @dev Elliptic Curve Digital Signature Algorithm (ECDSA) operations.
+ *
+ * These functions can be used to verify that a message was signed by the holder
+ * of the private keys of a given address.
+ */
+library ECDSA {
+    enum RecoverError {
+        NoError,
+        InvalidSignature,
+        InvalidSignatureLength,
+        InvalidSignatureS
+    }
+
+    /**
+     * @dev The signature is invalid.
+     */
+    error ECDSAInvalidSignature();
+
+    /**
+     * @dev The signature has an invalid length.
+     */
+    error ECDSAInvalidSignatureLength(uint256 length);
+
+    /**
+     * @dev The signature has an S value that is in the upper half order.
+     */
+    error ECDSAInvalidSignatureS(bytes32 s);
+
+    /**
+     * @dev Returns the address that signed a hashed message (`hash`) with `signature` or an error. This will not
+     * return address(0) without also returning an error description. Errors are documented using an enum (error type)
+     * and a bytes32 providing additional information about the error.
+     *
+     * If no error is returned, then the address can be used for verification purposes.
+     *
+     * The `ecrecover` EVM precompile allows for malleable (non-unique) signatures:
+     * this function rejects them by requiring the `s` value to be in the lower
+     * half order, and the `v` value to be either 27 or 28.
+     *
+     * NOTE: This function only supports 65-byte signatures. ERC-2098 short signatures are rejected. This restriction
+     * is DEPRECATED and will be removed in v6.0. Developers SHOULD NOT use signatures as unique identifiers; use hash
+     * invalidation or nonces for replay protection.
+     *
+     * IMPORTANT: `hash` _must_ be the result of a hash operation for the
+     * verification to be secure: it is possible to craft signatures that
+     * recover to arbitrary addresses for non-hashed data. A safe way to ensure
+     * this is by receiving a hash of the original message (which may otherwise
+     * be too long), and then calling {MessageHashUtils-toEthSignedMessageHash} on it.
+     *
+     * Documentation for signature generation:
+     *
+     * - with https://web3js.readthedocs.io/en/v1.3.4/web3-eth-accounts.html#sign[Web3.js]
+     * - with https://docs.ethers.io/v5/api/signer/#Signer-signMessage[ethers]
+     */
+    function tryRecover(
+        bytes32 hash,
+        bytes memory signature
+    ) internal pure returns (address recovered, RecoverError err, bytes32 errArg) {
+        if (signature.length == 65) {
+            bytes32 r;
+            bytes32 s;
+            uint8 v;
+            // ecrecover takes the signature parameters, and the only way to get them
+            // currently is to use assembly.
+            assembly ("memory-safe") {
+                r := mload(add(signature, 0x20))
+                s := mload(add(signature, 0x40))
+                v := byte(0, mload(add(signature, 0x60)))
+            }
+            return tryRecover(hash, v, r, s);
+        } else {
+            return (address(0), RecoverError.InvalidSignatureLength, bytes32(signature.length));
+        }
+    }
+
+    /**
+     * @dev Variant of {tryRecover} that takes a signature in calldata
+     */
+    function tryRecoverCalldata(
+        bytes32 hash,
+        bytes calldata signature
+    ) internal pure returns (address recovered, RecoverError err, bytes32 errArg) {
+        if (signature.length == 65) {
+            bytes32 r;
+            bytes32 s;
+            uint8 v;
+            // ecrecover takes the signature parameters, calldata slices would work here, but are
+            // significantly more expensive (length check) than using calldataload in assembly.
+            assembly ("memory-safe") {
+                r := calldataload(signature.offset)
+                s := calldataload(add(signature.offset, 0x20))
+                v := byte(0, calldataload(add(signature.offset, 0x40)))
+            }
+            return tryRecover(hash, v, r, s);
+        } else {
+            return (address(0), RecoverError.InvalidSignatureLength, bytes32(signature.length));
+        }
+    }
+
+    /**
+     * @dev Returns the address that signed a hashed message (`hash`) with
+     * `signature`. This address can then be used for verification purposes.
+     *
+     * The `ecrecover` EVM precompile allows for malleable (non-unique) signatures:
+     * this function rejects them by requiring the `s` value to be in the lower
+     * half order, and the `v` value to be either 27 or 28.
+     *
+     * NOTE: This function only supports 65-byte signatures. ERC-2098 short signatures are rejected. This restriction
+     * is DEPRECATED and will be removed in v6.0. Developers SHOULD NOT use signatures as unique identifiers; use hash
+     * invalidation or nonces for replay protection.
+     *
+     * IMPORTANT: `hash` _must_ be the result of a hash operation for the
+     * verification to be secure: it is possible to craft signatures that
+     * recover to arbitrary addresses for non-hashed data. A safe way to ensure
+     * this is by receiving a hash of the original message (which may otherwise
+     * be too long), and then calling {MessageHashUtils-toEthSignedMessageHash} on it.
+     */
+    function recover(bytes32 hash, bytes memory signature) internal pure returns (address) {
+        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, signature);
+        _throwError(error, errorArg);
+        return recovered;
+    }
+
+    /**
+     * @dev Variant of {recover} that takes a signature in calldata
+     */
+    function recoverCalldata(bytes32 hash, bytes calldata signature) internal pure returns (address) {
+        (address recovered, RecoverError error, bytes32 errorArg) = tryRecoverCalldata(hash, signature);
+        _throwError(error, errorArg);
+        return recovered;
+    }
+
+    /**
+     * @dev Overload of {ECDSA-tryRecover} that receives the `r` and `vs` short-signature fields separately.
+     *
+     * See https://eips.ethereum.org/EIPS/eip-2098[ERC-2098 short signatures]
+     */
+    function tryRecover(
+        bytes32 hash,
+        bytes32 r,
+        bytes32 vs
+    ) internal pure returns (address recovered, RecoverError err, bytes32 errArg) {
+        unchecked {
+            bytes32 s = vs & bytes32(0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff);
+            // We do not check for an overflow here since the shift operation results in 0 or 1.
+            uint8 v = uint8((uint256(vs) >> 255) + 27);
+            return tryRecover(hash, v, r, s);
+        }
+    }
+
+    /**
+     * @dev Overload of {ECDSA-recover} that receives the `r` and `vs` short-signature fields separately.
+     */
+    function recover(bytes32 hash, bytes32 r, bytes32 vs) internal pure returns (address) {
+        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, r, vs);
+        _throwError(error, errorArg);
+        return recovered;
+    }
+
+    /**
+     * @dev Overload of {ECDSA-tryRecover} that receives the `v`,
+     * `r` and `s` signature fields separately.
+     */
+    function tryRecover(
+        bytes32 hash,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal pure returns (address recovered, RecoverError err, bytes32 errArg) {
+        // EIP-2 still allows signature malleability for ecrecover(). Remove this possibility and make the signature
+        // unique. Appendix F in the Ethereum Yellow paper (https://ethereum.github.io/yellowpaper/paper.pdf), defines
+        // the valid range for s in (301): 0 < s < secp256k1n ÷ 2 + 1, and for v in (302): v ∈ {27, 28}. Most
+        // signatures from current libraries generate a unique signature with an s-value in the lower half order.
+        //
+        // If your library generates malleable signatures, such as s-values in the upper range, calculate a new s-value
+        // with 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 - s1 and flip v from 27 to 28 or
+        // vice versa. If your library also generates signatures with 0/1 for v instead 27/28, add 27 to v to accept
+        // these malleable signatures as well.
+        if (uint256(s) > 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0) {
+            return (address(0), RecoverError.InvalidSignatureS, s);
+        }
+
+        // If the signature is valid (and not malleable), return the signer address
+        address signer = ecrecover(hash, v, r, s);
+        if (signer == address(0)) {
+            return (address(0), RecoverError.InvalidSignature, bytes32(0));
+        }
+
+        return (signer, RecoverError.NoError, bytes32(0));
+    }
+
+    /**
+     * @dev Overload of {ECDSA-recover} that receives the `v`,
+     * `r` and `s` signature fields separately.
+     */
+    function recover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) internal pure returns (address) {
+        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, v, r, s);
+        _throwError(error, errorArg);
+        return recovered;
+    }
+
+    /**
+     * @dev Parse a signature into its `v`, `r` and `s` components. Supports 65-byte and 64-byte (ERC-2098)
+     * formats. Returns (0,0,0) for invalid signatures.
+     *
+     * For 64-byte signatures, `v` is automatically normalized to 27 or 28.
+     * For 65-byte signatures, `v` is returned as-is and MUST already be 27 or 28 for use with ecrecover.
+     *
+     * Consider validating the result before use, or use {tryRecover}/{recover} which perform full validation.
+     */
+    function parse(bytes memory signature) internal pure returns (uint8 v, bytes32 r, bytes32 s) {
+        assembly ("memory-safe") {
+            // Check the signature length
+            switch mload(signature)
+            // - case 65: r,s,v signature (standard)
+            case 65 {
+                r := mload(add(signature, 0x20))
+                s := mload(add(signature, 0x40))
+                v := byte(0, mload(add(signature, 0x60)))
+            }
+            // - case 64: r,vs signature (cf https://eips.ethereum.org/EIPS/eip-2098)
+            case 64 {
+                let vs := mload(add(signature, 0x40))
+                r := mload(add(signature, 0x20))
+                s := and(vs, shr(1, not(0)))
+                v := add(shr(255, vs), 27)
+            }
+            default {
+                r := 0
+                s := 0
+                v := 0
+            }
+        }
+    }
+
+    /**
+     * @dev Variant of {parse} that takes a signature in calldata
+     */
+    function parseCalldata(bytes calldata signature) internal pure returns (uint8 v, bytes32 r, bytes32 s) {
+        assembly ("memory-safe") {
+            // Check the signature length
+            switch signature.length
+            // - case 65: r,s,v signature (standard)
+            case 65 {
+                r := calldataload(signature.offset)
+                s := calldataload(add(signature.offset, 0x20))
+                v := byte(0, calldataload(add(signature.offset, 0x40)))
+            }
+            // - case 64: r,vs signature (cf https://eips.ethereum.org/EIPS/eip-2098)
+            case 64 {
+                let vs := calldataload(add(signature.offset, 0x20))
+                r := calldataload(signature.offset)
+                s := and(vs, shr(1, not(0)))
+                v := add(shr(255, vs), 27)
+            }
+            default {
+                r := 0
+                s := 0
+                v := 0
+            }
+        }
+    }
+
+    /**
+     * @dev Optionally reverts with the corresponding custom error according to the `error` argument provided.
+     */
+    function _throwError(RecoverError error, bytes32 errorArg) private pure {
+        if (error == RecoverError.NoError) {
+            return; // no error: do nothing
+        } else if (error == RecoverError.InvalidSignature) {
+            revert ECDSAInvalidSignature();
+        } else if (error == RecoverError.InvalidSignatureLength) {
+            revert ECDSAInvalidSignatureLength(uint256(errorArg));
+        } else if (error == RecoverError.InvalidSignatureS) {
+            revert ECDSAInvalidSignatureS(errorArg);
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
 // File: @openzeppelin/contracts/utils/math/SignedMath.sol
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.1.0) (utils/math/SignedMath.sol)
-
-
 
 /**
  * @dev Standard signed math utilities missing in the Solidity language.
@@ -4019,8 +6054,6 @@ library SignedMath {
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.6.0) (utils/Bytes.sol)
-
-
 
 /**
  * @dev Bytes operations.
@@ -4353,11 +6386,6 @@ library Bytes {
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.6.0) (utils/Strings.sol)
-
-
-
-
-
 
 /**
  * @dev String operations.
@@ -4888,8 +6916,6 @@ library Strings {
 
 // OpenZeppelin Contracts (last updated v5.6.0) (utils/cryptography/MessageHashUtils.sol)
 
-
-
 /**
  * @dev Signature message hash utilities for producing digests to be consumed by {ECDSA} recovery or signing.
  *
@@ -5113,158 +7139,10 @@ library MessageHashUtils {
 }
 
 // ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/utils/StorageSlot.sol
-// ----------------------------------------------------------------------------
-
-// OpenZeppelin Contracts (last updated v5.1.0) (utils/StorageSlot.sol)
-// This file was procedurally generated from scripts/generate/templates/StorageSlot.js.
-
-
-/**
- * @dev Library for reading and writing primitive types to specific storage slots.
- *
- * Storage slots are often used to avoid storage conflict when dealing with upgradeable contracts.
- * This library helps with reading and writing to such slots without the need for inline assembly.
- *
- * The functions in this library return Slot structs that contain a `value` member that can be used to read or write.
- *
- * Example usage to set ERC-1967 implementation slot:
- * ```solidity
- * contract ERC1967 {
- *     // Define the slot. Alternatively, use the SlotDerivation library to derive the slot.
- *     bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
- *
- *     function _getImplementation() internal view returns (address) {
- *         return StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
- *     }
- *
- *     function _setImplementation(address newImplementation) internal {
- *         require(newImplementation.code.length > 0);
- *         StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = newImplementation;
- *     }
- * }
- * ```
- *
- * TIP: Consider using this library along with {SlotDerivation}.
- */
-library StorageSlot {
-    struct AddressSlot {
-        address value;
-    }
-
-    struct BooleanSlot {
-        bool value;
-    }
-
-    struct Bytes32Slot {
-        bytes32 value;
-    }
-
-    struct Uint256Slot {
-        uint256 value;
-    }
-
-    struct Int256Slot {
-        int256 value;
-    }
-
-    struct StringSlot {
-        string value;
-    }
-
-    struct BytesSlot {
-        bytes value;
-    }
-
-    /**
-     * @dev Returns an `AddressSlot` with member `value` located at `slot`.
-     */
-    function getAddressSlot(bytes32 slot) internal pure returns (AddressSlot storage r) {
-        assembly ("memory-safe") {
-            r.slot := slot
-        }
-    }
-
-    /**
-     * @dev Returns a `BooleanSlot` with member `value` located at `slot`.
-     */
-    function getBooleanSlot(bytes32 slot) internal pure returns (BooleanSlot storage r) {
-        assembly ("memory-safe") {
-            r.slot := slot
-        }
-    }
-
-    /**
-     * @dev Returns a `Bytes32Slot` with member `value` located at `slot`.
-     */
-    function getBytes32Slot(bytes32 slot) internal pure returns (Bytes32Slot storage r) {
-        assembly ("memory-safe") {
-            r.slot := slot
-        }
-    }
-
-    /**
-     * @dev Returns a `Uint256Slot` with member `value` located at `slot`.
-     */
-    function getUint256Slot(bytes32 slot) internal pure returns (Uint256Slot storage r) {
-        assembly ("memory-safe") {
-            r.slot := slot
-        }
-    }
-
-    /**
-     * @dev Returns a `Int256Slot` with member `value` located at `slot`.
-     */
-    function getInt256Slot(bytes32 slot) internal pure returns (Int256Slot storage r) {
-        assembly ("memory-safe") {
-            r.slot := slot
-        }
-    }
-
-    /**
-     * @dev Returns a `StringSlot` with member `value` located at `slot`.
-     */
-    function getStringSlot(bytes32 slot) internal pure returns (StringSlot storage r) {
-        assembly ("memory-safe") {
-            r.slot := slot
-        }
-    }
-
-    /**
-     * @dev Returns an `StringSlot` representation of the string storage pointer `store`.
-     */
-    function getStringSlot(string storage store) internal pure returns (StringSlot storage r) {
-        assembly ("memory-safe") {
-            r.slot := store.slot
-        }
-    }
-
-    /**
-     * @dev Returns a `BytesSlot` with member `value` located at `slot`.
-     */
-    function getBytesSlot(bytes32 slot) internal pure returns (BytesSlot storage r) {
-        assembly ("memory-safe") {
-            r.slot := slot
-        }
-    }
-
-    /**
-     * @dev Returns an `BytesSlot` representation of the bytes storage pointer `store`.
-     */
-    function getBytesSlot(bytes storage store) internal pure returns (BytesSlot storage r) {
-        assembly ("memory-safe") {
-            r.slot := store.slot
-        }
-    }
-}
-
-// ----------------------------------------------------------------------------
 // File: @openzeppelin/contracts/utils/ShortStrings.sol
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.5.0) (utils/ShortStrings.sol)
-
-
 
 // | string  | 0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA   |
 // | length  | 0x                                                              BB |
@@ -5388,7 +7266,6 @@ library ShortStrings {
 
 // OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC5267.sol)
 
-
 interface IERC5267 {
     /**
      * @dev MAY be emitted to signal that the domain could have changed.
@@ -5418,10 +7295,6 @@ interface IERC5267 {
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.5.0) (utils/cryptography/EIP712.sol)
-
-
-
-
 
 /**
  * @dev https://eips.ethereum.org/EIPS/eip-712[EIP-712] is a standard for hashing and signing of typed structured data.
@@ -5581,7 +7454,6 @@ abstract contract EIP712 is IERC5267 {
 
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/Nonces.sol)
 
-
 /**
  * @dev Provides tracking nonces for addresses. Nonces will only increment.
  */
@@ -5630,12 +7502,6 @@ abstract contract Nonces {
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.5.0) (token/ERC20/extensions/ERC20Permit.sol)
-
-
-
-
-
-
 
 /**
  * @dev Implementation of the ERC-20 Permit extension allowing approvals to be made via signatures, as defined in
@@ -5705,66 +7571,216 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712, Nonces {
 }
 
 // ----------------------------------------------------------------------------
-// File: @openzeppelin/contracts/utils/ReentrancyGuard.sol
+// File: @openzeppelin/contracts/utils/TransientSlot.sol
 // ----------------------------------------------------------------------------
 
-// OpenZeppelin Contracts (last updated v5.5.0) (utils/ReentrancyGuard.sol)
-
-
+// OpenZeppelin Contracts (last updated v5.3.0) (utils/TransientSlot.sol)
+// This file was procedurally generated from scripts/generate/templates/TransientSlot.js.
 
 /**
- * @dev Contract module that helps prevent reentrant calls to a function.
+ * @dev Library for reading and writing value-types to specific transient storage slots.
  *
- * Inheriting from `ReentrancyGuard` will make the {nonReentrant} modifier
- * available, which can be applied to functions to make sure there are no nested
- * (reentrant) calls to them.
+ * Transient slots are often used to store temporary values that are removed after the current transaction.
+ * This library helps with reading and writing to such slots without the need for inline assembly.
  *
- * Note that because there is a single `nonReentrant` guard, functions marked as
- * `nonReentrant` may not call one another. This can be worked around by making
- * those functions `private`, and then adding `external` `nonReentrant` entry
- * points to them.
+ *  * Example reading and writing values using transient storage:
+ * ```solidity
+ * contract Lock {
+ *     using TransientSlot for *;
  *
- * TIP: If EIP-1153 (transient storage) is available on the chain you're deploying at,
- * consider using {ReentrancyGuardTransient} instead.
+ *     // Define the slot. Alternatively, use the SlotDerivation library to derive the slot.
+ *     bytes32 internal constant _LOCK_SLOT = 0xf4678858b2b588224636b8522b729e7722d32fc491da849ed75b3fdf3c84f542;
  *
- * TIP: If you would like to learn more about reentrancy and alternative ways
- * to protect against it, check out our blog post
- * https://blog.openzeppelin.com/reentrancy-after-istanbul/[Reentrancy After Istanbul].
+ *     modifier locked() {
+ *         require(!_LOCK_SLOT.asBoolean().tload());
  *
- * IMPORTANT: Deprecated. This storage-based reentrancy guard will be removed and replaced
- * by the {ReentrancyGuardTransient} variant in v6.0.
+ *         _LOCK_SLOT.asBoolean().tstore(true);
+ *         _;
+ *         _LOCK_SLOT.asBoolean().tstore(false);
+ *     }
+ * }
+ * ```
+ *
+ * TIP: Consider using this library along with {SlotDerivation}.
+ */
+library TransientSlot {
+    /**
+     * @dev UDVT that represents a slot holding an address.
+     */
+    type AddressSlot is bytes32;
+
+    /**
+     * @dev Cast an arbitrary slot to a AddressSlot.
+     */
+    function asAddress(bytes32 slot) internal pure returns (AddressSlot) {
+        return AddressSlot.wrap(slot);
+    }
+
+    /**
+     * @dev UDVT that represents a slot holding a bool.
+     */
+    type BooleanSlot is bytes32;
+
+    /**
+     * @dev Cast an arbitrary slot to a BooleanSlot.
+     */
+    function asBoolean(bytes32 slot) internal pure returns (BooleanSlot) {
+        return BooleanSlot.wrap(slot);
+    }
+
+    /**
+     * @dev UDVT that represents a slot holding a bytes32.
+     */
+    type Bytes32Slot is bytes32;
+
+    /**
+     * @dev Cast an arbitrary slot to a Bytes32Slot.
+     */
+    function asBytes32(bytes32 slot) internal pure returns (Bytes32Slot) {
+        return Bytes32Slot.wrap(slot);
+    }
+
+    /**
+     * @dev UDVT that represents a slot holding a uint256.
+     */
+    type Uint256Slot is bytes32;
+
+    /**
+     * @dev Cast an arbitrary slot to a Uint256Slot.
+     */
+    function asUint256(bytes32 slot) internal pure returns (Uint256Slot) {
+        return Uint256Slot.wrap(slot);
+    }
+
+    /**
+     * @dev UDVT that represents a slot holding a int256.
+     */
+    type Int256Slot is bytes32;
+
+    /**
+     * @dev Cast an arbitrary slot to a Int256Slot.
+     */
+    function asInt256(bytes32 slot) internal pure returns (Int256Slot) {
+        return Int256Slot.wrap(slot);
+    }
+
+    /**
+     * @dev Load the value held at location `slot` in transient storage.
+     */
+    function tload(AddressSlot slot) internal view returns (address value) {
+        assembly ("memory-safe") {
+            value := tload(slot)
+        }
+    }
+
+    /**
+     * @dev Store `value` at location `slot` in transient storage.
+     */
+    function tstore(AddressSlot slot, address value) internal {
+        assembly ("memory-safe") {
+            tstore(slot, value)
+        }
+    }
+
+    /**
+     * @dev Load the value held at location `slot` in transient storage.
+     */
+    function tload(BooleanSlot slot) internal view returns (bool value) {
+        assembly ("memory-safe") {
+            value := tload(slot)
+        }
+    }
+
+    /**
+     * @dev Store `value` at location `slot` in transient storage.
+     */
+    function tstore(BooleanSlot slot, bool value) internal {
+        assembly ("memory-safe") {
+            tstore(slot, value)
+        }
+    }
+
+    /**
+     * @dev Load the value held at location `slot` in transient storage.
+     */
+    function tload(Bytes32Slot slot) internal view returns (bytes32 value) {
+        assembly ("memory-safe") {
+            value := tload(slot)
+        }
+    }
+
+    /**
+     * @dev Store `value` at location `slot` in transient storage.
+     */
+    function tstore(Bytes32Slot slot, bytes32 value) internal {
+        assembly ("memory-safe") {
+            tstore(slot, value)
+        }
+    }
+
+    /**
+     * @dev Load the value held at location `slot` in transient storage.
+     */
+    function tload(Uint256Slot slot) internal view returns (uint256 value) {
+        assembly ("memory-safe") {
+            value := tload(slot)
+        }
+    }
+
+    /**
+     * @dev Store `value` at location `slot` in transient storage.
+     */
+    function tstore(Uint256Slot slot, uint256 value) internal {
+        assembly ("memory-safe") {
+            tstore(slot, value)
+        }
+    }
+
+    /**
+     * @dev Load the value held at location `slot` in transient storage.
+     */
+    function tload(Int256Slot slot) internal view returns (int256 value) {
+        assembly ("memory-safe") {
+            value := tload(slot)
+        }
+    }
+
+    /**
+     * @dev Store `value` at location `slot` in transient storage.
+     */
+    function tstore(Int256Slot slot, int256 value) internal {
+        assembly ("memory-safe") {
+            tstore(slot, value)
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+// File: @openzeppelin/contracts/utils/ReentrancyGuardTransient.sol
+// ----------------------------------------------------------------------------
+
+// OpenZeppelin Contracts (last updated v5.5.0) (utils/ReentrancyGuardTransient.sol)
+
+/**
+ * @dev Variant of {ReentrancyGuard} that uses transient storage.
+ *
+ * NOTE: This variant only works on networks where EIP-1153 is available.
+ *
+ * _Available since v5.1._
  *
  * @custom:stateless
  */
-abstract contract ReentrancyGuard {
-    using StorageSlot for bytes32;
+abstract contract ReentrancyGuardTransient {
+    using TransientSlot for *;
 
     // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.ReentrancyGuard")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant REENTRANCY_GUARD_STORAGE =
         0x9b779b17422d0df92223018b32b4d1fa46e071723d6817e2486d003becc55f00;
 
-    // Booleans are more expensive than uint256 or any type that takes up a full
-    // word because each write operation emits an extra SLOAD to first read the
-    // slot's contents, replace the bits taken up by the boolean, and then write
-    // back. This is the compiler's defense against contract upgrades and
-    // pointer aliasing, and it cannot be disabled.
-
-    // The values being non-zero value makes deployment a bit more expensive,
-    // but in exchange the refund on every call to nonReentrant will be lower in
-    // amount. Since refunds are capped to a percentage of the total
-    // transaction's gas, it is best to keep them low in cases like this one, to
-    // increase the likelihood of the full refund coming into effect.
-    uint256 private constant NOT_ENTERED = 1;
-    uint256 private constant ENTERED = 2;
-
     /**
      * @dev Unauthorized reentrant call.
      */
     error ReentrancyGuardReentrantCall();
-
-    constructor() {
-        _reentrancyGuardStorageSlot().getUint256Slot().value = NOT_ENTERED;
-    }
 
     /**
      * @dev Prevents a contract from calling itself, directly or indirectly.
@@ -5799,17 +7815,15 @@ abstract contract ReentrancyGuard {
     }
 
     function _nonReentrantBefore() private {
-        // On the first call to nonReentrant, _status will be NOT_ENTERED
+        // On the first call to nonReentrant, REENTRANCY_GUARD_STORAGE.asBoolean().tload() will be false
         _nonReentrantBeforeView();
 
         // Any calls to nonReentrant after this point will fail
-        _reentrancyGuardStorageSlot().getUint256Slot().value = ENTERED;
+        _reentrancyGuardStorageSlot().asBoolean().tstore(true);
     }
 
     function _nonReentrantAfter() private {
-        // By storing the original value once again, a refund is triggered (see
-        // https://eips.ethereum.org/EIPS/eip-2200)
-        _reentrancyGuardStorageSlot().getUint256Slot().value = NOT_ENTERED;
+        _reentrancyGuardStorageSlot().asBoolean().tstore(false);
     }
 
     /**
@@ -5817,7 +7831,7 @@ abstract contract ReentrancyGuard {
      * `nonReentrant` function in the call stack.
      */
     function _reentrancyGuardEntered() internal view returns (bool) {
-        return _reentrancyGuardStorageSlot().getUint256Slot().value == ENTERED;
+        return _reentrancyGuardStorageSlot().asBoolean().tload();
     }
 
     function _reentrancyGuardStorageSlot() internal pure virtual returns (bytes32) {
@@ -5826,90 +7840,205 @@ abstract contract ReentrancyGuard {
 }
 
 // ----------------------------------------------------------------------------
+// File: contracts/vendor/openzeppelin-community-contracts/contracts/token/ERC20/extensions/ERC20Restricted.sol
+// ----------------------------------------------------------------------------
+
+/**
+ * @dev Extension of {ERC20} that allows to implement user account transfer restrictions
+ * through the {canTransact} function. Inspired by https://eips.ethereum.org/EIPS/eip-7943[EIP-7943].
+ *
+ * By default, each account has no explicit restriction. The {canTransact} function acts as
+ * a blocklist. Developers can override {canTransact} to check that `restriction == ALLOWED`
+ * to implement an allowlist.
+ */
+abstract contract ERC20Restricted is ERC20 {
+    enum Restriction {
+        DEFAULT, // User has no explicit restriction
+        BLOCKED, // User is explicitly blocked
+        ALLOWED // User is explicitly allowed
+    }
+
+    mapping(address account => Restriction) private _restrictions;
+
+    /// @dev Emitted when a user account's restriction is updated.
+    event UserRestrictionsUpdated(address indexed account, Restriction restriction);
+
+    /// @dev The operation failed because the user account is restricted.
+    error ERC20UserRestricted(address account);
+
+    /// @dev Returns the restriction of a user account.
+    function getRestriction(address account) public view virtual returns (Restriction) {
+        return _restrictions[account];
+    }
+
+    /**
+     * @dev Returns whether a user account is allowed to interact with the token.
+     *
+     * Default implementation only disallows explicitly BLOCKED accounts (i.e. a blocklist).
+     *
+     * To convert into an allowlist, override as:
+     *
+     * ```solidity
+     * function canTransact(address account) public view virtual override returns (bool) {
+     *     return getRestriction(account) == Restriction.ALLOWED;
+     * }
+     * ```
+     */
+    function canTransact(address account) public view virtual returns (bool) {
+        return getRestriction(account) != Restriction.BLOCKED; // i.e. DEFAULT && ALLOWED
+    }
+
+    /**
+     * @dev See {ERC20-_update}. Enforces restriction transfers (excluding minting and burning).
+     *
+     * Requirements:
+     *
+     * * `from` must be allowed to transfer tokens (see {canTransact}).
+     * * `to` must be allowed to receive tokens (see {canTransact}).
+     */
+    function _update(address from, address to, uint256 value) internal virtual override {
+        if (from != address(0)) _checkRestriction(from); // Not minting
+        if (to != address(0)) _checkRestriction(to); // Not burning
+        super._update(from, to, value);
+    }
+
+    // We don't check restrictions for approvals since the actual transfer
+    // will be checked in _update. This allows for more flexible approval patterns.
+
+    /// @dev Updates the restriction of a user account.
+    function _setRestriction(address account, Restriction restriction) internal virtual {
+        if (getRestriction(account) != restriction) {
+            _restrictions[account] = restriction;
+            emit UserRestrictionsUpdated(account, restriction);
+        } // no-op if restriction is unchanged
+    }
+
+    /// @dev Convenience function to block a user account (set to BLOCKED).
+    function _blockUser(address account) internal virtual {
+        _setRestriction(account, Restriction.BLOCKED);
+    }
+
+    /// @dev Convenience function to allow a user account (set to ALLOWED).
+    function _allowUser(address account) internal virtual {
+        _setRestriction(account, Restriction.ALLOWED);
+    }
+
+    /// @dev Convenience function to reset a user account to default restriction.
+    function _resetUser(address account) internal virtual {
+        _setRestriction(account, Restriction.DEFAULT);
+    }
+
+    /// @dev Checks if a user account is restricted. Reverts with {ERC20Restricted} if so.
+    function _checkRestriction(address account) internal view virtual {
+        require(canTransact(account), ERC20UserRestricted(account));
+    }
+}
+
+// ----------------------------------------------------------------------------
 // File: contracts/ShirushiCoin.sol
 // ----------------------------------------------------------------------------
 
-// Shirushi Coin ver 3.0
+// Shirushi Coin ver 3.1
 
 // Compatible with OpenZeppelin Contracts ^5.6.1
 
-
- // ERC-1363 Transfer And Call
-
-
-
- // EIP-2612 ERC20 Permit
-
+// OpenZeppelin Community Contracts (not part of the audited @openzeppelin/contracts package).
+// Vendored unchanged at a pinned commit. See contracts/vendor/README.md.
 
 /**
  * @title ShirushiCoin
  * @notice ShirushiCoin is the ERC20-compliant token.
- *         It supports mining, freezing, pausing, transfer callbacks (ERC1363),
- *         and gasless approvals (ERC20Permit).
- * @dev This contract inherits from ReentrancyGuard to protect against reentrancy attacks,
- *      and role-based access control (AccessControl) with the following roles:
- *      - PAUSER_ROLE: Permission to pause
- *      - FREEZER_ROLE: Permission to freeze
- *      - RECORDER_ROLE: Permission to record
- *      - MINER_ROLE: Permission to mine
- *      - POOLER_ROLE: Permission to pool
+ *         It supports mining, address freezing, an exchange whitelist,
+ *         transfer callbacks (ERC1363) and gasless approvals (ERC20Permit).
+ * @dev Changes from v3.0 (see SISC v3.1 Component Map):
+ *      - Removed: burn / burnFrom (ERC20Burnable), adminBurn, adminMint,
+ *        pause / unpause (ERC20Pausable) and any transfer of DEFAULT_ADMIN_ROLE.
+ *        No function can increase, decrease or move the balance of another account.
+ *      - Issuance is `mine()` only. The migration supply is minted once in the constructor.
+ *      - Freezing is implemented with {ERC20Restricted} (BLOCKED) instead of a private mapping.
+ *      - The exchange whitelist is {ERC20Restricted} (ALLOWED) plus the SISC transition guard
+ *        in {_setRestriction}: a registered address can never be frozen.
+ *      - `maxSupply` is enforced by {ERC20Capped}; re-entrancy by {ReentrancyGuardTransient};
+ *        role holders are enumerable via {AccessControlEnumerable}.
+ *      - Roles: DEFAULT_ADMIN_ROLE is fixed at deployment. PAUSER_ROLE is gone (pause removed)
+ *        and POOLER_ROLE is gone (`multiTransfer` moves only the caller's own balance).
+ *        MINING_ADMIN_ROLE is new and separates the mining settings from the top-level admin.
+ *        - FREEZER_ROLE: Permission to freeze / unfreeze
+ *        - WHITELIST_ROLE: Permission to register / unregister exchange addresses
+ *        - MINING_ADMIN_ROLE: Permission to set the pool account and the mining reward plan
+ *        - MINER_ROLE: Permission to mine
+ *        - RECORDER_ROLE: Permission to record
  */
-contract ShirushiCoin is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC1363, ERC20Permit, ReentrancyGuard {
+contract ShirushiCoin is
+    ERC20,
+    ERC20Capped,
+    ERC20Restricted,
+    AccessControlEnumerable,
+    ERC1363,
+    ERC20Permit,
+    ReentrancyGuardTransient
+{
     // --- Constants ---
     /// @dev String of system version.
-    string public constant VERSION = "3.00";
+    string public constant VERSION = "3.10";
 
     /// @dev Number of decimal places for the coin. Complies with the ERC20 standard of 18 decimals.
     uint256 public constant DECIMAL_FACTOR = 1e18;
 
-    /// @dev Annual reduction rate of mining rewards (9 = 90%). 
-    ///      Example: if last year’s reward was 10,000, this year’s reward is 9,000.
+    /// @dev Maximum supply (in wei). Enforced by {ERC20Capped}: 300,000,000 coins.
+    ///      Unchanged from v3.0 and not settable at deployment.
+    uint256 public constant MAX_SUPPLY = 300_000_000 * DECIMAL_FACTOR;
+
+    /// @dev Annual reduction rate of mining rewards (9 = 90%).
+    ///      Example: if last year's reward was 10,000, this year's reward is 9,000.
     uint256 public constant MINING_REWARD_REDUCTION_PERCENT = 9;
 
     /// @dev The starting year of mining.
     uint256 public constant MINING_START_YEAR = 2022;
 
-    /// @dev Initial mining reward (in whole coins, not wei). 
+    /// @dev Initial mining reward (in whole coins, not wei).
     ///      The actual reward is `INITIAL_MINING_REWARD * DECIMAL_FACTOR`.
     uint256 public constant INITIAL_MINING_REWARD = 10_000;
+
+    /// @dev Maximum number of entries accepted by the genesis mint and by `multiTransfer()`.
+    uint256 public constant MAX_BATCH_SIZE = 100;
 
     /// @dev Minimum interval between mining operations (23 hours).
     uint256 private constant _MINING_MIN_INTERVAL = 23 hours;
 
     // --- Roles ---
-    /// @dev Role that allows pausing/unpausing operations. Required for `pause()`/`unpause()`.
-    bytes32 private constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
-
     /// @dev Role that allows freezing/unfreezing accounts. Required for `freeze()`/`unfreeze()`.
-    bytes32 private constant FREEZER_ROLE = keccak256("FREEZER_ROLE");
+    bytes32 public constant FREEZER_ROLE = keccak256("FREEZER_ROLE");
 
-    /// @dev Role that allows recording Web3 Maker AI Data (e.g., AI-generated data). 
-    ///      Required for `storeWeb3MakerAIData()`.
-    bytes32 private constant RECORDER_ROLE = keccak256("RECORDER_ROLE");
+    /// @dev Role that allows registering/unregistering exchange addresses.
+    ///      Required for `registerExchange()`/`unregisterExchange()`.
+    bytes32 public constant WHITELIST_ROLE = keccak256("WHITELIST_ROLE");
+
+    /// @dev Role that allows managing the mining settings.
+    ///      Required for `setPoolAccount()`/`setMiningReward()`.
+    bytes32 public constant MINING_ADMIN_ROLE = keccak256("MINING_ADMIN_ROLE");
 
     /// @dev Role that allows claiming mining rewards. Required for `mine()`.
-    bytes32 private constant MINER_ROLE = keccak256("MINER_ROLE");
+    bytes32 public constant MINER_ROLE = keccak256("MINER_ROLE");
 
-    /// @dev Role that allows managing the pool account. 
-    ///      Mining rewards are granted only to the single account holding this role. 
-    ///      Required for `multiTransfer()`.
-    bytes32 private constant POOLER_ROLE = keccak256("POOLER_ROLE");
+    /// @dev Role that allows recording Web3 Maker AI Data (e.g., AI-generated data).
+    ///      Required for `storeWeb3MakerAIData()`.
+    bytes32 public constant RECORDER_ROLE = keccak256("RECORDER_ROLE");
 
     // --- State Variables ---
-    /// @dev Initial supply (in wei). An immutable value set in the constructor.
-    uint256 public immutable initialSupply;
+    /// @dev The single holder of DEFAULT_ADMIN_ROLE. Fixed in the constructor: the role can
+    ///      never be granted to another address, revoked or renounced.
+    address public immutable fixedAdminAccount;
 
-    /// @dev Maximum supply (in wei). Checked in `mint()` to ensure it is not exceeded.
-    uint256 public immutable maxSupply;
+    /// @dev Total amount minted by the constructor (in wei). The migration supply of v3.1.
+    uint256 public immutable genesisSupply;
 
-    /// @dev Total minig supply (in wei).
+    /// @dev Total mining supply (in wei). Starts at the amount already mined by the previous
+    ///      versions (constructor argument) and grows with every `mine()`.
     uint256 public totalMiningSupply;
 
     /// @dev The pool account. Mining rewards are granted to this single account.
     address private poolAccount;
-
-    /// @dev Mapping of frozen accounts. `[account] => [isFrozen]`.
-    mapping(address => bool) private _frozenAccounts;
 
     /// @dev GMT timestamp (Unix time) of the last mining operation.
     uint256 public lastMinedAt;
@@ -5926,72 +8055,175 @@ contract ShirushiCoin is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC
     /// @dev Annual mining reward plan (in wei). `[year] => [reward]`.
     mapping(uint256 => uint256) private _miningRewardPlan;
 
-    // エラー定数の定義
-    string constant ERROR_ZERO_ADDRESS = "ZERO_ADDRESS";
-    string constant ERROR_AMOUNT_ZERO = "AMOUNT_ZERO";
-    string constant ERROR_EXCEEDING_MAX_SUPPLY = "EXCEEDING_MAX_SUPPLY";
-    string constant ERROR_INSUFFICIENT_BALANCE = "INSUFFICIENT_BALANCE";
-    string constant ERROR_INVALID_NUMBER = "INVALID_NUMBER";
-    string constant ERROR_INTERVAL = "COOLDOWN_PERIOD";
-    string constant ERROR_EXCEEDING_100_RECIPIENTS = "EXCEEDING_100_RECIPIENTS";
-    string constant ERROR_EXCEEDING_100_AMOUNTS = "EXCEEDING_100_AMOUNTS";
-    string constant ERROR_LENGTH_MISMATCH = "LENGTH_MISMATCH";
-    string constant ERROR_FROZEN_SENDER_ACCOUNT = "FROZEN_SENDER_ACCOUNT";
-    string constant ERROR_FROZEN_RECIPIENT_ACCOUNT = "FROZEN_RECIPIENT_ACCOUNT";
+    // --- Errors ---
+    /// @dev The zero address was given where a real address is required.
+    error ZeroAddress();
+
+    /// @dev An amount of zero was given where a positive amount is required.
+    error AmountZero();
+
+    /// @dev A number (year, hash, ...) is out of the accepted range.
+    error InvalidNumber();
+
+    /// @dev `mine()` was called before the minimum interval elapsed.
+    error CooldownPeriod();
+
+    /// @dev A batch argument is empty or longer than {MAX_BATCH_SIZE}.
+    error InvalidBatchSize();
+
+    /// @dev Two array arguments have different lengths.
+    error LengthMismatch();
+
+    /// @dev The already-mined supply given to the constructor exceeds the genesis supply.
+    error InvalidMiningSupply();
+
+    /// @dev DEFAULT_ADMIN_ROLE is fixed at deployment: it cannot be granted, revoked or renounced.
+    error AdminIsFixed();
+
+    /// @dev A registered exchange address cannot be frozen (ALLOWED -> BLOCKED is forbidden).
+    error ExchangeAddressProtected(address account);
+
+    /// @dev A frozen address cannot be registered as an exchange (BLOCKED -> ALLOWED is forbidden).
+    error FrozenAddressCannotBeRegistered(address account);
+
+    /// @dev `unfreeze()` was called on an address that is not frozen.
+    error NotFrozen(address account);
+
+    /// @dev `unregisterExchange()` was called on an address that is not registered.
+    error NotRegistered(address account);
+
+    // --- Events ---
+    /// @notice Emitted once by the constructor with the migration supply figures
+    /// @param genesisSupply The total amount minted by the constructor (in wei)
+    /// @param legacyMinedSupply The amount already mined by the previous versions (in wei)
+    event GenesisSupplyMinted(uint256 genesisSupply, uint256 legacyMinedSupply);
+
+    /// @notice Emitted when the pool account is changed
+    /// @param oldAccount The previous pool account address
+    /// @param newAccount The new pool account address
+    event PoolAccountChanged(address indexed oldAccount, address indexed newAccount);
+
+    /// @notice Emitted when an account is frozen or unfrozen
+    /// @param account The account being frozen/unfrozen
+    /// @param isFrozen True if the account is now frozen, false if unfrozen
+    event AccountFrozen(address indexed account, bool isFrozen);
+
+    /// @notice Emitted when an exchange address is registered or unregistered
+    /// @param account The exchange address
+    /// @param isRegistered True if the address is now registered, false if unregistered
+    event ExchangeRegistered(address indexed account, bool isRegistered);
+
+    /// @notice Emitted when the mining reward of a year is changed
+    /// @param year The target year
+    /// @param oldReward The previous reward for that year (in wei)
+    /// @param newReward The new reward for that year (in wei)
+    event MiningRewardChanged(uint256 indexed year, uint256 oldReward, uint256 newReward);
+
+    /**
+     * @notice Initial role holders of ShirushiCoin.
+     * @dev Passed as a single struct so that the six addresses cannot be mixed up positionally.
+     *      Every field except `recorder` must be a non-zero address.
+     * @param admin The single, permanent holder of DEFAULT_ADMIN_ROLE (role management only).
+     * @param freezer The initial holder of FREEZER_ROLE.
+     * @param whitelistAdmin The initial holder of WHITELIST_ROLE.
+     * @param miningAdmin The initial holder of MINING_ADMIN_ROLE.
+     * @param miner The initial holder of MINER_ROLE.
+     * @param recorder The initial holder of RECORDER_ROLE. The zero address means no holder.
+     */
+    struct InitialRoleHolders {
+        address admin;
+        address freezer;
+        address whitelistAdmin;
+        address miningAdmin;
+        address miner;
+        address recorder;
+    }
 
     /**
     * @notice Initialization process for ShirushiCoin.
     * @dev This constructor performs the following operations:
     *      Sets the token name ("Shirushi Coin") and symbol ("SISC").
-    *      Sets the initial supply (200 million coins) and the maximum supply (300 million coins).
-    *      Mints the initial supply to `newAdminAccount`.
-    *      Mine the total mining supply whicht was mined already by SISC ver1 to `newAdminAccount`.
-    *      Grants all administrative roles to `newAdminAccount`.
-    *      Sets the pool account to `newAdminAccount`.
+    *      Sets the maximum supply to {MAX_SUPPLY} (300 million coins) via {ERC20Capped}.
+    *      Mints the migration supply once, to the given holders in the given amounts.
+    *      Grants each role to the given initial holder. The deployer receives no role.
+    *      Sets the pool account.
     *      Initializes the mining reward plan (reward schedule for 100 years).
-    * @param newAdminAccount The administrator account. 
-    *                        Receives the initial supply and is granted all roles 
-    *                        (DEFAULT_ADMIN_ROLE, PAUSER_ROLE, etc.).
+    *      Notes:
+    *      - There is no `adminMint()` in v3.1, so `genesisHolders` / `genesisAmounts` and
+    *        `legacyMinedSupply` cannot be corrected after deployment. They must match the
+    *        supply snapshot taken when mining on the previous version was stopped.
+    *      - The sum of `genesisAmounts` is capped by {MAX_SUPPLY} ({ERC20Capped}).
+    * @param roleHolders The initial holder of each role. See {InitialRoleHolders}.
+    * @param poolAccount_ The account that receives mining rewards. Cannot be the zero address.
+    * @param genesisHolders The accounts that receive the migration supply (1..{MAX_BATCH_SIZE}).
+    * @param genesisAmounts The amount for each account (in wei, each > 0). Same length as `genesisHolders`.
+    * @param legacyMinedSupply The amount already mined by the previous versions (in wei).
+    *                          It is accounting only: it is not minted here and must not exceed
+    *                          the sum of `genesisAmounts`.
     */
-    constructor(address newAdminAccount)
+    constructor(
+        InitialRoleHolders memory roleHolders,
+        address poolAccount_,
+        address[] memory genesisHolders,
+        uint256[] memory genesisAmounts,
+        uint256 legacyMinedSupply
+    )
         ERC20("Shirushi Coin", "SISC")
+        ERC20Capped(MAX_SUPPLY)
         ERC20Permit("Shirushi Coin")
     {
-        // --- Supply Settings ---
-        /// @dev Initial supply: 200,000,000 coins (200,000,000 * 10^18 wei).
-        initialSupply = 200_000_000 * DECIMAL_FACTOR;
+        // --- Argument Validation ---
+        if (
+            roleHolders.admin == address(0) ||
+            roleHolders.freezer == address(0) ||
+            roleHolders.whitelistAdmin == address(0) ||
+            roleHolders.miningAdmin == address(0) ||
+            roleHolders.miner == address(0) ||
+            poolAccount_ == address(0)
+        ) revert ZeroAddress();
 
-        /// @dev Maximum supply: 300,000,000 coins (300,000,000 * 10^18 wei).
-        maxSupply = 300_000_000 * DECIMAL_FACTOR;
-
-        /// @dev Total mining supply: 9,690,500 which was mined by SISC ver1 (9,690,500 * 10^18 wei).
-        totalMiningSupply = 9_690_500 * DECIMAL_FACTOR;
-
-        // --- Initial Mint ---
-        /// @dev Mint the initial supply to the administrator account.
-        _mint(newAdminAccount, initialSupply);
-
-        /// @dev Mine the total minig supply by SISC ver 1
-        _mint(newAdminAccount, totalMiningSupply);
+        uint256 holderCount = genesisHolders.length;
+        if (holderCount == 0 || holderCount > MAX_BATCH_SIZE) revert InvalidBatchSize();
+        if (holderCount != genesisAmounts.length) revert LengthMismatch();
 
         // --- Role Assignment ---
-        /// @dev Grant all roles to the administrator account:
-        ///      - DEFAULT_ADMIN_ROLE: Role management authority (can grant/revoke/check roles).
-        ///      - PAUSER_ROLE: Authority to pause/unpause.
-        ///      - FREEZER_ROLE: Authority to freeze/unfreeze accounts.
-        ///      - RECORDER_ROLE: Authority to record Web3 Maker AI data.
-        ///      - MINER_ROLE: Authority to mine.
-        ///      - POOLER_ROLE: Authority to manage the pool account.
-        _grantRole(DEFAULT_ADMIN_ROLE, newAdminAccount);
-        _grantRole(PAUSER_ROLE, newAdminAccount);
-        _grantRole(FREEZER_ROLE, newAdminAccount);
-        _grantRole(RECORDER_ROLE, newAdminAccount);
-        _grantRole(MINER_ROLE, newAdminAccount);
-        _grantRole(POOLER_ROLE, newAdminAccount);
+        /// @dev DEFAULT_ADMIN_ROLE is pinned to `roleHolders.admin` for the life of the contract:
+        ///      `_grantRole` / `_revokeRole` below reject every later change. The initial grants
+        ///      call the base implementation directly because the `_grantRole` override reads
+        ///      `fixedAdminAccount`, and immutable variables cannot be read during construction.
+        fixedAdminAccount = roleHolders.admin;
+        AccessControlEnumerable._grantRole(DEFAULT_ADMIN_ROLE, roleHolders.admin);
+        AccessControlEnumerable._grantRole(FREEZER_ROLE, roleHolders.freezer);
+        AccessControlEnumerable._grantRole(WHITELIST_ROLE, roleHolders.whitelistAdmin);
+        AccessControlEnumerable._grantRole(MINING_ADMIN_ROLE, roleHolders.miningAdmin);
+        AccessControlEnumerable._grantRole(MINER_ROLE, roleHolders.miner);
+        if (roleHolders.recorder != address(0)) {
+            AccessControlEnumerable._grantRole(RECORDER_ROLE, roleHolders.recorder);
+        }
 
         // --- Pool Account Setup ---
-        /// @dev Set the pool account to the administrator account.
-        poolAccount = newAdminAccount;
+        poolAccount = poolAccount_;
+        emit PoolAccountChanged(address(0), poolAccount_);
+
+        // --- Genesis Mint (the only mint outside `mine()`) ---
+        uint256 total = 0;
+        for (uint256 i = 0; i < holderCount; i++) {
+            address holder = genesisHolders[i];
+            uint256 amount = genesisAmounts[i];
+            if (holder == address(0)) revert ZeroAddress();
+            if (amount == 0) revert AmountZero();
+
+            total += amount;
+            _mint(holder, amount);
+        }
+        genesisSupply = total;
+
+        // --- Supply Accounting ---
+        /// @dev Mining total already achieved by the previous versions. Accounting value only.
+        if (legacyMinedSupply > total) revert InvalidMiningSupply();
+        totalMiningSupply = legacyMinedSupply;
+
+        emit GenesisSupplyMinted(total, legacyMinedSupply);
 
         // --- Initialize Mining Reward Plan ---
         /// @dev Initialize the mining reward plan:
@@ -6010,59 +8242,30 @@ contract ShirushiCoin is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC
         }
     }
 
-    /// @notice Emitted when the pool account is changed
-    /// @param oldAccount The previous pool account address
-    /// @param newAccount The new pool account address
-    event PoolAccountChanged(address indexed oldAccount, address indexed newAccount);
-
-    /**
-     * @notice Update the pool account that receives mining rewards.
-     * @dev This function can only be called by an account holding the `DEFAULT_ADMIN_ROLE`.
-     *      The pool account is the single address that will receive all mining rewards.
-     *      Emits a {PoolAccountChanged} event on success.
-     * @param account The new pool account address. Cannot be the zero address.
-     */
-    function setPoolAccount(address account) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(account != address(0), ERROR_ZERO_ADDRESS);
-        address old = poolAccount;
-        poolAccount = account;
-        emit PoolAccountChanged(old, account);
-    }
-
-    /// @notice Enable token pause.
-    /// @dev Can only be executed by an account holding the `PAUSER_ROLE`.
-    ///      While paused, functions such as transfer and mint are disabled.
-    function pause() external onlyRole(PAUSER_ROLE) {
-        _pause();
-    }
-
-    /// @notice Unpause the token.
-    /// @dev Can only be executed by an account holding the `PAUSER_ROLE`.
-    ///      After unpausing, all token functions are resumed.
-    function unpause() external onlyRole(PAUSER_ROLE) {
-        _unpause();
-    }
-
-    /// @notice Emitted when an account is frozen or unfrozen
-    /// @param account The account being frozen/unfrozen
-    /// @param isFrozen True if the account is now frozen, false if unfrozen
-    event AccountFrozen(address indexed account, bool isFrozen);
+    // ------------------------------------------------------------------
+    // Freezing and the exchange whitelist (ERC20Restricted)
+    // ------------------------------------------------------------------
 
     /**
     * @notice Freeze the specified account, restricting its token transfers.
     * @dev This function can only be called by an account holding the `FREEZER_ROLE`.
+    *      Sets the {ERC20Restricted} state of the account to BLOCKED.
     *      A frozen account is restricted from the following operations:
     *      - `transfer()` / `transferFrom()` (if the sender or recipient is a frozen account)
-    *      - `approve()` (if the frozen account attempts to approve)
+    *      - receiving mining rewards (`mine()` reverts while the pool account is frozen)
     *      Notes:
     *      - A frozen account can still check its balance via `balanceOf()`, but cannot transfer coins.
-    *      - Freezing is applied per account.
-    *      - Execution fails if the account is the zero address.
+    *      - `approve()` / `permit()` are not restricted; the resulting transfer is.
+    *      - Freezing is applied per account and has no expiry.
+    *      - Execution fails if the account is the zero address, or if the account is a
+    *        registered exchange address ({ExchangeAddressProtected}).
     * @param account The account to freeze.
     */
     function freeze(address account) external onlyRole(FREEZER_ROLE) {
-        require(account != address(0), ERROR_ZERO_ADDRESS);
-        _frozenAccounts[account] = true;
+        if (account == address(0)) revert ZeroAddress();
+
+        // Reverts on ALLOWED -> BLOCKED. See `_setRestriction`.
+        _blockUser(account);
 
         emit AccountFrozen(account, true);
     }
@@ -6070,74 +8273,121 @@ contract ShirushiCoin is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC
     /**
     * @notice Unfreeze the specified account, lifting transfer restrictions.
     * @dev This function can only be called by an account holding the `FREEZER_ROLE`.
-    *      Execution fails if the account is the zero address.
+    *      Resets the {ERC20Restricted} state of the account from BLOCKED to DEFAULT.
+    *      Execution fails if the account is not frozen ({NotFrozen}). In particular, the
+    *      FREEZER_ROLE cannot use this function to remove the ALLOWED state of a registered
+    *      exchange address; only `unregisterExchange()` (WHITELIST_ROLE) can do that.
     * @param account The account to unfreeze.
     */
     function unfreeze(address account) external onlyRole(FREEZER_ROLE) {
-        require(account != address(0), ERROR_ZERO_ADDRESS);
-        _frozenAccounts[account] = false;
+        if (getRestriction(account) != Restriction.BLOCKED) revert NotFrozen(account);
+
+        _resetUser(account);
 
         emit AccountFrozen(account, false);
     }
 
-
     /**
-    * @notice Mint new coins to the specified account by the administrator.
-    * @dev This function can only be called by an account holding the `DEFAULT_ADMIN_ROLE`.
-    *      New coins are issued to `account`, increasing the total supply.
-    *      Notes:
-    *      - `amount` must be greater than 0.
-    *      - The total supply after minting must not exceed the maximum supply `maxSupply`.
-    *        Execution reverts if exceeded.
-    *      - Execution reverts if the recipient account is the zero address.
-    * @param account The account to mint coins to.
-    * @param amount The amount of coins to mint (> 0)(in wei).
+    * @notice Register an exchange address, making it immune to freezing.
+    * @dev This function can only be called by an account holding the `WHITELIST_ROLE`.
+    *      Sets the {ERC20Restricted} state of the account to ALLOWED. While registered,
+    *      `freeze()` on this address always reverts.
+    *      Execution fails if the account is the zero address, or if the account is currently
+    *      frozen ({FrozenAddressCannotBeRegistered}) - registering it would silently unfreeze it.
+    * @param account The exchange address to register.
     */
-    function adminMint(address account, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(amount > 0, ERROR_AMOUNT_ZERO);
-        require(account != address(0), ERROR_ZERO_ADDRESS);
-        require(totalSupply() + amount <= maxSupply, ERROR_EXCEEDING_MAX_SUPPLY);
-        
-        // Executing minting
-        _mint(account, amount);
+    function registerExchange(address account) external onlyRole(WHITELIST_ROLE) {
+        if (account == address(0)) revert ZeroAddress();
+
+        // Reverts on BLOCKED -> ALLOWED. See `_setRestriction`.
+        _allowUser(account);
+
+        emit ExchangeRegistered(account, true);
     }
-        
-    /**
-    * @notice Burn tokens from the specified account.
-    * @dev This burn capability is strictly safeguarded and will NEVER be executed arbitrarily during normal operations.  
-    *      It exists solely as an emergency safeguard. If a malicious third party acts against
-    *      the common interests of coin holders, this function can be invoked to reset such harmful actions.
-    *      Outside of such exceptional scenarios, it will never be used.
-    *      And this function can only be called by an account holding the administrator.
-    *      The specified `amount` of tokens will be destroyed from the given `account`,
-    *      reducing the total supply.
-    *      Notes:
-    *      - `amount` must be greater than 0.
-    *      - The account to burn from must have at least the specified token balance.
-    *      - Execution reverts if the account is the zero address.
-    * @param account The account from which tokens will be burned.
-    * @param amount The amount of tokens to burn (> 0),(in wei).
-    */
-    function adminBurn(address account, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(amount > 0, ERROR_AMOUNT_ZERO);
-        require(account != address(0), ERROR_ZERO_ADDRESS);
-        require(balanceOf(account) >= amount, ERROR_INSUFFICIENT_BALANCE);
 
-        // Executing burning
-        _burn(account, amount);
+    /**
+    * @notice Unregister an exchange address.
+    * @dev This function can only be called by an account holding the `WHITELIST_ROLE`.
+    *      Resets the {ERC20Restricted} state of the account from ALLOWED to DEFAULT. This is
+    *      the only path that can remove the ALLOWED state.
+    *      Execution fails if the account is not registered ({NotRegistered}).
+    * @param account The exchange address to unregister.
+    */
+    function unregisterExchange(address account) external onlyRole(WHITELIST_ROLE) {
+        if (getRestriction(account) != Restriction.ALLOWED) revert NotRegistered(account);
+
+        _resetUser(account);
+
+        emit ExchangeRegistered(account, false);
+    }
+
+    /// @notice Returns true if the account is frozen.
+    /// @param account The account to check.
+    function isFrozen(address account) external view returns (bool) {
+        return getRestriction(account) == Restriction.BLOCKED;
+    }
+
+    /// @notice Returns true if the account is a registered exchange address.
+    /// @param account The account to check.
+    function isRegisteredExchange(address account) external view returns (bool) {
+        return getRestriction(account) == Restriction.ALLOWED;
+    }
+
+    /**
+     * @dev The single write path of the {ERC20Restricted} state, with the SISC transition guard.
+     *      {ERC20Restricted} on its own allows any transition, so the following three are
+     *      forbidden here:
+     *      - ALLOWED -> BLOCKED: a registered exchange address can never be frozen.
+     *      - BLOCKED -> ALLOWED: registering a frozen address would unfreeze it.
+     *      - ALLOWED -> DEFAULT is not blocked here, but it is only reachable from
+     *        `unregisterExchange()` (WHITELIST_ROLE): `unfreeze()` (FREEZER_ROLE) requires the
+     *        current state to be BLOCKED, so "unfreeze then freeze" cannot strip ALLOWED.
+     */
+    function _setRestriction(address account, Restriction next) internal override {
+        Restriction current = getRestriction(account);
+        if (current == Restriction.ALLOWED && next == Restriction.BLOCKED) {
+            revert ExchangeAddressProtected(account);
+        }
+        if (current == Restriction.BLOCKED && next == Restriction.ALLOWED) {
+            revert FrozenAddressCannotBeRegistered(account);
+        }
+        super._setRestriction(account, next);
+    }
+
+    // ------------------------------------------------------------------
+    // Mining
+    // ------------------------------------------------------------------
+
+    /// @notice Returns the pool account that receives mining rewards.
+    function getPoolAccount() external view returns (address) {
+        return poolAccount;
+    }
+
+    /**
+     * @notice Update the pool account that receives mining rewards.
+     * @dev This function can only be called by an account holding the `MINING_ADMIN_ROLE`
+     *      (in v3.0 it was DEFAULT_ADMIN_ROLE).
+     *      The pool account is the single address that will receive all mining rewards.
+     *      Emits a {PoolAccountChanged} event on success.
+     * @param account The new pool account address. Cannot be the zero address.
+     */
+    function setPoolAccount(address account) external onlyRole(MINING_ADMIN_ROLE) {
+        if (account == address(0)) revert ZeroAddress();
+        address old = poolAccount;
+        poolAccount = account;
+        emit PoolAccountChanged(old, account);
     }
 
     /**
     * @dev Retrieve the mining reward for a given year.
-    *      The reward is returned in wei. For invalid years 
-    *      (before {MINING_START_YEAR}), 0 is returned.
+    *      The reward is returned in wei. For invalid years
+    *      (before {MINING_START_YEAR}), the call reverts.
     * @param year The year for which to retrieve the reward (e.g., 2024).
-    * @return reward The reward amount in wei (0 for invalid years).
+    * @return reward The reward amount in wei (0 for years outside the plan).
     */
     function getMiningReward(uint256 year) public view returns (uint256) {
         // Undefined year
-        require(year >= MINING_START_YEAR, ERROR_INVALID_NUMBER);
-        require(year <= 9999, ERROR_INVALID_NUMBER);
+        if (year < MINING_START_YEAR || year > 9999) revert InvalidNumber();
 
         // Return the mining reward in wei
         return _miningRewardPlan[year];
@@ -6145,22 +8395,26 @@ contract ShirushiCoin is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC
 
     /**
     * @notice Set the mining reward for a specific year.
-    * @dev This function can only be executed by an account with the `DEFAULT_ADMIN_ROLE`.
+    * @dev This function can only be executed by an account with the `MINING_ADMIN_ROLE`
+    *      (in v3.0 it was DEFAULT_ADMIN_ROLE).
     *      Notes:
     *      - `year`: The target year (must be greater than or equal to `MINING_START_YEAR`).
     *      - `reward`: The mining reward for that year (in wei, zero is allowed).
     *      - Existing reward settings will be overwritten.
-    *      - Example: (2025, 100 SISC) → Sets the reward for 2025 to 100 SISC.
-    * @param year The year to set (≥ MINING_START_YEAR).
+    *      - Example: (2025, 100 SISC) -> Sets the reward for 2025 to 100 SISC.
+    *      - Emits a {MiningRewardChanged} event on success.
+    * @param year The year to set (>= MINING_START_YEAR).
     * @param reward The reward amount in wei.
     */
-    function setMiningReward(uint256 year, uint256 reward) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setMiningReward(uint256 year, uint256 reward) external onlyRole(MINING_ADMIN_ROLE) {
         // Validate year
-        require(year >= MINING_START_YEAR, ERROR_INVALID_NUMBER);
-        require(year <= 9999, ERROR_INVALID_NUMBER);
+        if (year < MINING_START_YEAR || year > 9999) revert InvalidNumber();
 
         // Set new reward
+        uint256 old = _miningRewardPlan[year];
         _miningRewardPlan[year] = reward;
+
+        emit MiningRewardChanged(year, old, reward);
     }
 
     /**
@@ -6177,43 +8431,45 @@ contract ShirushiCoin is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC
     *      Notes:
     *      - Execution must pass 23 hours since the last execution
     *      - The mining reward for the target year will be applied
-    *      - Total supply does not exceed maxSupply
+    *      - Total supply does not exceed {MAX_SUPPLY} (enforced by {ERC20Capped})
     *      - The pool account must not be the zero address
     *      - Mining rewards are minted directly to the pool account
     *      - After execution, lastMinedAt and lastMiningReward are updated
     *      - Emits the event: MineEvent(msg.sender, poolAccount, miningReward)
     *      - State variables are updated early to prevent reentrancy attacks
     *      - Interval check is performed first to prevent front-running
+    * @param year The year whose reward is minted.
     */
     function mine(uint256 year) external onlyRole(MINER_ROLE) nonReentrant {
         // Input Validation (Prioritize interval checks)
         uint256 timestamp = block.timestamp;
-        require(
-            timestamp - lastMinedAt >= _MINING_MIN_INTERVAL,
-            ERROR_INTERVAL
-        );
+        if (timestamp - lastMinedAt < _MINING_MIN_INTERVAL) revert CooldownPeriod();
 
         // Reward-related validation
         uint256 miningReward = getMiningReward(year);
-        require(miningReward > 0, ERROR_INVALID_NUMBER);
-        require(totalSupply() + miningReward <= maxSupply, ERROR_EXCEEDING_MAX_SUPPLY);
+        if (miningReward == 0) revert InvalidNumber();
 
         // Pool Account Validation
-        require(poolAccount != address(0), ERROR_ZERO_ADDRESS);
+        address pool = poolAccount;
+        if (pool == address(0)) revert ZeroAddress();
 
         // Early State Variable Updates (Checks-Effects-Interactions Pattern)
         lastMinedAt = timestamp;
         lastMiningReward = miningReward;
 
-        // Execute mining
-        _mint(poolAccount, miningReward);
-
-        // Add mining reward to the total mainig supply
+        // Add mining reward to the total mining supply
         totalMiningSupply = totalMiningSupply + miningReward;
 
+        // Execute mining. {ERC20Capped} reverts if MAX_SUPPLY would be exceeded.
+        _mint(pool, miningReward);
+
         // Event trigger
-        emit MineEvent(msg.sender, poolAccount, miningReward);
+        emit MineEvent(msg.sender, pool, miningReward);
     }
+
+    // ------------------------------------------------------------------
+    // Web3 Maker AI data
+    // ------------------------------------------------------------------
 
     /// @notice Web3 Maker AI Data recording event
     /// @dev Persists the recorder's account and the data hash on the blockchain
@@ -6230,7 +8486,7 @@ contract ShirushiCoin is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC
     /// @param web3MakerAIData The hash of the data to be recorded (bytes32)
     function storeWeb3MakerAIData(bytes32 web3MakerAIData) external onlyRole(RECORDER_ROLE) {
         // Zero hash validation
-        require(web3MakerAIData != bytes32(0), ERROR_INVALID_NUMBER);
+        if (web3MakerAIData == bytes32(0)) revert InvalidNumber();
 
         // Emit event (executed before updating storage)
         emit Web3MakerAIDataStored(msg.sender, web3MakerAIData);
@@ -6239,6 +8495,10 @@ contract ShirushiCoin is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC
         lastRecordedAt = block.timestamp;
         lastWeb3MakerAIData = web3MakerAIData;
     }
+
+    // ------------------------------------------------------------------
+    // Batch transfer
+    // ------------------------------------------------------------------
 
     /// @notice Bulk transfer event
     /// @dev Records the sender, number of recipients, and total amount transferred
@@ -6253,13 +8513,12 @@ contract ShirushiCoin is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC
 
     /**
     * @notice Executes a batch transfer to multiple recipients.
-    * @dev 
-    * - Supports up to 100 recipients. 
-    * - The function reverts if any recipient is frozen.
-    * - Validates that the sender has sufficient balance to cover the total transfer amount.
-    * - Prevents reentrancy attacks via ReentrancyGuard.
-    * - Only accounts with `POOLER_ROLE` can call this function.
-    * @param recipients Array of recipient addresses (max 100).
+    * @dev
+    * - Supports 1 to {MAX_BATCH_SIZE} recipients.
+    * - Moves only the caller's own balance, so no role is required (POOLER_ROLE was removed in v3.1).
+    * - The function reverts if the caller or any recipient is frozen (checked in `_update`).
+    * - Prevents reentrancy attacks via {ReentrancyGuardTransient}.
+    * @param recipients Array of recipient addresses (1..{MAX_BATCH_SIZE}).
     * @param amounts Array of amounts to send, same length as `recipients`.
     * @custom:gas-cost Approximately 50,000 gas per recipient (estimated).
     */
@@ -6269,52 +8528,81 @@ contract ShirushiCoin is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC
     )
         external
         nonReentrant
-        onlyRole(POOLER_ROLE)
     {
         // Array length checks to prevent DoS attacks
-        require(recipients.length <= 100, ERROR_EXCEEDING_100_RECIPIENTS);
-        require(amounts.length <= 100, ERROR_EXCEEDING_100_AMOUNTS);
-        require(recipients.length == amounts.length, ERROR_LENGTH_MISMATCH);
+        uint256 count = recipients.length;
+        if (count == 0 || count > MAX_BATCH_SIZE) revert InvalidBatchSize();
+        if (count != amounts.length) revert LengthMismatch();
 
         uint256 totalAmount = 0;
+        address sender = _msgSender();
 
-        // First pass: validate recipients and calculate total amount
-        for (uint256 i = 0; i < recipients.length; i++) {
-            require(!_frozenAccounts[recipients[i]], ERROR_FROZEN_RECIPIENT_ACCOUNT);
+        // Execute transfers. `_transfer` checks the balance, the zero address
+        // and the restriction state of both sides.
+        for (uint256 i = 0; i < count; i++) {
             totalAmount += amounts[i];
-        }
-
-        // Ensure sender has enough balance to cover all transfers
-        require(balanceOf(msg.sender) >= totalAmount, ERROR_INSUFFICIENT_BALANCE);
-
-        // Second pass: execute transfers
-        for (uint256 i = 0; i < recipients.length; i++) {
-            _transfer(msg.sender, recipients[i], amounts[i]);
+            _transfer(sender, recipients[i], amounts[i]);
         }
 
         // Emit event with actual number of recipients and total amount
-        emit MultiTransferEvent(msg.sender, recipients.length, totalAmount);
+        emit MultiTransferEvent(sender, count, totalAmount);
     }
 
-    // This functions is overrides required by Solidity.
-    function _update(address from, address to, uint256 value) internal override(ERC20, ERC20Pausable) {
-        if (from != address(0)) {
-            require(!_frozenAccounts[from], ERROR_FROZEN_SENDER_ACCOUNT);
-        }
-        if (to != address(0)) {
-            require(!_frozenAccounts[to], ERROR_FROZEN_RECIPIENT_ACCOUNT);
-        }
+    // ------------------------------------------------------------------
+    // Role management: DEFAULT_ADMIN_ROLE is fixed at deployment
+    // ------------------------------------------------------------------
+
+    /**
+     * @dev DEFAULT_ADMIN_ROLE can never be granted to any address other than
+     *      {fixedAdminAccount}. Every other role behaves as in {AccessControl}.
+     */
+    function _grantRole(bytes32 role, address account)
+        internal
+        override(AccessControlEnumerable)
+        returns (bool)
+    {
+        if (role == DEFAULT_ADMIN_ROLE && account != fixedAdminAccount) revert AdminIsFixed();
+        return super._grantRole(role, account);
+    }
+
+    /**
+     * @dev DEFAULT_ADMIN_ROLE can never be revoked or renounced (`renounceRole` calls this).
+     *      Every other role behaves as in {AccessControl}.
+     */
+    function _revokeRole(bytes32 role, address account)
+        internal
+        override(AccessControlEnumerable)
+        returns (bool)
+    {
+        if (role == DEFAULT_ADMIN_ROLE) revert AdminIsFixed();
+        return super._revokeRole(role, account);
+    }
+
+    // ------------------------------------------------------------------
+    // Overrides required by Solidity
+    // ------------------------------------------------------------------
+
+    /// @notice Returns the maximum supply (in wei). Alias of {ERC20Capped-cap}.
+    /// @dev Kept for compatibility with the v3.0 `maxSupply` getter.
+    function maxSupply() external view returns (uint256) {
+        return cap();
+    }
+
+    // This function is an override required by Solidity.
+    function _update(address from, address to, uint256 value)
+        internal
+        override(ERC20, ERC20Capped, ERC20Restricted)
+    {
         super._update(from, to, value);
     }
 
-    // This functions is overrides required by Solidity.
+    // This function is an override required by Solidity.
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(AccessControl, ERC1363)
+        override(AccessControlEnumerable, ERC1363)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
     }
 }
-
