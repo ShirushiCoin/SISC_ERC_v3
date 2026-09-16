@@ -1,0 +1,36 @@
+SISC (ShirushiCoin) — third-party notices
+=========================================
+
+This project is MIT licensed (see LICENSE). It incorporates third-party source
+code, also under the MIT License, whose copyright notices are reproduced below
+as that license requires. This applies both to the modular sources built from
+solc-input.json and to the single-file contracts/ShirushiCoin_flattened.sol,
+which inlines all of them under one SPDX-License-Identifier header.
+
+-------------------------------------------------------------------------------
+OpenZeppelin Contracts
+  Upstream: https://github.com/OpenZeppelin/openzeppelin-contracts
+  Version:  5.6.1
+  Files:    ~40 sources under @openzeppelin/contracts/, embedded in
+            solc-input.json and inlined in ShirushiCoin_flattened.sol
+
+  The MIT License (MIT)
+
+  Copyright (c) 2016-2024 zOS Global Limited and contributors
+
+-------------------------------------------------------------------------------
+OpenZeppelin Community Contracts
+  Upstream: https://github.com/OpenZeppelin/openzeppelin-community-contracts
+  Commit:   a12b30ca7affe3320777378eddf2d0cebae8c5b2
+  File:     contracts/token/ERC20/extensions/ERC20Restricted.sol
+            (vendored unchanged — see contracts/vendor/README.md)
+
+  NOTE: this library is NOT covered by OpenZeppelin's audits.
+
+  The MIT License (MIT)
+
+  Copyright (c) 2016-2024 zOS Global Limited and contributors
+
+-------------------------------------------------------------------------------
+
+Full MIT license text: see LICENSE.

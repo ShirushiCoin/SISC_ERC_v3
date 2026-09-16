@@ -27,11 +27,22 @@ three-state model used by v3.1:
 |---|---|
 | `DEFAULT` | ordinary address |
 | `BLOCKED` | frozen (`freeze()` / `unfreeze()`, FREEZER_ROLE) |
-| `ALLOWED` | registered exchange address (`registerExchange()` / `unregisterExchange()`, WHITELIST_ROLE) |
+| `ALLOWED` | registered exchange address (`registerExchange()`, WHITELIST_ROLE). **Permanent:** there is no unregister function and `ShirushiCoin._setRestriction()` rejects every transition out of `ALLOWED` |
 
 `canTransact()` is left at the upstream default (a blocklist: only `BLOCKED` is stopped),
 so `ALLOWED` is **not** a transfer gate for anyone else — it only marks the addresses that
 `ShirushiCoin._setRestriction()` protects from being frozen.
+
+### Two places where SISC extends the upstream behaviour
+
+1. `ShirushiCoin._setRestriction()` makes `ALLOWED` a terminal state, so the exchange
+   whitelist is append-only. Upstream allows any transition.
+2. `ShirushiCoin._spendAllowance()` additionally checks the **spender**. Upstream
+   `_update` (lines 60-64) checks only `from` and `to`, and the comment at lines 66-67
+   deliberately leaves approvals unrestricted. Without the override, freezing an address
+   would not stop it from calling `transferFrom(victim, cleanAddress, ...)` against an
+   allowance approved earlier - the tokens never touch the frozen address. Freezing is the
+   incident-response tool for exactly that, so SISC restricts the spender.
 
 ### Re-verifying the file
 

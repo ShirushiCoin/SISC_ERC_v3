@@ -8095,6 +8095,7 @@ abstract contract ERC20Restricted is ERC20 {
  // EIP-2612 ERC20 Permit
 
 
+
 // OpenZeppelin Community Contracts (not part of the audited @openzeppelin/contracts package).
 // Vendored unchanged at a pinned commit. See contracts/vendor/README.md.
 
@@ -8107,15 +8108,33 @@ abstract contract ERC20Restricted is ERC20 {
  * @dev Changes from v3.0 (see SISC v3.1 Component Map):
  *      - Removed: burn / burnFrom (ERC20Burnable), adminBurn, adminMint,
  *        pause / unpause (ERC20Pausable) and any transfer of DEFAULT_ADMIN_ROLE.
- *        No function can increase, decrease or move the balance of another account.
- *      - Issuance is `mine()` only. The migration supply is minted once in the constructor.
+ *        There is no burn path of any kind, so no function can decrease the balance of any
+ *        account, and none can move another account's balance without that holder's approval.
+ *      - Issuance goes through `mine()` only, plus the one-time migration supply minted in the
+ *        constructor. Note that `mine()` is NOT a schedule enforced on-chain:
+ *        MINING_ADMIN_ROLE can raise any year's reward with {setMiningReward} (no upper bound)
+ *        and repoint the recipient with {setPoolAccount}, while MINER_ROLE chooses the `year`
+ *        passed to {mine} and may replay any past year every 23 hours. Those two roles together
+ *        can therefore mint the entire remaining cap headroom to an address of their choosing,
+ *        and DEFAULT_ADMIN_ROLE can grant itself both. **The only hard limit on issuance is
+ *        {MAX_SUPPLY}**, enforced by {ERC20Capped}. See docs/v3.1-security-notes.md S-1 / S-2.
  *      - Freezing is implemented with {ERC20Restricted} (BLOCKED) instead of a private mapping.
  *      - The exchange whitelist is {ERC20Restricted} (ALLOWED) plus the SISC transition guard
  *        in {_setRestriction}. The whitelist is append-only: registration is permanent, so a
  *        registered address can never be frozen, unregistered or otherwise changed. Every
  *        registered address is enumerable on-chain through {getRegisteredExchanges}.
- *      - `maxSupply` is enforced by {ERC20Capped}; re-entrancy by {ReentrancyGuardTransient};
- *        role holders are enumerable via {AccessControlEnumerable}.
+ *      - `maxSupply` is enforced by {ERC20Capped}; role holders are enumerable via
+ *        {AccessControlEnumerable}.
+ *      - Re-entrancy: {mine} and {multiTransfer} carry `nonReentrant` as defence in depth, but
+ *        neither makes an external call, so the guard cannot currently trip. The functions that
+ *        do call out are the inherited ERC-1363 ones (`transferAndCall`, `transferFromAndCall`,
+ *        `approveAndCall`); they are deliberately unguarded because their callbacks fire only
+ *        after `_update` and `_spendAllowance` have fully settled, leaving no partial state to
+ *        re-enter. Do not read the two guards as covering the ERC-1363 paths.
+ *      - Supply accounting: `totalSupply()` is the only figure that reflects existing tokens.
+ *        `totalMiningSupply` starts at `legacyMinedSupply`, which this contract never minted, so
+ *        remaining issuance is `cap() - totalSupply()` and NOT `cap() - totalMiningSupply()`.
+ *        {minedByThisContract} returns the part actually minted by this contract.
  *      - Roles: DEFAULT_ADMIN_ROLE is fixed at deployment. PAUSER_ROLE is gone (pause removed)
  *        and POOLER_ROLE is gone (`multiTransfer` moves only the caller's own balance).
  *        MINING_ADMIN_ROLE is new and separates the mining settings from the top-level admin.
@@ -8189,8 +8208,16 @@ contract ShirushiCoin is
     /// @dev Total amount minted by the constructor (in wei). The migration supply of v3.1.
     uint256 public immutable genesisSupply;
 
-    /// @dev Total mining supply (in wei). Starts at the amount already mined by the previous
-    ///      versions (constructor argument) and grows with every `mine()`.
+    /// @dev The amount already mined by the previous versions (in wei), as given to the
+    ///      constructor. These coins were NOT minted by this contract - they arrive as part of
+    ///      {genesisSupply}. Exposed so that {totalMiningSupply} can be split into its historical
+    ///      and its on-chain parts. See {minedByThisContract}.
+    uint256 public immutable legacyMinedSupply;
+
+    /// @dev Total mining supply (in wei). Starts at {legacyMinedSupply} and grows with every
+    ///      `mine()`. This is NOT a supply figure: it counts coins this contract never minted,
+    ///      so `cap() - totalMiningSupply` is NOT the remaining issuance. Use
+    ///      `cap() - totalSupply()` for that.
     uint256 public totalMiningSupply;
 
     /// @dev The pool account. Mining rewards are granted to this single account.
@@ -8213,8 +8240,9 @@ contract ShirushiCoin is
 
     /// @dev Append-only registry of every registered exchange address, in registration order.
     ///      Entries are never removed, reordered or overwritten, so an address keeps its index
-    ///      for the life of the contract. {registerExchange} rejects addresses that are already
-    ///      registered, so the array never contains duplicates or the zero address.
+    ///      for the life of the contract. {registerExchange} returns early for an address that is
+    ///      already registered, so the array never contains duplicates, the zero address, or this
+    ///      contract.
     address[] private _registeredExchanges;
 
     // --- Errors ---
@@ -8236,8 +8264,24 @@ contract ShirushiCoin is
     /// @dev Two array arguments have different lengths.
     error LengthMismatch();
 
-    /// @dev The already-mined supply given to the constructor exceeds the genesis supply.
+    /// @dev The already-mined supply given to the constructor exceeds {MAX_SUPPLY}.
+    ///      It is a cumulative historical figure and is deliberately NOT bounded by the genesis
+    ///      supply: the previous versions had burn functions, so more coins may have been mined
+    ///      over time than survive in the migration snapshot.
     error InvalidMiningSupply();
+
+    /// @dev The same address appears more than once in `genesisHolders`.
+    error DuplicateGenesisHolder(address account);
+
+    /// @dev {setPoolAccount} was given a frozen address, which would brick {mine}.
+    error PoolAccountIsFrozen(address account);
+
+    /// @dev {registerExchange} was given an address that must never be registered.
+    error InvalidExchangeAddress(address account);
+
+    /// @dev {mine} was called for a year whose reward is zero - either outside the 100-year plan
+    ///      (2122 onwards) or explicitly zeroed by {setMiningReward}.
+    error NoRewardForYear(uint256 year);
 
     /// @dev DEFAULT_ADMIN_ROLE is fixed at deployment: it cannot be granted, revoked or renounced.
     error AdminIsFixed();
@@ -8249,14 +8293,8 @@ contract ShirushiCoin is
     ///      (ALLOWED -> DEFAULT is forbidden): registration is permanent.
     error ExchangeRegistrationIsPermanent(address account);
 
-    /// @dev `registerExchange()` was called on an address that is already registered.
-    error AlreadyRegistered(address account);
-
     /// @dev A frozen address cannot be registered as an exchange (BLOCKED -> ALLOWED is forbidden).
     error FrozenAddressCannotBeRegistered(address account);
-
-    /// @dev `unfreeze()` was called on an address that is not frozen.
-    error NotFrozen(address account);
 
     /// @dev An index argument is outside the bounds of the exchange registry.
     error IndexOutOfBounds(uint256 index, uint256 length);
@@ -8292,7 +8330,16 @@ contract ShirushiCoin is
 
     /**
      * @notice Initial role holders of ShirushiCoin.
-     * @dev Passed as a single struct so that the six addresses cannot be mixed up positionally.
+     * @dev Grouped into a struct for readability. **This does NOT prevent positional mistakes:**
+     *      a struct of six `address` fields ABI-encodes as six consecutive address words, exactly
+     *      like six positional arguments. The field names survive only in tooling that builds the
+     *      call from a named object (an ethers script); in Remix the tuple is a single text field
+     *      and on Etherscan it is raw hex, so there the order is all there is.
+     *      Getting the `admin` slot wrong is UNRECOVERABLE: {fixedAdminAccount} is taken from it
+     *      and can never be granted elsewhere, revoked or renounced, so a hot key landing there
+     *      becomes the permanent root of role management. Deploy with `scripts/deploy-sisc.ts`
+     *      (named object + pre-flight assertions) and verify the `RoleGranted` logs with
+     *      `scripts/verify-deployment.ts` before doing anything else.
      *      Every field except `recorder` must be a non-zero address.
      * @param admin The single, permanent holder of DEFAULT_ADMIN_ROLE (role management only).
      * @param freezer The initial holder of FREEZER_ROLE.
@@ -8328,16 +8375,18 @@ contract ShirushiCoin is
     * @param poolAccount_ The account that receives mining rewards. Cannot be the zero address.
     * @param genesisHolders The accounts that receive the migration supply (1..{MAX_BATCH_SIZE}).
     * @param genesisAmounts The amount for each account (in wei, each > 0). Same length as `genesisHolders`.
-    * @param legacyMinedSupply The amount already mined by the previous versions (in wei).
-    *                          It is accounting only: it is not minted here and must not exceed
-    *                          the sum of `genesisAmounts`.
+    * @param legacyMinedSupply_ The amount already mined by the previous versions (in wei).
+    *                          Accounting only: it is not minted here. It is a cumulative
+    *                          historical total, so it may legitimately exceed the surviving
+    *                          migration supply (the previous versions could burn). It is
+    *                          therefore bounded only by {MAX_SUPPLY}.
     */
     constructor(
         InitialRoleHolders memory roleHolders,
         address poolAccount_,
         address[] memory genesisHolders,
         uint256[] memory genesisAmounts,
-        uint256 legacyMinedSupply
+        uint256 legacyMinedSupply_
     )
         ERC20("Shirushi Coin", "SISC")
         ERC20Capped(MAX_SUPPLY)
@@ -8352,6 +8401,11 @@ contract ShirushiCoin is
             roleHolders.miner == address(0) ||
             poolAccount_ == address(0)
         ) revert ZeroAddress();
+
+        // The token itself must never hold or receive the supply: there is no burn and no rescue
+        // function, so anything sent to `address(this)` is permanently lost and still counts
+        // against the cap. {registerExchange} applies the same rule.
+        if (poolAccount_ == address(this)) revert InvalidExchangeAddress(poolAccount_);
 
         uint256 holderCount = genesisHolders.length;
         if (holderCount == 0 || holderCount > MAX_BATCH_SIZE) revert InvalidBatchSize();
@@ -8373,6 +8427,20 @@ contract ShirushiCoin is
         }
 
         // --- Pool Account Setup ---
+        /// @dev The pool is deliberately NOT auto-registered as an exchange address. Registration
+        ///      is permanent and ALLOWED is terminal, so auto-registering would make the mint
+        ///      destination permanently unfreezable - and because MINING_ADMIN_ROLE can point the
+        ///      pool anywhere and raise any year's reward (S-1), that would remove the only
+        ///      on-chain response to an abusive or compromised mint. Freezing the pool does stop
+        ///      `mine()`, but that is reversible by unfreezing, whereas a permanent freeze
+        ///      exemption is not. Registering the pool is available as an operational choice;
+        ///      see docs/v3.1-security-notes.md S-5 for the trade-off.
+        ///
+        ///      **Scope of this protection.** It holds against a compromised MINING_ADMIN_ROLE +
+        ///      MINER_ROLE pair, which cannot register anything. It does NOT hold against the
+        ///      fixed admin: DEFAULT_ADMIN_ROLE can grant itself WHITELIST_ROLE, register an
+        ///      address of its choosing and then point the pool at it, making the proceeds
+        ///      permanently unfreezable (S-3). Nothing here constrains the admin key.
         poolAccount = poolAccount_;
         emit PoolAccountChanged(address(0), poolAccount_);
 
@@ -8382,7 +8450,15 @@ contract ShirushiCoin is
             address holder = genesisHolders[i];
             uint256 amount = genesisAmounts[i];
             if (holder == address(0)) revert ZeroAddress();
+            if (holder == address(this)) revert InvalidExchangeAddress(holder);
             if (amount == 0) revert AmountZero();
+
+            // Reject duplicates. The totals still add up, so a repeated address is invisible in
+            // `genesisSupply` / `totalSupply` / {GenesisSupplyMinted}, and with no adminMint and
+            // no burn path a misallocation here can only be fixed by redeploying.
+            for (uint256 j = 0; j < i; j++) {
+                if (genesisHolders[j] == holder) revert DuplicateGenesisHolder(holder);
+            }
 
             total += amount;
             _mint(holder, amount);
@@ -8390,11 +8466,13 @@ contract ShirushiCoin is
         genesisSupply = total;
 
         // --- Supply Accounting ---
-        /// @dev Mining total already achieved by the previous versions. Accounting value only.
-        if (legacyMinedSupply > total) revert InvalidMiningSupply();
-        totalMiningSupply = legacyMinedSupply;
+        /// @dev Mining total already achieved by the previous versions. Accounting value only:
+        ///      cumulative, so it is bounded by the cap rather than by the migration snapshot.
+        if (legacyMinedSupply_ > MAX_SUPPLY) revert InvalidMiningSupply();
+        legacyMinedSupply = legacyMinedSupply_;
+        totalMiningSupply = legacyMinedSupply_;
 
-        emit GenesisSupplyMinted(total, legacyMinedSupply);
+        emit GenesisSupplyMinted(total, legacyMinedSupply_);
 
         // --- Initialize Mining Reward Plan ---
         /// @dev Initialize the mining reward plan:
@@ -8422,19 +8500,26 @@ contract ShirushiCoin is
     * @dev This function can only be called by an account holding the `FREEZER_ROLE`.
     *      Sets the {ERC20Restricted} state of the account to BLOCKED.
     *      A frozen account is restricted from the following operations:
-    *      - `transfer()` / `transferFrom()` (if the sender or recipient is a frozen account)
+    *      - `transfer()` / `transferFrom()` (if the sender, the recipient, or the spender
+    *        calling `transferFrom` is a frozen account - see {_spendAllowance})
     *      - receiving mining rewards (`mine()` reverts while the pool account is frozen)
     *      Notes:
     *      - A frozen account can still check its balance via `balanceOf()`, but cannot transfer coins.
     *      - `approve()` / `permit()` are not restricted; the resulting transfer is.
     *      - Freezing is applied per account and has no expiry.
-    *      - Execution fails if the account is the zero address, or if the account is a
-    *        registered exchange address ({ExchangeAddressProtected}). The latter is permanent:
-    *        a registered address can never be frozen, and there is no way to unregister it.
+    *      - Execution fails if the account is the zero address, or if the account is a registered
+    *        exchange address ({ExchangeAddressProtected}). The latter is permanent: a registered
+    *        address can never be frozen, and there is no way to unregister it.
+    *      - **Idempotent.** Freezing an already-frozen account succeeds and does nothing; no
+    *        {AccountFrozen} event is emitted. A revert here would abort a whole multi-address
+    *        Safe batch because one address had been frozen seconds earlier - exactly the race
+    *        that happens during an incident. The event still fires only on a real transition,
+    *        so indexers can keep treating "event" as "state changed".
     * @param account The account to freeze.
     */
     function freeze(address account) external onlyRole(FREEZER_ROLE) {
         if (account == address(0)) revert ZeroAddress();
+        if (getRestriction(account) == Restriction.BLOCKED) return; // already frozen: no-op
 
         // Reverts on ALLOWED -> BLOCKED. See `_setRestriction`.
         _blockUser(account);
@@ -8446,13 +8531,15 @@ contract ShirushiCoin is
     * @notice Unfreeze the specified account, lifting transfer restrictions.
     * @dev This function can only be called by an account holding the `FREEZER_ROLE`.
     *      Resets the {ERC20Restricted} state of the account from BLOCKED to DEFAULT.
-    *      Execution fails if the account is not frozen ({NotFrozen}). In particular, the
+    *      **Idempotent**, for the same batch-safety reason as {freeze}: an account that is not
+    *      frozen is left untouched and no event is emitted. In particular this means the
     *      FREEZER_ROLE cannot use this function to remove the ALLOWED state of a registered
-    *      exchange address: that state is permanent and no function can remove it.
+    *      exchange address - such a call is a silent no-op, never a reset.
     * @param account The account to unfreeze.
     */
     function unfreeze(address account) external onlyRole(FREEZER_ROLE) {
-        if (getRestriction(account) != Restriction.BLOCKED) revert NotFrozen(account);
+        if (account == address(0)) revert ZeroAddress(); // symmetric with {freeze}
+        if (getRestriction(account) != Restriction.BLOCKED) return; // not frozen (or ALLOWED): no-op
 
         _resetUser(account);
 
@@ -8472,14 +8559,17 @@ contract ShirushiCoin is
     *      DEFAULT_ADMIN_ROLE - can remove an address from the whitelist or change its entry.
     *      A wrong address registered here can only be corrected by redeploying the contract.
     *
-    *      Execution fails if the account is the zero address, if the account is already
-    *      registered ({AlreadyRegistered}), or if the account is currently frozen
+    *      Execution fails if the account is the zero address, if it is the token contract itself
+    *      ({InvalidExchangeAddress}), or if the account is currently frozen
     *      ({FrozenAddressCannotBeRegistered}) - registering it would silently unfreeze it.
+    *      Registering an already-registered address is an idempotent no-op: nothing is appended
+    *      to the registry and no event is emitted.
     * @param account The exchange address to register.
     */
     function registerExchange(address account) external onlyRole(WHITELIST_ROLE) {
         if (account == address(0)) revert ZeroAddress();
-        if (getRestriction(account) == Restriction.ALLOWED) revert AlreadyRegistered(account);
+        if (account == address(this)) revert InvalidExchangeAddress(account);
+        if (getRestriction(account) == Restriction.ALLOWED) return; // already registered: no-op
 
         // Reverts on BLOCKED -> ALLOWED. See `_setRestriction`.
         _allowUser(account);
@@ -8545,8 +8635,8 @@ contract ShirushiCoin is
      *      - BLOCKED -> ALLOWED ({FrozenAddressCannotBeRegistered}): registering a frozen
      *        address would silently unfreeze it.
      *
-     *      ALLOWED -> ALLOWED is unreachable: {registerExchange} rejects an already-registered
-     *      address with {AlreadyRegistered}, so the registry cannot gain duplicate entries.
+     *      ALLOWED -> ALLOWED never reaches here: {registerExchange} returns early for an
+     *      already-registered address, so the registry cannot gain duplicate entries.
      */
     function _setRestriction(address account, Restriction next) internal override {
         Restriction current = getRestriction(account);
@@ -8574,22 +8664,45 @@ contract ShirushiCoin is
      * @dev This function can only be called by an account holding the `MINING_ADMIN_ROLE`
      *      (in v3.0 it was DEFAULT_ADMIN_ROLE).
      *      The pool account is the single address that will receive all mining rewards.
-     *      Emits a {PoolAccountChanged} event on success.
-     * @param account The new pool account address. Cannot be the zero address.
+     *      The new account must not be frozen ({PoolAccountIsFrozen}): pointing the pool at a
+     *      BLOCKED address would make every `mine()` revert. It deliberately does NOT have to be
+     *      a registered exchange address - requiring that would force every mint destination to
+     *      be permanently unfreezable, which removes the only on-chain response to an abusive
+     *      mint (see the constructor and docs/v3.1-security-notes.md S-1 / S-5).
+     *      Note this check is a snapshot: the pool can still be frozen afterwards, which pauses
+     *      mining until it is unfrozen. That is the intended, reversible failure mode.
+     *      An ALLOWED (registered) address IS accepted. Doing so makes the mint destination
+     *      permanently unfreezable, which is the trade-off described on the constructor; it is
+     *      not blocked here because registering the pool is a legitimate operational choice.
+     *      Setting the account it already holds is an idempotent no-op with no event - but the
+     *      frozen check runs first, so a successful call always means the pool is currently a
+     *      usable destination. Re-applying a frozen pool reverts instead of reporting success.
+     * @param account The new pool account address. Must be non-zero, not this contract, not frozen.
      */
     function setPoolAccount(address account) external onlyRole(MINING_ADMIN_ROLE) {
         if (account == address(0)) revert ZeroAddress();
+        // Same guard as the constructor and {registerExchange}. Tokens minted to this contract
+        // can never be recovered (no burn, no rescue) yet still count against the cap.
+        if (account == address(this)) revert InvalidExchangeAddress(account);
+        // Checked before the unchanged short-circuit so that "success" never means
+        // "nothing happened and mining is still stuck on a frozen pool".
+        if (getRestriction(account) == Restriction.BLOCKED) revert PoolAccountIsFrozen(account);
         address old = poolAccount;
+        if (account == old) return; // unchanged: no-op
         poolAccount = account;
         emit PoolAccountChanged(old, account);
     }
 
     /**
-    * @dev Retrieve the mining reward for a given year.
-    *      The reward is returned in wei. For invalid years
-    *      (before {MINING_START_YEAR}), the call reverts.
+    * @dev Retrieve the mining reward for a given year, in wei.
+    *      The constructor fills the plan for exactly 100 years: {MINING_START_YEAR} (2022)
+    *      through 2121. Behaviour by year:
+    *      - below {MINING_START_YEAR}, or above 9999: reverts {InvalidNumber}
+    *      - 2022..2121: the planned reward (non-zero unless {setMiningReward} zeroed it)
+    *      - 2122..9999: returns 0, meaning the plan is exhausted. {mine} then reverts
+    *        {NoRewardForYear}, which is distinct from the malformed-year {InvalidNumber}.
     * @param year The year for which to retrieve the reward (e.g., 2024).
-    * @return reward The reward amount in wei (0 for years outside the plan).
+    * @return reward The reward amount in wei (0 for 2122..9999 and for zeroed years).
     */
     function getMiningReward(uint256 year) public view returns (uint256) {
         // Undefined year
@@ -8616,8 +8729,11 @@ contract ShirushiCoin is
         // Validate year
         if (year < MINING_START_YEAR || year > 9999) revert InvalidNumber();
 
-        // Set new reward
+        // Setting the value the year already holds is an idempotent no-op, so that a batch that
+        // re-applies a schedule does not abort, and {MiningRewardChanged} is never emitted for a
+        // change that did not happen - an indexer would otherwise record a false schedule edit.
         uint256 old = _miningRewardPlan[year];
+        if (old == reward) return;
         _miningRewardPlan[year] = reward;
 
         emit MiningRewardChanged(year, old, reward);
@@ -8651,9 +8767,10 @@ contract ShirushiCoin is
         uint256 timestamp = block.timestamp;
         if (timestamp - lastMinedAt < _MINING_MIN_INTERVAL) revert CooldownPeriod();
 
-        // Reward-related validation
+        // Reward-related validation. A distinct error separates "the plan has run out for this
+        // year" (2122 onwards, or a year zeroed by {setMiningReward}) from a malformed year.
         uint256 miningReward = getMiningReward(year);
-        if (miningReward == 0) revert InvalidNumber();
+        if (miningReward == 0) revert NoRewardForYear(year);
 
         // Pool Account Validation
         address pool = poolAccount;
@@ -8722,11 +8839,15 @@ contract ShirushiCoin is
     * @dev
     * - Supports 1 to {MAX_BATCH_SIZE} recipients.
     * - Moves only the caller's own balance, so no role is required (POOLER_ROLE was removed in v3.1).
-    * - The function reverts if the caller or any recipient is frozen (checked in `_update`).
-    * - Prevents reentrancy attacks via {ReentrancyGuardTransient}.
+    * - **All or nothing.** If the caller or ANY recipient is frozen, `_update` reverts and the
+    *   entire batch is rolled back - no subset of the transfers lands. A batch assembled ahead of
+    *   time can therefore fail because one recipient was frozen in the meantime. Screen the
+    *   recipients with {canTransact} or {isFrozen} before submitting a large batch.
+    * - Carries `nonReentrant` as defence in depth, but `_transfer` makes no external call, so the
+    *   guard cannot currently trip. See the re-entrancy note on the contract.
     * @param recipients Array of recipient addresses (1..{MAX_BATCH_SIZE}).
     * @param amounts Array of amounts to send, same length as `recipients`.
-    * @custom:gas-cost Approximately 50,000 gas per recipient (estimated).
+    * @custom:gas-cost Approximately 29,400 gas per recipient (measured, 100 fresh recipients).
     */
     function multiTransfer(
         address[] calldata recipients,
@@ -8780,7 +8901,10 @@ contract ShirushiCoin is
         override(AccessControlEnumerable)
         returns (bool)
     {
-        if (role == DEFAULT_ADMIN_ROLE) revert AdminIsFixed();
+        // Only reject an actual removal. Revoking or renouncing DEFAULT_ADMIN_ROLE on an address
+        // that never held it is a no-op in {IAccessControl}; reverting on it would make any
+        // defensive "renounce everything" batch in a Safe or a deploy script fail as a whole.
+        if (role == DEFAULT_ADMIN_ROLE && hasRole(role, account)) revert AdminIsFixed();
         return super._revokeRole(role, account);
     }
 
@@ -8792,6 +8916,33 @@ contract ShirushiCoin is
     /// @dev Kept for compatibility with the v3.0 `maxSupply` getter.
     function maxSupply() external view returns (uint256) {
         return cap();
+    }
+
+    /// @notice Returns the amount actually minted by this contract's {mine} (in wei).
+    /// @dev `totalMiningSupply` starts at {legacyMinedSupply}, which this contract never minted,
+    ///      so this subtraction is the only on-chain figure for v3.1's own mining output.
+    ///      Remaining issuance is `cap() - totalSupply()`, never `cap() - totalMiningSupply()`.
+    function minedByThisContract() external view returns (uint256) {
+        return totalMiningSupply - legacyMinedSupply;
+    }
+
+    /**
+     * @dev Frozen accounts cannot spend someone else's allowance.
+     *
+     *      {ERC20Restricted} checks only the `from` and `to` of a transfer, never the spender, so
+     *      without this override `freeze(attacker)` would not stop the attacker from calling
+     *      `transferFrom(victim, anyCleanAddress, ...)` against allowances approved earlier: the
+     *      tokens never touch the frozen address, so every upstream check passes. Freezing is the
+     *      incident-response tool for exactly that kind of approval drain, so the spender is
+     *      checked here.
+     *
+     *      This covers `transferFrom` and the inherited `transferFromAndCall`. `approve` and
+     *      `permit` stay unrestricted (upstream design - see docs/v3.1-security-notes.md S-4):
+     *      a frozen holder can still grant an allowance, but no frozen account can spend one.
+     */
+    function _spendAllowance(address owner, address spender, uint256 value) internal override {
+        _checkRestriction(spender);
+        super._spendAllowance(owner, spender, value);
     }
 
     // This function is an override required by Solidity.
@@ -8809,7 +8960,11 @@ contract ShirushiCoin is
         override(AccessControlEnumerable, ERC1363)
         returns (bool)
     {
-        return super.supportsInterface(interfaceId);
+        // {ERC20Permit} implements {IERC5267} (`eip712Domain()`) but OpenZeppelin does not
+        // register it, so an ERC-165 consumer would not discover the working implementation.
+        // ERC-20 itself is deliberately not advertised: the standard predates ERC-165 and
+        // defines no interface id for it.
+        return interfaceId == type(IERC5267).interfaceId || super.supportsInterface(interfaceId);
     }
 }
 

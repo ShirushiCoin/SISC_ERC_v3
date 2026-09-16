@@ -1,5 +1,17 @@
 # Solidity コンパイラ互換性調査レポート
 
+> **注記（2026-09-16 / feature/v3.1）**
+> 本レポートは **v3.0 時点**の solc / OpenZeppelin 互換性調査の記録である。
+> その後 v3.1 で `artifacts/` は **リポジトリから削除**し、ビルドと検証の正本を
+> [`solc-input.json`](solc-input.json)（standard-json input）に一本化した。
+> 削除前の `artifacts/` は v3.0 のビルド出力のままで、v3.1 が削除したはずの
+> `adminMint` / `adminBurn` / `burn` / `burnFrom` / `pause` を含む ABI を配布する状態だった。
+> 以下の本文に出てくる `artifacts/` の再生成・参照の記述は当時の作業記録として読むこと。
+> 現在のビルド設定は `solc-input.json` の `settings`（solc 0.8.36 / evmVersion `prague` /
+> optimizer 無効 runs 200）が正本である。
+
+---
+
 **調査日**: 2026-08-31
 **対象**: `contracts/ShirushiCoin.sol`
 **ブランチ**: `feature/20260831`
@@ -15,7 +27,8 @@
 コントラクト本体のコードそのものは最新コンパイラに完全に対応しており、警告は 1 件も発生しない。
 
 本レポートの指摘はすべて本ブランチで対応済みである（[4. 適用した修正](#4-適用した修正)を参照）。
-併せて、コンパイラ設定の固定・`artifacts/` の再生成・検証用 Standard JSON Input の追加まで完了している。
+併せて、コンパイラ設定の固定と検証用 Standard JSON Input の追加まで完了している
+（当時あわせて再生成した `artifacts/` は、上の注記のとおり v3.1 で削除した）。
 
 ### バージョン対照表
 
@@ -24,7 +37,7 @@
 | solc | 0.8.30（`pragma ^0.8.30`）| **0.8.36**（`pragma 0.8.36` に固定）|
 | OpenZeppelin Contracts | 5.4.0 と表記（実体は一部 4.9.0 混在）| **5.6.1**（`.deps/` を全面同期）|
 | evmVersion | 未指定（コンパイラ既定に依存）| **`prague` を明示指定** |
-| `artifacts/` | solc 0.8.30 / 修正前ソースの出力 | solc 0.8.36 / 修正後ソースで再生成 |
+| `artifacts/` | solc 0.8.30 / 修正前ソースの出力 | 当時は再生成。**v3.1 で削除し `solc-input.json` に一本化** |
 
 > 参考: evmVersion を無指定にした場合のコンパイラ既定値は solc 0.8.30 が `prague`、solc 0.8.36 が `osaka` であり、
 > バージョン間で変化する。本リポジトリではこれに依存しないよう `prague` を明示的に固定した（3 章・4-4 参照）。
@@ -253,7 +266,7 @@ OpenZeppelin 5.6.1 側が `error` を識別子として使用していること�
 | 1 | import パス修正 | **必須** | 対応済み（4-1）|
 | 2 | evmVersion の明示指定 | **高** | 対応済み。`prague` に固定（4-4）|
 | 3 | pragma のバージョン固定 | 中 | 対応済み。`pragma solidity 0.8.36;`（4-5）|
-| 4 | `artifacts/` の再生成 | 中 | 対応済み。solc 0.8.36 / prague で全面再生成（4-4）|
+| 4 | `artifacts/` の扱い | 中 | 当時は再生成。**v3.1 で削除し `solc-input.json` に一本化**（上の注記） |
 | 5 | 依存バージョンの統一 | 中 | 対応済み。`.deps/` を OZ 5.6.1 に統一（4-3）|
 
 ### 未対応（今後の検討事項）

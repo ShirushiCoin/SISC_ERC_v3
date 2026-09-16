@@ -1,0 +1,21 @@
+{
+  "name": "sisc-erc20",
+  "version": "3.1.0",
+  "private": true,
+  "description": "ShirushiCoin (SISC) v3.1 - ERC-20 token. Build and deployment tooling.",
+  "license": "MIT",
+  "scripts": {
+    "build": "sh scripts/build.sh",
+    "deploy": "ts-node scripts/deploy-sisc.ts",
+    "verify": "ts-node scripts/verify-deployment.ts",
+    "test": "sh scripts/build.sh && hardhat run --no-compile test/shirushicoin.test.js"
+  },
+  "devDependencies": {
+    "ethers": "^6.17.0",
+    "solc": "0.8.36",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.0",
+    "hardhat": "^2.22.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.0"
+  }
+}
