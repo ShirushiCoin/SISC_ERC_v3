@@ -27,14 +27,16 @@ import { ERC20Restricted } from "./vendor/openzeppelin-community-contracts/contr
  *      - Issuance is `mine()` only. The migration supply is minted once in the constructor.
  *      - Freezing is implemented with {ERC20Restricted} (BLOCKED) instead of a private mapping.
  *      - The exchange whitelist is {ERC20Restricted} (ALLOWED) plus the SISC transition guard
- *        in {_setRestriction}: a registered address can never be frozen.
+ *        in {_setRestriction}. The whitelist is append-only: registration is permanent, so a
+ *        registered address can never be frozen, unregistered or otherwise changed. Every
+ *        registered address is enumerable on-chain through {getRegisteredExchanges}.
  *      - `maxSupply` is enforced by {ERC20Capped}; re-entrancy by {ReentrancyGuardTransient};
  *        role holders are enumerable via {AccessControlEnumerable}.
  *      - Roles: DEFAULT_ADMIN_ROLE is fixed at deployment. PAUSER_ROLE is gone (pause removed)
  *        and POOLER_ROLE is gone (`multiTransfer` moves only the caller's own balance).
  *        MINING_ADMIN_ROLE is new and separates the mining settings from the top-level admin.
  *        - FREEZER_ROLE: Permission to freeze / unfreeze
- *        - WHITELIST_ROLE: Permission to register / unregister exchange addresses
+ *        - WHITELIST_ROLE: Permission to register exchange addresses (registration is permanent)
  *        - MINING_ADMIN_ROLE: Permission to set the pool account and the mining reward plan
  *        - MINER_ROLE: Permission to mine
  *        - RECORDER_ROLE: Permission to record
@@ -80,8 +82,8 @@ contract ShirushiCoin is
     /// @dev Role that allows freezing/unfreezing accounts. Required for `freeze()`/`unfreeze()`.
     bytes32 public constant FREEZER_ROLE = keccak256("FREEZER_ROLE");
 
-    /// @dev Role that allows registering/unregistering exchange addresses.
-    ///      Required for `registerExchange()`/`unregisterExchange()`.
+    /// @dev Role that allows registering exchange addresses. Required for `registerExchange()`.
+    ///      There is no counterpart: registration is permanent and cannot be undone by any role.
     bytes32 public constant WHITELIST_ROLE = keccak256("WHITELIST_ROLE");
 
     /// @dev Role that allows managing the mining settings.
@@ -125,6 +127,12 @@ contract ShirushiCoin is
     /// @dev Annual mining reward plan (in wei). `[year] => [reward]`.
     mapping(uint256 => uint256) private _miningRewardPlan;
 
+    /// @dev Append-only registry of every registered exchange address, in registration order.
+    ///      Entries are never removed, reordered or overwritten, so an address keeps its index
+    ///      for the life of the contract. {registerExchange} rejects addresses that are already
+    ///      registered, so the array never contains duplicates or the zero address.
+    address[] private _registeredExchanges;
+
     // --- Errors ---
     /// @dev The zero address was given where a real address is required.
     error ZeroAddress();
@@ -153,14 +161,21 @@ contract ShirushiCoin is
     /// @dev A registered exchange address cannot be frozen (ALLOWED -> BLOCKED is forbidden).
     error ExchangeAddressProtected(address account);
 
+    /// @dev A registered exchange address can never leave the ALLOWED state
+    ///      (ALLOWED -> DEFAULT is forbidden): registration is permanent.
+    error ExchangeRegistrationIsPermanent(address account);
+
+    /// @dev `registerExchange()` was called on an address that is already registered.
+    error AlreadyRegistered(address account);
+
     /// @dev A frozen address cannot be registered as an exchange (BLOCKED -> ALLOWED is forbidden).
     error FrozenAddressCannotBeRegistered(address account);
 
     /// @dev `unfreeze()` was called on an address that is not frozen.
     error NotFrozen(address account);
 
-    /// @dev `unregisterExchange()` was called on an address that is not registered.
-    error NotRegistered(address account);
+    /// @dev An index argument is outside the bounds of the exchange registry.
+    error IndexOutOfBounds(uint256 index, uint256 length);
 
     // --- Events ---
     /// @notice Emitted once by the constructor with the migration supply figures
@@ -178,10 +193,12 @@ contract ShirushiCoin is
     /// @param isFrozen True if the account is now frozen, false if unfrozen
     event AccountFrozen(address indexed account, bool isFrozen);
 
-    /// @notice Emitted when an exchange address is registered or unregistered
+    /// @notice Emitted when an exchange address is registered.
+    /// @dev Registration is permanent, so there is no matching "unregistered" event and this
+    ///      event is emitted at most once per address.
     /// @param account The exchange address
-    /// @param isRegistered True if the address is now registered, false if unregistered
-    event ExchangeRegistered(address indexed account, bool isRegistered);
+    /// @param index The index of the address in the append-only registry
+    event ExchangeRegistered(address indexed account, uint256 index);
 
     /// @notice Emitted when the mining reward of a year is changed
     /// @param year The target year
@@ -328,7 +345,8 @@ contract ShirushiCoin is
     *      - `approve()` / `permit()` are not restricted; the resulting transfer is.
     *      - Freezing is applied per account and has no expiry.
     *      - Execution fails if the account is the zero address, or if the account is a
-    *        registered exchange address ({ExchangeAddressProtected}).
+    *        registered exchange address ({ExchangeAddressProtected}). The latter is permanent:
+    *        a registered address can never be frozen, and there is no way to unregister it.
     * @param account The account to freeze.
     */
     function freeze(address account) external onlyRole(FREEZER_ROLE) {
@@ -346,7 +364,7 @@ contract ShirushiCoin is
     *      Resets the {ERC20Restricted} state of the account from BLOCKED to DEFAULT.
     *      Execution fails if the account is not frozen ({NotFrozen}). In particular, the
     *      FREEZER_ROLE cannot use this function to remove the ALLOWED state of a registered
-    *      exchange address; only `unregisterExchange()` (WHITELIST_ROLE) can do that.
+    *      exchange address: that state is permanent and no function can remove it.
     * @param account The account to unfreeze.
     */
     function unfreeze(address account) external onlyRole(FREEZER_ROLE) {
@@ -358,37 +376,34 @@ contract ShirushiCoin is
     }
 
     /**
-    * @notice Register an exchange address, making it immune to freezing.
+    * @notice Register an exchange address, making it permanently immune to freezing.
     * @dev This function can only be called by an account holding the `WHITELIST_ROLE`.
-    *      Sets the {ERC20Restricted} state of the account to ALLOWED. While registered,
-    *      `freeze()` on this address always reverts.
-    *      Execution fails if the account is the zero address, or if the account is currently
-    *      frozen ({FrozenAddressCannotBeRegistered}) - registering it would silently unfreeze it.
+    *      Sets the {ERC20Restricted} state of the account to ALLOWED and appends it to the
+    *      append-only registry read by {registeredExchangeCount} / {registeredExchangeAt} /
+    *      {getRegisteredExchanges}.
+    *
+    *      **Registration is permanent and cannot be undone.** There is no unregister function,
+    *      and {_setRestriction} rejects every transition out of ALLOWED, so `freeze()` on a
+    *      registered address reverts for the life of the contract. No role - including
+    *      DEFAULT_ADMIN_ROLE - can remove an address from the whitelist or change its entry.
+    *      A wrong address registered here can only be corrected by redeploying the contract.
+    *
+    *      Execution fails if the account is the zero address, if the account is already
+    *      registered ({AlreadyRegistered}), or if the account is currently frozen
+    *      ({FrozenAddressCannotBeRegistered}) - registering it would silently unfreeze it.
     * @param account The exchange address to register.
     */
     function registerExchange(address account) external onlyRole(WHITELIST_ROLE) {
         if (account == address(0)) revert ZeroAddress();
+        if (getRestriction(account) == Restriction.ALLOWED) revert AlreadyRegistered(account);
 
         // Reverts on BLOCKED -> ALLOWED. See `_setRestriction`.
         _allowUser(account);
 
-        emit ExchangeRegistered(account, true);
-    }
+        uint256 index = _registeredExchanges.length;
+        _registeredExchanges.push(account);
 
-    /**
-    * @notice Unregister an exchange address.
-    * @dev This function can only be called by an account holding the `WHITELIST_ROLE`.
-    *      Resets the {ERC20Restricted} state of the account from ALLOWED to DEFAULT. This is
-    *      the only path that can remove the ALLOWED state.
-    *      Execution fails if the account is not registered ({NotRegistered}).
-    * @param account The exchange address to unregister.
-    */
-    function unregisterExchange(address account) external onlyRole(WHITELIST_ROLE) {
-        if (getRestriction(account) != Restriction.ALLOWED) revert NotRegistered(account);
-
-        _resetUser(account);
-
-        emit ExchangeRegistered(account, false);
+        emit ExchangeRegistered(account, index);
     }
 
     /// @notice Returns true if the account is frozen.
@@ -398,25 +413,62 @@ contract ShirushiCoin is
     }
 
     /// @notice Returns true if the account is a registered exchange address.
+    /// @dev Once this returns true for an address it returns true forever.
     /// @param account The account to check.
     function isRegisteredExchange(address account) external view returns (bool) {
         return getRestriction(account) == Restriction.ALLOWED;
     }
 
+    /// @notice Returns the number of registered exchange addresses.
+    /// @dev The registry is append-only, so this value never decreases.
+    function registeredExchangeCount() external view returns (uint256) {
+        return _registeredExchanges.length;
+    }
+
+    /// @notice Returns the registered exchange address at `index`.
+    /// @dev Indexes are assigned in registration order and never change.
+    /// @param index The position in the registry (0 .. {registeredExchangeCount} - 1).
+    function registeredExchangeAt(uint256 index) external view returns (address) {
+        uint256 length = _registeredExchanges.length;
+        if (index >= length) revert IndexOutOfBounds(index, length);
+        return _registeredExchanges[index];
+    }
+
+    /**
+     * @notice Returns every registered exchange address, in registration order.
+     * @dev Intended for off-chain calls (`eth_call`), where the whole registry can be read and
+     *      audited in one request. It is not `view`-cheap for on-chain callers: the cost grows
+     *      with {registeredExchangeCount}, so use {registeredExchangeAt} to page through the
+     *      registry if the list ever grows large.
+     */
+    function getRegisteredExchanges() external view returns (address[] memory) {
+        return _registeredExchanges;
+    }
+
     /**
      * @dev The single write path of the {ERC20Restricted} state, with the SISC transition guard.
-     *      {ERC20Restricted} on its own allows any transition, so the following three are
-     *      forbidden here:
-     *      - ALLOWED -> BLOCKED: a registered exchange address can never be frozen.
-     *      - BLOCKED -> ALLOWED: registering a frozen address would unfreeze it.
-     *      - ALLOWED -> DEFAULT is not blocked here, but it is only reachable from
-     *        `unregisterExchange()` (WHITELIST_ROLE): `unfreeze()` (FREEZER_ROLE) requires the
-     *        current state to be BLOCKED, so "unfreeze then freeze" cannot strip ALLOWED.
+     *      {ERC20Restricted} on its own allows any transition. Here **ALLOWED is terminal**:
+     *      once an address is registered, no code path can move it to another state, which is
+     *      what makes the whitelist append-only.
+     *
+     *      Forbidden transitions:
+     *      - ALLOWED -> BLOCKED ({ExchangeAddressProtected}): a registered exchange address can
+     *        never be frozen, by any role.
+     *      - ALLOWED -> DEFAULT ({ExchangeRegistrationIsPermanent}): a registered exchange
+     *        address can never be unregistered. No external function attempts this - there is
+     *        no `unregisterExchange` - and this check is the structural guarantee behind that
+     *        absence, including against any future caller of `_resetUser`.
+     *      - BLOCKED -> ALLOWED ({FrozenAddressCannotBeRegistered}): registering a frozen
+     *        address would silently unfreeze it.
+     *
+     *      ALLOWED -> ALLOWED is unreachable: {registerExchange} rejects an already-registered
+     *      address with {AlreadyRegistered}, so the registry cannot gain duplicate entries.
      */
     function _setRestriction(address account, Restriction next) internal override {
         Restriction current = getRestriction(account);
-        if (current == Restriction.ALLOWED && next == Restriction.BLOCKED) {
-            revert ExchangeAddressProtected(account);
+        if (current == Restriction.ALLOWED) {
+            if (next == Restriction.BLOCKED) revert ExchangeAddressProtected(account);
+            revert ExchangeRegistrationIsPermanent(account);
         }
         if (current == Restriction.BLOCKED && next == Restriction.ALLOWED) {
             revert FrozenAddressCannotBeRegistered(account);

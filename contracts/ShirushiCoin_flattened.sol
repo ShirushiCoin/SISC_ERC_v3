@@ -14,6 +14,8 @@ pragma solidity 0.8.36;
 
 // OpenZeppelin Contracts (last updated v5.4.0) (access/IAccessControl.sol)
 
+
+
 /**
  * @dev External interface of AccessControl declared to support ERC-165 detection.
  */
@@ -114,6 +116,10 @@ interface IAccessControl {
 
 // OpenZeppelin Contracts (last updated v5.4.0) (access/extensions/IAccessControlEnumerable.sol)
 
+
+
+
+
 /**
  * @dev External interface of AccessControlEnumerable declared to support ERC-165 detection.
  */
@@ -145,6 +151,8 @@ interface IAccessControlEnumerable is IAccessControl {
 
 // OpenZeppelin Contracts (last updated v5.0.1) (utils/Context.sol)
 
+
+
 /**
  * @dev Provides information about the current execution context, including the
  * sender of the transaction and its data. While these are generally available
@@ -175,6 +183,8 @@ abstract contract Context {
 
 // OpenZeppelin Contracts (last updated v5.4.0) (utils/introspection/IERC165.sol)
 
+
+
 /**
  * @dev Interface of the ERC-165 standard, as defined in the
  * https://eips.ethereum.org/EIPS/eip-165[ERC].
@@ -202,6 +212,10 @@ interface IERC165 {
 
 // OpenZeppelin Contracts (last updated v5.4.0) (utils/introspection/ERC165.sol)
 
+
+
+
+
 /**
  * @dev Implementation of the {IERC165} interface.
  *
@@ -226,6 +240,12 @@ abstract contract ERC165 is IERC165 {
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.6.0) (access/AccessControl.sol)
+
+
+
+
+
+
 
 /**
  * @dev Contract module that allows children to implement role-based access
@@ -432,6 +452,8 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
 
 // OpenZeppelin Contracts (last updated v5.1.0) (utils/Comparators.sol)
 
+
+
 /**
  * @dev Provides a set of functions to compare values.
  *
@@ -453,6 +475,8 @@ library Comparators {
 
 // OpenZeppelin Contracts (last updated v5.5.0) (utils/SlotDerivation.sol)
 // This file was procedurally generated from scripts/generate/templates/SlotDerivation.js.
+
+
 
 /**
  * @dev Library for computing storage (and transient storage) locations from namespaces and deriving slots
@@ -611,6 +635,8 @@ library SlotDerivation {
 // OpenZeppelin Contracts (last updated v5.1.0) (utils/StorageSlot.sol)
 // This file was procedurally generated from scripts/generate/templates/StorageSlot.js.
 
+
+
 /**
  * @dev Library for reading and writing primitive types to specific storage slots.
  *
@@ -755,6 +781,8 @@ library StorageSlot {
 
 // OpenZeppelin Contracts (last updated v5.1.0) (utils/Panic.sol)
 
+
+
 /**
  * @dev Helper library for emitting standardized panic codes.
  *
@@ -814,6 +842,8 @@ library Panic {
 
 // OpenZeppelin Contracts (last updated v5.6.0) (utils/math/SafeCast.sol)
 // This file was procedurally generated from scripts/generate/templates/SafeCast.js.
+
+
 
 /**
  * @dev Wrappers over Solidity's uintXX/intXX/bool casting operators with added overflow
@@ -1978,6 +2008,11 @@ library SafeCast {
 
 // OpenZeppelin Contracts (last updated v5.6.0) (utils/math/Math.sol)
 
+
+
+
+
+
 /**
  * @dev Standard math utilities missing in the Solidity language.
  */
@@ -2740,6 +2775,13 @@ library Math {
 
 // OpenZeppelin Contracts (last updated v5.6.0) (utils/Arrays.sol)
 // This file was procedurally generated from scripts/generate/templates/Arrays.js.
+
+
+
+
+
+
+
 
 /**
  * @dev Collection of functions related to array types.
@@ -3625,6 +3667,11 @@ library Arrays {
 
 // OpenZeppelin Contracts (last updated v5.6.0) (utils/structs/EnumerableSet.sol)
 // This file was procedurally generated from scripts/generate/templates/EnumerableSet.js.
+
+
+
+
+
 
 /**
  * @dev Library for managing
@@ -4519,6 +4566,13 @@ library EnumerableSet {
 
 // OpenZeppelin Contracts (last updated v5.5.0) (access/extensions/AccessControlEnumerable.sol)
 
+
+
+
+
+
+
+
 /**
  * @dev Extension of {AccessControl} that allows enumerating the members of each role.
  */
@@ -4596,6 +4650,8 @@ abstract contract AccessControlEnumerable is IAccessControlEnumerable, AccessCon
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/IERC20.sol)
+
+
 
 /**
  * @dev Interface of the ERC-20 standard as defined in the ERC.
@@ -4678,6 +4734,10 @@ interface IERC20 {
 
 // OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/extensions/IERC20Metadata.sol)
 
+
+
+
+
 /**
  * @dev Interface for the optional metadata functions from the ERC-20 standard.
  */
@@ -4703,6 +4763,8 @@ interface IERC20Metadata is IERC20 {
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.5.0) (interfaces/draft-IERC6093.sol)
+
+
 
 /**
  * @dev Standard ERC-20 Errors
@@ -4867,6 +4929,13 @@ interface IERC1155Errors {
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.5.0) (token/ERC20/ERC20.sol)
+
+
+
+
+
+
+
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -5182,6 +5251,11 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
 
 // OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC1363.sol)
 
+
+
+
+
+
 /**
  * @title IERC1363
  * @dev Interface of the ERC-1363 standard as defined in the https://eips.ethereum.org/EIPS/eip-1363[ERC-1363].
@@ -5267,6 +5341,8 @@ interface IERC1363 is IERC20, IERC165 {
 
 // OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC1363Receiver.sol)
 
+
+
 /**
  * @title IERC1363Receiver
  * @dev Interface for any contract that wants to support `transferAndCall` or `transferFromAndCall`
@@ -5301,6 +5377,8 @@ interface IERC1363Receiver {
 
 // OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC1363Spender.sol)
 
+
+
 /**
  * @title IERC1363Spender
  * @dev Interface for any contract that wants to support `approveAndCall`
@@ -5328,6 +5406,11 @@ interface IERC1363Spender {
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/utils/ERC1363Utils.sol)
+
+
+
+
+
 
 /**
  * @dev Library that provides common ERC-1363 utility functions.
@@ -5422,6 +5505,13 @@ library ERC1363Utils {
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/extensions/ERC1363.sol)
+
+
+
+
+
+
+
 
 /**
  * @title ERC1363
@@ -5555,6 +5645,10 @@ abstract contract ERC1363 is ERC20, ERC165, IERC1363 {
 
 // OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/extensions/ERC20Capped.sol)
 
+
+
+
+
 /**
  * @dev Extension of {ERC20} that adds a cap to the supply of tokens.
  */
@@ -5608,6 +5702,8 @@ abstract contract ERC20Capped is ERC20 {
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.5.0) (token/ERC20/extensions/IERC20Permit.sol)
+
+
 
 /**
  * @dev Interface of the ERC-20 Permit extension allowing approvals to be made via signatures, as defined in
@@ -5700,6 +5796,8 @@ interface IERC20Permit {
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.6.0) (utils/cryptography/ECDSA.sol)
+
+
 
 /**
  * @dev Elliptic Curve Digital Signature Algorithm (ECDSA) operations.
@@ -5987,6 +6085,10 @@ library ECDSA {
 
 // OpenZeppelin Contracts (last updated v5.1.0) (utils/math/SignedMath.sol)
 
+
+
+
+
 /**
  * @dev Standard signed math utilities missing in the Solidity language.
  */
@@ -6054,6 +6156,10 @@ library SignedMath {
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.6.0) (utils/Bytes.sol)
+
+
+
+
 
 /**
  * @dev Bytes operations.
@@ -6386,6 +6492,13 @@ library Bytes {
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.6.0) (utils/Strings.sol)
+
+
+
+
+
+
+
 
 /**
  * @dev String operations.
@@ -6916,6 +7029,10 @@ library Strings {
 
 // OpenZeppelin Contracts (last updated v5.6.0) (utils/cryptography/MessageHashUtils.sol)
 
+
+
+
+
 /**
  * @dev Signature message hash utilities for producing digests to be consumed by {ECDSA} recovery or signing.
  *
@@ -7144,6 +7261,10 @@ library MessageHashUtils {
 
 // OpenZeppelin Contracts (last updated v5.5.0) (utils/ShortStrings.sol)
 
+
+
+
+
 // | string  | 0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA   |
 // | length  | 0x                                                              BB |
 type ShortString is bytes32;
@@ -7266,6 +7387,8 @@ library ShortStrings {
 
 // OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC5267.sol)
 
+
+
 interface IERC5267 {
     /**
      * @dev MAY be emitted to signal that the domain could have changed.
@@ -7295,6 +7418,12 @@ interface IERC5267 {
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.5.0) (utils/cryptography/EIP712.sol)
+
+
+
+
+
+
 
 /**
  * @dev https://eips.ethereum.org/EIPS/eip-712[EIP-712] is a standard for hashing and signing of typed structured data.
@@ -7454,6 +7583,7 @@ abstract contract EIP712 is IERC5267 {
 
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/Nonces.sol)
 
+
 /**
  * @dev Provides tracking nonces for addresses. Nonces will only increment.
  */
@@ -7502,6 +7632,14 @@ abstract contract Nonces {
 // ----------------------------------------------------------------------------
 
 // OpenZeppelin Contracts (last updated v5.5.0) (token/ERC20/extensions/ERC20Permit.sol)
+
+
+
+
+
+
+
+
 
 /**
  * @dev Implementation of the ERC-20 Permit extension allowing approvals to be made via signatures, as defined in
@@ -7576,6 +7714,8 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712, Nonces {
 
 // OpenZeppelin Contracts (last updated v5.3.0) (utils/TransientSlot.sol)
 // This file was procedurally generated from scripts/generate/templates/TransientSlot.js.
+
+
 
 /**
  * @dev Library for reading and writing value-types to specific transient storage slots.
@@ -7761,6 +7901,10 @@ library TransientSlot {
 
 // OpenZeppelin Contracts (last updated v5.5.0) (utils/ReentrancyGuardTransient.sol)
 
+
+
+
+
 /**
  * @dev Variant of {ReentrancyGuard} that uses transient storage.
  *
@@ -7940,10 +8084,20 @@ abstract contract ERC20Restricted is ERC20 {
 
 // Shirushi Coin ver 3.1
 
+
 // Compatible with OpenZeppelin Contracts ^5.6.1
+
+
+
+ // ERC-1363 Transfer And Call
+
+
+ // EIP-2612 ERC20 Permit
+
 
 // OpenZeppelin Community Contracts (not part of the audited @openzeppelin/contracts package).
 // Vendored unchanged at a pinned commit. See contracts/vendor/README.md.
+
 
 /**
  * @title ShirushiCoin
@@ -7957,14 +8111,16 @@ abstract contract ERC20Restricted is ERC20 {
  *      - Issuance is `mine()` only. The migration supply is minted once in the constructor.
  *      - Freezing is implemented with {ERC20Restricted} (BLOCKED) instead of a private mapping.
  *      - The exchange whitelist is {ERC20Restricted} (ALLOWED) plus the SISC transition guard
- *        in {_setRestriction}: a registered address can never be frozen.
+ *        in {_setRestriction}. The whitelist is append-only: registration is permanent, so a
+ *        registered address can never be frozen, unregistered or otherwise changed. Every
+ *        registered address is enumerable on-chain through {getRegisteredExchanges}.
  *      - `maxSupply` is enforced by {ERC20Capped}; re-entrancy by {ReentrancyGuardTransient};
  *        role holders are enumerable via {AccessControlEnumerable}.
  *      - Roles: DEFAULT_ADMIN_ROLE is fixed at deployment. PAUSER_ROLE is gone (pause removed)
  *        and POOLER_ROLE is gone (`multiTransfer` moves only the caller's own balance).
  *        MINING_ADMIN_ROLE is new and separates the mining settings from the top-level admin.
  *        - FREEZER_ROLE: Permission to freeze / unfreeze
- *        - WHITELIST_ROLE: Permission to register / unregister exchange addresses
+ *        - WHITELIST_ROLE: Permission to register exchange addresses (registration is permanent)
  *        - MINING_ADMIN_ROLE: Permission to set the pool account and the mining reward plan
  *        - MINER_ROLE: Permission to mine
  *        - RECORDER_ROLE: Permission to record
@@ -8010,8 +8166,8 @@ contract ShirushiCoin is
     /// @dev Role that allows freezing/unfreezing accounts. Required for `freeze()`/`unfreeze()`.
     bytes32 public constant FREEZER_ROLE = keccak256("FREEZER_ROLE");
 
-    /// @dev Role that allows registering/unregistering exchange addresses.
-    ///      Required for `registerExchange()`/`unregisterExchange()`.
+    /// @dev Role that allows registering exchange addresses. Required for `registerExchange()`.
+    ///      There is no counterpart: registration is permanent and cannot be undone by any role.
     bytes32 public constant WHITELIST_ROLE = keccak256("WHITELIST_ROLE");
 
     /// @dev Role that allows managing the mining settings.
@@ -8055,6 +8211,12 @@ contract ShirushiCoin is
     /// @dev Annual mining reward plan (in wei). `[year] => [reward]`.
     mapping(uint256 => uint256) private _miningRewardPlan;
 
+    /// @dev Append-only registry of every registered exchange address, in registration order.
+    ///      Entries are never removed, reordered or overwritten, so an address keeps its index
+    ///      for the life of the contract. {registerExchange} rejects addresses that are already
+    ///      registered, so the array never contains duplicates or the zero address.
+    address[] private _registeredExchanges;
+
     // --- Errors ---
     /// @dev The zero address was given where a real address is required.
     error ZeroAddress();
@@ -8083,14 +8245,21 @@ contract ShirushiCoin is
     /// @dev A registered exchange address cannot be frozen (ALLOWED -> BLOCKED is forbidden).
     error ExchangeAddressProtected(address account);
 
+    /// @dev A registered exchange address can never leave the ALLOWED state
+    ///      (ALLOWED -> DEFAULT is forbidden): registration is permanent.
+    error ExchangeRegistrationIsPermanent(address account);
+
+    /// @dev `registerExchange()` was called on an address that is already registered.
+    error AlreadyRegistered(address account);
+
     /// @dev A frozen address cannot be registered as an exchange (BLOCKED -> ALLOWED is forbidden).
     error FrozenAddressCannotBeRegistered(address account);
 
     /// @dev `unfreeze()` was called on an address that is not frozen.
     error NotFrozen(address account);
 
-    /// @dev `unregisterExchange()` was called on an address that is not registered.
-    error NotRegistered(address account);
+    /// @dev An index argument is outside the bounds of the exchange registry.
+    error IndexOutOfBounds(uint256 index, uint256 length);
 
     // --- Events ---
     /// @notice Emitted once by the constructor with the migration supply figures
@@ -8108,10 +8277,12 @@ contract ShirushiCoin is
     /// @param isFrozen True if the account is now frozen, false if unfrozen
     event AccountFrozen(address indexed account, bool isFrozen);
 
-    /// @notice Emitted when an exchange address is registered or unregistered
+    /// @notice Emitted when an exchange address is registered.
+    /// @dev Registration is permanent, so there is no matching "unregistered" event and this
+    ///      event is emitted at most once per address.
     /// @param account The exchange address
-    /// @param isRegistered True if the address is now registered, false if unregistered
-    event ExchangeRegistered(address indexed account, bool isRegistered);
+    /// @param index The index of the address in the append-only registry
+    event ExchangeRegistered(address indexed account, uint256 index);
 
     /// @notice Emitted when the mining reward of a year is changed
     /// @param year The target year
@@ -8258,7 +8429,8 @@ contract ShirushiCoin is
     *      - `approve()` / `permit()` are not restricted; the resulting transfer is.
     *      - Freezing is applied per account and has no expiry.
     *      - Execution fails if the account is the zero address, or if the account is a
-    *        registered exchange address ({ExchangeAddressProtected}).
+    *        registered exchange address ({ExchangeAddressProtected}). The latter is permanent:
+    *        a registered address can never be frozen, and there is no way to unregister it.
     * @param account The account to freeze.
     */
     function freeze(address account) external onlyRole(FREEZER_ROLE) {
@@ -8276,7 +8448,7 @@ contract ShirushiCoin is
     *      Resets the {ERC20Restricted} state of the account from BLOCKED to DEFAULT.
     *      Execution fails if the account is not frozen ({NotFrozen}). In particular, the
     *      FREEZER_ROLE cannot use this function to remove the ALLOWED state of a registered
-    *      exchange address; only `unregisterExchange()` (WHITELIST_ROLE) can do that.
+    *      exchange address: that state is permanent and no function can remove it.
     * @param account The account to unfreeze.
     */
     function unfreeze(address account) external onlyRole(FREEZER_ROLE) {
@@ -8288,37 +8460,34 @@ contract ShirushiCoin is
     }
 
     /**
-    * @notice Register an exchange address, making it immune to freezing.
+    * @notice Register an exchange address, making it permanently immune to freezing.
     * @dev This function can only be called by an account holding the `WHITELIST_ROLE`.
-    *      Sets the {ERC20Restricted} state of the account to ALLOWED. While registered,
-    *      `freeze()` on this address always reverts.
-    *      Execution fails if the account is the zero address, or if the account is currently
-    *      frozen ({FrozenAddressCannotBeRegistered}) - registering it would silently unfreeze it.
+    *      Sets the {ERC20Restricted} state of the account to ALLOWED and appends it to the
+    *      append-only registry read by {registeredExchangeCount} / {registeredExchangeAt} /
+    *      {getRegisteredExchanges}.
+    *
+    *      **Registration is permanent and cannot be undone.** There is no unregister function,
+    *      and {_setRestriction} rejects every transition out of ALLOWED, so `freeze()` on a
+    *      registered address reverts for the life of the contract. No role - including
+    *      DEFAULT_ADMIN_ROLE - can remove an address from the whitelist or change its entry.
+    *      A wrong address registered here can only be corrected by redeploying the contract.
+    *
+    *      Execution fails if the account is the zero address, if the account is already
+    *      registered ({AlreadyRegistered}), or if the account is currently frozen
+    *      ({FrozenAddressCannotBeRegistered}) - registering it would silently unfreeze it.
     * @param account The exchange address to register.
     */
     function registerExchange(address account) external onlyRole(WHITELIST_ROLE) {
         if (account == address(0)) revert ZeroAddress();
+        if (getRestriction(account) == Restriction.ALLOWED) revert AlreadyRegistered(account);
 
         // Reverts on BLOCKED -> ALLOWED. See `_setRestriction`.
         _allowUser(account);
 
-        emit ExchangeRegistered(account, true);
-    }
+        uint256 index = _registeredExchanges.length;
+        _registeredExchanges.push(account);
 
-    /**
-    * @notice Unregister an exchange address.
-    * @dev This function can only be called by an account holding the `WHITELIST_ROLE`.
-    *      Resets the {ERC20Restricted} state of the account from ALLOWED to DEFAULT. This is
-    *      the only path that can remove the ALLOWED state.
-    *      Execution fails if the account is not registered ({NotRegistered}).
-    * @param account The exchange address to unregister.
-    */
-    function unregisterExchange(address account) external onlyRole(WHITELIST_ROLE) {
-        if (getRestriction(account) != Restriction.ALLOWED) revert NotRegistered(account);
-
-        _resetUser(account);
-
-        emit ExchangeRegistered(account, false);
+        emit ExchangeRegistered(account, index);
     }
 
     /// @notice Returns true if the account is frozen.
@@ -8328,25 +8497,62 @@ contract ShirushiCoin is
     }
 
     /// @notice Returns true if the account is a registered exchange address.
+    /// @dev Once this returns true for an address it returns true forever.
     /// @param account The account to check.
     function isRegisteredExchange(address account) external view returns (bool) {
         return getRestriction(account) == Restriction.ALLOWED;
     }
 
+    /// @notice Returns the number of registered exchange addresses.
+    /// @dev The registry is append-only, so this value never decreases.
+    function registeredExchangeCount() external view returns (uint256) {
+        return _registeredExchanges.length;
+    }
+
+    /// @notice Returns the registered exchange address at `index`.
+    /// @dev Indexes are assigned in registration order and never change.
+    /// @param index The position in the registry (0 .. {registeredExchangeCount} - 1).
+    function registeredExchangeAt(uint256 index) external view returns (address) {
+        uint256 length = _registeredExchanges.length;
+        if (index >= length) revert IndexOutOfBounds(index, length);
+        return _registeredExchanges[index];
+    }
+
+    /**
+     * @notice Returns every registered exchange address, in registration order.
+     * @dev Intended for off-chain calls (`eth_call`), where the whole registry can be read and
+     *      audited in one request. It is not `view`-cheap for on-chain callers: the cost grows
+     *      with {registeredExchangeCount}, so use {registeredExchangeAt} to page through the
+     *      registry if the list ever grows large.
+     */
+    function getRegisteredExchanges() external view returns (address[] memory) {
+        return _registeredExchanges;
+    }
+
     /**
      * @dev The single write path of the {ERC20Restricted} state, with the SISC transition guard.
-     *      {ERC20Restricted} on its own allows any transition, so the following three are
-     *      forbidden here:
-     *      - ALLOWED -> BLOCKED: a registered exchange address can never be frozen.
-     *      - BLOCKED -> ALLOWED: registering a frozen address would unfreeze it.
-     *      - ALLOWED -> DEFAULT is not blocked here, but it is only reachable from
-     *        `unregisterExchange()` (WHITELIST_ROLE): `unfreeze()` (FREEZER_ROLE) requires the
-     *        current state to be BLOCKED, so "unfreeze then freeze" cannot strip ALLOWED.
+     *      {ERC20Restricted} on its own allows any transition. Here **ALLOWED is terminal**:
+     *      once an address is registered, no code path can move it to another state, which is
+     *      what makes the whitelist append-only.
+     *
+     *      Forbidden transitions:
+     *      - ALLOWED -> BLOCKED ({ExchangeAddressProtected}): a registered exchange address can
+     *        never be frozen, by any role.
+     *      - ALLOWED -> DEFAULT ({ExchangeRegistrationIsPermanent}): a registered exchange
+     *        address can never be unregistered. No external function attempts this - there is
+     *        no `unregisterExchange` - and this check is the structural guarantee behind that
+     *        absence, including against any future caller of `_resetUser`.
+     *      - BLOCKED -> ALLOWED ({FrozenAddressCannotBeRegistered}): registering a frozen
+     *        address would silently unfreeze it.
+     *
+     *      ALLOWED -> ALLOWED is unreachable: {registerExchange} rejects an already-registered
+     *      address with {AlreadyRegistered}, so the registry cannot gain duplicate entries.
      */
     function _setRestriction(address account, Restriction next) internal override {
         Restriction current = getRestriction(account);
-        if (current == Restriction.ALLOWED && next == Restriction.BLOCKED) {
-            revert ExchangeAddressProtected(account);
+        if (current == Restriction.ALLOWED) {
+            if (next == Restriction.BLOCKED) revert ExchangeAddressProtected(account);
+            revert ExchangeRegistrationIsPermanent(account);
         }
         if (current == Restriction.BLOCKED && next == Restriction.ALLOWED) {
             revert FrozenAddressCannotBeRegistered(account);
@@ -8606,3 +8812,4 @@ contract ShirushiCoin is
         return super.supportsInterface(interfaceId);
     }
 }
+

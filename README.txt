@@ -13,7 +13,8 @@ See docs/v3.1-changes.md for the full v3.0 -> v3.1 difference and for the deploy
  + DEFAULT_ADMIN_ROLE – manages the other roles. Fixed at deployment: it cannot be granted
    to another address, revoked or renounced.
  + FREEZER_ROLE – can freeze(address) / unfreeze(address) individual accounts.
- + WHITELIST_ROLE – can registerExchange(address) / unregisterExchange(address).
+ + WHITELIST_ROLE - can registerExchange(address). Registration is PERMANENT:
+   there is no unregister function and no role can remove or change an entry.
  + MINING_ADMIN_ROLE – can setPoolAccount(address) / setMiningReward(year, reward).
  + MINER_ROLE – can call mine(year) to mint the yearly reward to the pool account.
  + RECORDER_ROLE – can call storeWeb3MakerAIData(bytes32).
@@ -77,7 +78,11 @@ isFrozen(address)
 
 Exchange whitelist
 
-registerExchange(address) / unregisterExchange(address)   # WHITELIST_ROLE
+registerExchange(address)                      # WHITELIST_ROLE (permanent, append-only)
+isRegisteredExchange(address) -> bool          # view
+registeredExchangeCount() -> uint256           # view
+registeredExchangeAt(uint256) -> address       # view
+getRegisteredExchanges() -> address[]          # view, whole registry in one call
 isRegisteredExchange(address)
 
 Mining
@@ -92,7 +97,7 @@ Events (Selected)
 GenesisSupplyMinted(uint256 genesisSupply, uint256 legacyMinedSupply)
 MineEvent(address miner, address pool, uint256 amount)
 AccountFrozen(address account, bool isFrozen)
-ExchangeRegistered(address account, bool isRegistered)
+ExchangeRegistered(address indexed account, uint256 index)
 UserRestrictionsUpdated(address account, Restriction restriction)   # from ERC20Restricted
 PoolAccountChanged(address oldAccount, address newAccount)
 MiningRewardChanged(uint256 year, uint256 oldReward, uint256 newReward)
