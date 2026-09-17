@@ -1,9 +1,11 @@
 *** SISC (ShirushiCoin) – Overview
 
 SISC is an ERC-20 compatible token with role-based access control and a built-in mining schedule.
-This branch (feature/v3.1) contains version 3.1. There is no burn path of any kind, so no
-function can decrease any balance, and none can move another account's balance without that
-holder's approval. Issuance is NOT a fixed on-chain schedule: see "Issuance limits" below.
+This branch (feature/v3.1) contains version 3.1. There is no burn path of any kind, so nothing
+can reduce totalSupply, and no role can seize another account's balance: every transfer needs
+either the holder's own call or an allowance the holder granted. (Ordinary transfers and approved
+transferFrom do of course reduce the sender's balance - that is not what this says.)
+Issuance is NOT a fixed on-chain schedule: see "Issuance limits" below.
 
 See docs/v3.1-changes.md for the full v3.0 -> v3.1 difference and for the deployment arguments.
 
@@ -105,7 +107,7 @@ produces the same runtime but a different metadata hash, so it can only be a par
 
   npm install
   npm run build                 # solc-input.json -> build/ShirushiCoin.json
-  npm test                      # 53 checks against that exact bytecode
+  npm test                      # 101 checks against that exact bytecode
   cp scripts/sisc.config.example.ts scripts/sisc.config.ts   # then fill it in
   npm run deploy                # dry run (pre-flight checks only)
   CONFIRM=DEPLOY RPC_URL=... PRIVATE_KEY=... npm run deploy
@@ -124,14 +126,18 @@ MINER_ROLE, RECORDER_ROLE.
 
 Freeze/Unfreeze Accounts
 
-freeze(address) / unfreeze(address)          # FREEZER_ROLE; both revert if the state
-                                             # would not actually change
+freeze(address) / unfreeze(address)          # FREEZER_ROLE
+   Both are idempotent: if the account is already in the requested state the call succeeds,
+   changes nothing and emits no event. (A revert would abort a whole multi-address Safe batch
+   during an incident - see docs/v3.1-security-notes.md S-10.)
+   freeze on a whitelisted address reverts ExchangeAddressProtected; unfreeze on one is a
+   silent no-op that does NOT remove the ALLOWED state.
 isFrozen(address)
 
 Exchange whitelist
 
 registerExchange(address)                      # WHITELIST_ROLE (permanent, append-only)
-isRegisteredExchange(address) -> bool          # view
+isWhitelisted(address) -> bool          # view
 registeredExchangeCount() -> uint256           # view
 registeredExchangeAt(uint256) -> address       # view
 getRegisteredExchanges() -> address[]          # view, whole registry in one call
@@ -151,8 +157,10 @@ Mining
 Check reward: getMiningReward(year)
 Execute: mine(year)                          # MINER_ROLE, respects the 23h interval and the cap
 Settings: setPoolAccount(address) / setMiningReward(year, reward)   # MINING_ADMIN_ROLE
-   setPoolAccount requires the new address to be registered already (WHITELIST_ROLE acts
-   first), so a rotation can never leave the pool freezable. Both setters revert
+   setPoolAccount rejects the zero address, the token contract itself, and any frozen address.
+   It does NOT require the new pool to be whitelisted: the pool deliberately stays freezable, so
+   that an abusive mint can still be contained. Registering the pool is an operational choice
+   with a permanent cost - see docs/v3.1-security-notes.md S-5.
    Both setters are idempotent: re-applying the current value succeeds, changes nothing and
    emits no event. setPoolAccount still rejects a frozen address first, so a success always
    means the pool is currently usable.

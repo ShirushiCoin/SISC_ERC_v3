@@ -59,8 +59,12 @@ function preflight(): bigint {
     fail(`gasLimit ${config.gasLimit} が不足しています。genesisHolders ${config.genesisHolders.length} 件の`
        + ` 推定消費は約 ${estimated}、15% の余裕を含めて ${required} 以上にしてください`);
   }
-  if (!Number.isInteger(config.expectedChainId) || config.expectedChainId <= 0) {
-    fail("expectedChainId を設定してください（Ethereum メインネットは 1）");
+  if (!Number.isSafeInteger(config.expectedChainId) || config.expectedChainId <= 0) {
+    fail("expectedChainId を正の整数で設定してください（Ethereum メインネットは 1）");
+  }
+  if (config.legacyMinedSupply < 0n) fail("legacyMinedSupply が負の値です");
+  for (const a of config.genesisAmounts) {
+    if (a > CAP) fail("genesisAmounts の 1 件が cap を超えています");
   }
 
   // admin スロットの誤りだけは回復不能（S-13）。運用鍵との同一指定は事故の兆候として強く警告する。
@@ -133,6 +137,20 @@ async function main() {
   if (collides.length) fail(`poolAccount / genesisHolders がこのコントラクト自身のアドレスと一致します: ${predicted}`);
 
   const factory = new ethers.ContractFactory(artifact.abi, artifact.bytecode, wallet);
+
+  // 推算式ではなく実測の見積りで gasLimit を確かめる。式は n<=100 で余裕を持つよう作ってあるが、
+  // コンストラクタのコストは genesisHolders 件数に対して厳密には線形でないため。
+  const deployTx = await factory.getDeployTransaction(
+    r, config.poolAccount, config.genesisHolders, config.genesisAmounts, config.legacyMinedSupply);
+  const measured = await provider.estimateGas({ ...deployTx, from: wallet.address });
+  console.log("  estimateGas    :", measured.toString(),
+              `(gasLimit ${config.gasLimit} / 余裕 ${config.gasLimit - measured})`);
+  if (config.gasLimit < measured) {
+    fail(`gasLimit ${config.gasLimit} が実測見積り ${measured} を下回っています`);
+  }
+  if (config.gasLimit < (measured * 110n) / 100n) {
+    console.warn("  警告: gasLimit の余裕が実測見積りの 10% 未満です。引き上げを検討してください。\n");
+  }
 
   const contract = await factory.deploy(
     r,                        // 名前付きオブジェクト。フィールド名を保持するのはこの形だけ

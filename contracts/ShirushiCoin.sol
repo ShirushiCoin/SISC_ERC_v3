@@ -24,8 +24,10 @@ import { ERC20Restricted } from "./vendor/openzeppelin-community-contracts/contr
  * @dev Changes from v3.0 (see SISC v3.1 Component Map):
  *      - Removed: burn / burnFrom (ERC20Burnable), adminBurn, adminMint,
  *        pause / unpause (ERC20Pausable) and any transfer of DEFAULT_ADMIN_ROLE.
- *        There is no burn path of any kind, so no function can decrease the balance of any
- *        account, and none can move another account's balance without that holder's approval.
+ *        There is no burn path of any kind, so nothing can reduce `totalSupply`, and no role
+ *        can seize another account's balance: every transfer needs either the holder's own
+ *        call or an allowance the holder granted. (Ordinary transfers and approved
+ *        `transferFrom` do of course reduce the sender's balance - that is not what this says.)
  *      - Issuance goes through `mine()` only, plus the one-time migration supply minted in the
  *        constructor. Note that `mine()` is NOT a schedule enforced on-chain:
  *        MINING_ADMIN_ROLE can raise any year's reward with {setMiningReward} (no upper bound)
@@ -502,10 +504,13 @@ contract ShirushiCoin is
         return getRestriction(account) == Restriction.BLOCKED;
     }
 
-    /// @notice Returns true if the account is a registered exchange address.
+    /// @notice Returns true if the account is on the exchange whitelist.
     /// @dev Once this returns true for an address it returns true forever.
+    ///      Named `isWhitelisted` to match the terminology used with the exchange, even though
+    ///      the writer is {registerExchange} and the event is {ExchangeRegistered}. All three
+    ///      refer to the same ALLOWED state of {ERC20Restricted}.
     /// @param account The account to check.
-    function isRegisteredExchange(address account) external view returns (bool) {
+    function isWhitelisted(address account) external view returns (bool) {
         return getRestriction(account) == Restriction.ALLOWED;
     }
 
@@ -861,11 +866,24 @@ contract ShirushiCoin is
         super._spendAllowance(owner, spender, value);
     }
 
-    // This function is an override required by Solidity.
+    /**
+     * @dev Override required by Solidity, plus one guard of our own.
+     *
+     *      Tokens sent to the token contract itself are unrecoverable: there is no burn, no
+     *      rescue function and no code path that moves this contract's own balance, yet they
+     *      keep counting against {MAX_SUPPLY}. The constructor, {setPoolAccount} and
+     *      {registerExchange} already refuse `address(this)`; this closes the remaining route,
+     *      which is an ordinary `transfer` / `transferFrom` / `multiTransfer` by any holder.
+     *
+     *      It reverts with OpenZeppelin's {IERC20Errors-ERC20InvalidReceiver} rather than a
+     *      bespoke error, so the failure looks exactly like `transfer(address(0))` to any
+     *      integrator already handling the standard ERC-20 error set.
+     */
     function _update(address from, address to, uint256 value)
         internal
         override(ERC20, ERC20Capped, ERC20Restricted)
     {
+        if (to == address(this)) revert ERC20InvalidReceiver(to);
         super._update(from, to, value);
     }
 
