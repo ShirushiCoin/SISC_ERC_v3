@@ -1,0 +1,2 @@
+Intentionally empty: hardhat.config.js points `paths.sources` here so Hardhat does not
+compile contracts/. The build comes from solc-input.json via scripts/build.sh.
